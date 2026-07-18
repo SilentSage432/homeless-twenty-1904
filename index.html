@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Homeless Twenty 1904 | Magic Valley &amp; Eastern Idaho Historical Society</title>
+  <meta name="description" content="Homeless Twenty 1904 preserves western heritage across Southern and Eastern Idaho. Discover Magic Valley history, historical plaques, and upcoming heritage events." />
+  <meta name="keywords" content="Homeless Twenty 1904, Southeast Idaho Historical Society, Magic Valley History Preservation, Eastern Idaho history, historical plaques, western heritage" />
+  <meta name="author" content="Homeless Twenty 1904" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://homelesstwenty1904.org/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://homelesstwenty1904.org/" />
+  <meta property="og:title" content="Homeless Twenty 1904 | Preserving Western Heritage &amp; Magic Valley History" />
+  <meta property="og:description" content="A historical society dedicated to safeguarding local lore and preserving the rugged western heritage of Southern and Eastern Idaho." />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&amp;h=630&amp;fit=crop" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Homeless Twenty 1904" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Homeless Twenty 1904 | Magic Valley History Preservation" />
+  <meta name="twitter:description" content="Preserving western heritage, historical plaques, and community events across Eastern Idaho and the Magic Valley." />
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&amp;h=630&amp;fit=crop" />
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&amp;family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&amp;display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            crimson: {
+              DEFAULT: '#990000',
+              dark: '#7a0000',
+              deep: '#5c0000',
+            },
+            charcoal: {
+              DEFAULT: '#111111',
+              soft: '#1a1a1a',
+            },
+            gold: {
+              DEFAULT: '#D4AF37',
+              light: '#E4C65A',
+              muted: '#B8942D',
+            },
+            slate: {
+              weathered: '#4A5568',
+            },
+            parchment: {
+              DEFAULT: '#FAFAF5',
+              warm: '#F5F2E8',
+              deep: '#EDE8DC',
+              ink: '#2C2416',
+            },
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'Georgia', 'serif'],
+            body: ['Merriweather', 'Georgia', 'serif'],
+          },
+          boxShadow: {
+            panel: '0 4px 24px rgba(17, 17, 17, 0.08)',
+            lift: '0 8px 32px rgba(17, 17, 17, 0.12)',
+          },
+        },
+      },
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
+  <style>
+    :root {
+      --crimson: #990000;
+      --charcoal: #111111;
+      --gold: #D4AF37;
+      --slate: #4A5568;
+      --parchment: #FAFAF5;
+    }
+
+    body {
+      font-family: Merriweather, Georgia, serif;
+      background-color: var(--parchment);
+      color: #2C2416;
+    }
+
+    .font-display {
+      font-family: "Playfair Display", Georgia, serif;
+    }
+
+    /* Warm parchment atmosphere — not flat white */
+    .bg-parchment-texture {
+      background-color: #FAFAF5;
+      background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(153, 0, 0, 0.04) 0%, transparent 45%),
+        linear-gradient(180deg, #FAFAF5 0%, #F5F2E8 50%, #FAFAF5 100%);
+    }
+
+    .hero-plane {
+      background-image:
+        linear-gradient(105deg, rgba(17, 17, 17, 0.88) 0%, rgba(17, 17, 17, 0.55) 45%, rgba(17, 17, 17, 0.35) 100%),
+        url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .drop-cap::first-letter {
+      float: left;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 3.75rem;
+      line-height: 0.8;
+      padding-right: 0.5rem;
+      padding-top: 0.35rem;
+      color: var(--crimson);
+      font-weight: 700;
+    }
+
+    .ornament-rule {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .ornament-rule::before,
+    .ornament-rule::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .ornament-diamond {
+      width: 8px;
+      height: 8px;
+      background: var(--gold);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    .nav-link {
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      transition: width 0.25s ease;
+    }
+
+    .nav-link:hover::after,
+    .nav-link:focus-visible::after {
+      width: 100%;
+    }
+
+    .plaque-overlay {
+      background: linear-gradient(to top, rgba(17, 17, 17, 0.92) 0%, rgba(17, 17, 17, 0.4) 55%, transparent 100%);
+    }
+
+    .focus-ring:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .btn-primary {
+      background-color: var(--crimson);
+      color: #FAFAF5;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #7a0000;
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+
+    .btn-gold {
+      border: 1.5px solid var(--gold);
+      color: var(--gold);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .btn-gold:hover {
+      background-color: var(--gold);
+      color: var(--charcoal);
+    }
+
+    /* Steady, vintage motion — not flashy tech */
+    @keyframes fade-rise {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes rule-draw {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    .animate-fade-rise {
+      animation: fade-rise 0.7s ease-out both;
+    }
+
+    .animate-fade-rise-delay {
+      animation: fade-rise 0.7s ease-out 0.15s both;
+    }
+
+    .animate-fade-rise-delay-2 {
+      animation: fade-rise 0.7s ease-out 0.3s both;
+    }
+
+    .hero-rule {
+      transform-origin: left;
+      animation: rule-draw 0.9s ease-out 0.4s both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-fade-rise,
+      .animate-fade-rise-delay,
+      .animate-fade-rise-delay-2,
+      .hero-rule {
+        animation: none;
+      }
+    }
+
+    [x-cloak] {
+      display: none !important;
+    }
+
+    .form-error {
+      border-color: var(--crimson) !important;
+    }
+  </style>
+</head>
+<body
+  class="bg-parchment-texture antialiased text-parchment-ink"
+  x-data="siteApp()"
+  @keydown.escape.window="closeLightbox()"
+>
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-crimson focus:text-parchment focus:px-4 focus:py-2 focus:font-body focus:text-sm">
+    Skip to main content
+  </a>
+
+  <!-- ═══════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════ -->
+  <header
+    class="fixed top-0 inset-x-0 z-50 transition-shadow duration-300"
+    :class="scrolled ? 'bg-charcoal/95 shadow-lift backdrop-blur-sm' : 'bg-charcoal'"
+    @scroll.window="scrolled = window.scrollY > 24"
+  >
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="flex h-16 sm:h-[4.5rem] items-center justify-between gap-4">
+        <a href="#top" class="focus-ring group flex items-center gap-3 min-w-0" aria-label="Homeless Twenty 1904 — Home">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center border border-gold/70 text-gold font-display text-sm font-bold tracking-wider" aria-hidden="true">
+            H20
+          </span>
+          <span class="min-w-0">
+            <span class="block font-display text-parchment text-base sm:text-lg leading-tight tracking-wide truncate">Homeless Twenty</span>
+            <span class="block text-[10px] sm:text-xs tracking-[0.2em] uppercase text-gold/90">1904</span>
+          </span>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-7" aria-label="Primary">
+          <a href="#about" class="nav-link focus-ring text-sm text-parchment/85 hover:text-gold tracking-wide">About</a>
+          <a href="#plaques" class="nav-link focus-ring text-sm text-parchment/85 hover:text-gold tracking-wide">Plaques</a>
+          <a href="#events" class="nav-link focus-ring text-sm text-parchment/85 hover:text-gold tracking-wide">Events</a>
+          <a href="#contact" class="nav-link focus-ring text-sm text-parchment/85 hover:text-gold tracking-wide">Contact</a>
+          <a href="#events" class="focus-ring btn-primary inline-flex items-center px-4 py-2 text-sm font-body tracking-wide">
+            View Events
+          </a>
+        </nav>
+
+        <button
+          type="button"
+          class="lg:hidden focus-ring flex h-11 w-11 items-center justify-center text-parchment border border-parchment/30"
+          @click="mobileOpen = !mobileOpen"
+          :aria-expanded="mobileOpen.toString()"
+          aria-controls="mobile-nav"
+          aria-label="Toggle navigation menu"
+        >
+          <svg x-show="!mobileOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+          <svg x-show="mobileOpen" x-cloak class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile nav -->
+    <div
+      id="mobile-nav"
+      x-show="mobileOpen"
+      x-cloak
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0 -translate-y-1"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      class="lg:hidden border-t border-parchment/10 bg-charcoal"
+      @click.outside="mobileOpen = false"
+    >
+      <nav class="mx-auto max-w-6xl px-4 py-4 flex flex-col gap-1" aria-label="Mobile">
+        <template x-for="item in navItems" :key="item.href">
+          <a
+            :href="item.href"
+            class="focus-ring block px-3 py-3 text-parchment/90 hover:text-gold hover:bg-white/5 text-base"
+            @click="mobileOpen = false"
+            x-text="item.label"
+          ></a>
+        </template>
+        <a
+          href="#events"
+          class="focus-ring btn-primary mt-2 text-center px-3 py-3 text-base"
+          @click="mobileOpen = false"
+        >
+          View Upcoming Events
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ═══════════════════════════════════════
+         HERO — full-bleed, brand-first
+    ═══════════════════════════════════════ -->
+    <section id="top" class="relative min-h-[100svh] hero-plane flex items-end sm:items-center" aria-labelledby="hero-brand">
+      <div class="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 pt-28 pb-16 sm:py-32">
+        <p class="animate-fade-rise text-gold text-xs sm:text-sm tracking-[0.28em] uppercase mb-4 font-body">
+          Historical Society · Southern &amp; Eastern Idaho
+        </p>
+        <h1 id="hero-brand" class="animate-fade-rise-delay font-display text-parchment text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight max-w-4xl">
+          Homeless Twenty<br class="hidden sm:block" />
+          <span class="text-gold">1904</span>
+        </h1>
+        <div class="hero-rule mt-6 mb-6 h-px w-24 sm:w-32 bg-gold" aria-hidden="true"></div>
+        <p class="animate-fade-rise-delay-2 font-body text-parchment/90 text-lg sm:text-xl leading-relaxed max-w-xl mb-10">
+          Preserving the Rugged Frontier History of the Magic Valley &amp; Eastern Idaho.
+        </p>
+        <div class="animate-fade-rise-delay-2">
+          <a
+            href="#events"
+            class="focus-ring btn-primary inline-flex items-center gap-2 px-7 py-3.5 text-base sm:text-lg tracking-wide"
+          >
+            View Upcoming Events
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         ABOUT / MISSION
+    ═══════════════════════════════════════ -->
+    <section id="about" class="relative py-20 sm:py-28" aria-labelledby="about-heading">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="ornament-rule mb-10 max-w-md mx-auto sm:mx-0" aria-hidden="true">
+          <span class="ornament-diamond"></span>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          <div class="lg:col-span-5">
+            <p class="text-crimson text-xs sm:text-sm tracking-[0.22em] uppercase mb-3">Our Mission</p>
+            <h2 id="about-heading" class="font-display text-charcoal text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-6">
+              Guardians of Magic Valley Lore
+            </h2>
+            <div class="h-px w-16 bg-gold mb-8" aria-hidden="true"></div>
+            <figure class="relative">
+              <img
+                src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=80"
+                alt="Rugged mountain landscape of the American West at dusk, recalling Idaho frontier country"
+                class="w-full aspect-[4/5] object-cover border border-charcoal/10 shadow-panel"
+                width="900"
+                height="1125"
+                loading="lazy"
+              />
+              <figcaption class="mt-3 text-sm text-slate-weathered italic">
+                The high country of Southern &amp; Eastern Idaho — land of trails, towns, and untold stories.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="lg:col-span-7">
+            <p class="drop-cap font-body text-lg sm:text-[1.125rem] leading-[1.85] text-parchment-ink/90 mb-6">
+              Homeless Twenty 1904 is a historical society interested in raising awareness of western heritage in Southern and Eastern Idaho. We focus heavily on preserving Eastern Idaho and Magic Valley history through community engagement, events, and the physical placement of historical markers and plaques that honor our region's rich past.
+            </p>
+            <p class="font-body text-lg leading-[1.85] text-parchment-ink/85 mb-10">
+              We gather as neighbors and keepers of memory — educators, outdoor wanderers, long-time locals, and anyone who believes a plaque on a quiet roadside can outlast a generation of forgetting.
+            </p>
+
+            <ul class="space-y-6 border-l-2 border-crimson/30 pl-6 mb-12" role="list">
+              <li>
+                <h3 class="font-display text-xl text-charcoal font-semibold mb-1">Raise Awareness</h3>
+                <p class="text-base leading-relaxed text-slate-weathered">Share the frontier stories of Southern and Eastern Idaho with the communities who live them.</p>
+              </li>
+              <li>
+                <h3 class="font-display text-xl text-charcoal font-semibold mb-1">Place Markers</h3>
+                <p class="text-base leading-relaxed text-slate-weathered">Install and maintain physical historical plaques that honor people, places, and passages worth remembering.</p>
+              </li>
+              <li>
+                <h3 class="font-display text-xl text-charcoal font-semibold mb-1">Gather Together</h3>
+                <p class="text-base leading-relaxed text-slate-weathered">Host dinners, outings, and commemorations that keep fraternal fellowship and local lore alive.</p>
+              </li>
+            </ul>
+
+            <!-- FAQ accordion -->
+            <div class="border-t border-charcoal/10 pt-8">
+              <h3 class="font-display text-2xl text-charcoal mb-5">Common Questions</h3>
+              <div class="divide-y divide-charcoal/10">
+                <template x-for="(faq, index) in faqs" :key="faq.q">
+                  <div class="py-1">
+                    <h4>
+                      <button
+                        type="button"
+                        class="focus-ring flex w-full items-center justify-between gap-4 py-4 text-left font-body text-base sm:text-lg text-charcoal hover:text-crimson"
+                        @click="openFaq = openFaq === index ? null : index"
+                        :aria-expanded="(openFaq === index).toString()"
+                        :aria-controls="'faq-panel-' + index"
+                      >
+                        <span x-text="faq.q"></span>
+                        <svg
+                          class="h-5 w-5 shrink-0 text-gold transition-transform duration-200"
+                          :class="openFaq === index && 'rotate-180'"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    </h4>
+                    <div
+                      :id="'faq-panel-' + index"
+                      x-show="openFaq === index"
+                      x-cloak
+                      x-transition:enter="transition ease-out duration-200"
+                      x-transition:enter-start="opacity-0 -translate-y-1"
+                      x-transition:enter-end="opacity-100 translate-y-0"
+                      class="pb-4 text-base leading-relaxed text-slate-weathered"
+                      x-text="faq.a"
+                    ></div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dark band — heritage statement -->
+    <aside class="bg-charcoal text-parchment py-14 sm:py-16" aria-label="Heritage statement">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 text-center">
+        <div class="ornament-rule mb-8 max-w-xs mx-auto" aria-hidden="true">
+          <span class="ornament-diamond"></span>
+        </div>
+        <blockquote class="font-display text-2xl sm:text-3xl md:text-4xl leading-snug italic text-parchment">
+          “A region that remembers its trails will never lose its way.”
+        </blockquote>
+        <p class="mt-6 text-sm tracking-[0.2em] uppercase text-gold">Homeless Twenty 1904</p>
+      </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════
+         PLAQUE GALLERY
+    ═══════════════════════════════════════ -->
+    <section id="plaques" class="py-20 sm:py-28 bg-parchment-warm/50" aria-labelledby="plaques-heading">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <p class="text-crimson text-xs sm:text-sm tracking-[0.22em] uppercase mb-3">Physical Markers</p>
+          <h2 id="plaques-heading" class="font-display text-charcoal text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-5">
+            Historical Plaque Gallery
+          </h2>
+          <div class="ornament-rule max-w-xs mx-auto mb-5" aria-hidden="true">
+            <span class="ornament-diamond"></span>
+          </div>
+          <p class="font-body text-lg leading-relaxed text-slate-weathered">
+            Markers placed across the Magic Valley and Eastern Idaho — each one a permanent record of people, places, and passages worth preserving.
+          </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7" role="list">
+          <template x-for="(plaque, index) in plaques" :key="plaque.id">
+            <article
+              class="group relative overflow-hidden border border-charcoal/10 bg-charcoal shadow-panel focus-within:ring-2 focus-within:ring-gold"
+              role="listitem"
+            >
+              <button
+                type="button"
+                class="focus-ring block w-full text-left"
+                @click="openLightbox(index)"
+                :aria-label="'View larger image: ' + plaque.title"
+              >
+                <div class="relative aspect-[4/3] overflow-hidden">
+                  <img
+                    :src="plaque.image"
+                    :alt="plaque.alt"
+                    class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    width="800"
+                    height="600"
+                    loading="lazy"
+                  />
+                  <div class="plaque-overlay absolute inset-0 flex flex-col justify-end p-5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity duration-300">
+                    <p class="text-gold text-xs tracking-[0.18em] uppercase mb-1" x-text="plaque.location"></p>
+                    <h3 class="font-display text-parchment text-xl font-semibold leading-snug" x-text="plaque.title"></h3>
+                    <p class="mt-2 text-sm text-parchment/80 line-clamp-2" x-text="plaque.significance"></p>
+                  </div>
+                </div>
+              </button>
+              <!-- Always-visible caption for mobile / accessibility -->
+              <div class="sm:hidden bg-charcoal px-4 py-3 border-t border-gold/20">
+                <p class="text-gold text-xs tracking-wider uppercase" x-text="plaque.location"></p>
+                <h3 class="font-display text-parchment text-lg" x-text="plaque.title"></h3>
+              </div>
+            </article>
+          </template>
+        </div>
+
+        <p class="mt-10 text-center text-sm text-slate-weathered">
+          Have a plaque location or story to contribute?
+          <a href="#contact" class="focus-ring text-crimson underline underline-offset-4 hover:text-crimson-dark">Send us a historical submission</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div
+      x-show="lightboxOpen"
+      x-cloak
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="activePlaque ? 'Plaque detail: ' + activePlaque.title : 'Plaque detail'"
+      @click.self="closeLightbox()"
+    >
+      <div class="absolute inset-0 bg-charcoal/90" aria-hidden="true"></div>
+      <div
+        class="relative z-10 w-full max-w-3xl bg-parchment shadow-lift border border-gold/40 max-h-[90vh] overflow-y-auto"
+        x-show="lightboxOpen"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-ref="lightboxPanel"
+      >
+        <button
+          type="button"
+          class="focus-ring absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center bg-charcoal text-parchment hover:text-gold"
+          @click="closeLightbox()"
+          aria-label="Close plaque lightbox"
+        >
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <template x-if="activePlaque">
+          <div>
+            <img
+              :src="activePlaque.image"
+              :alt="activePlaque.alt"
+              class="w-full aspect-[16/10] object-cover"
+              width="1200"
+              height="750"
+            />
+            <div class="p-6 sm:p-8">
+              <p class="text-crimson text-xs tracking-[0.2em] uppercase mb-2" x-text="activePlaque.location"></p>
+              <h3 class="font-display text-2xl sm:text-3xl text-charcoal font-semibold mb-3" x-text="activePlaque.title"></h3>
+              <div class="h-px w-12 bg-gold mb-4" aria-hidden="true"></div>
+              <p class="font-body text-base sm:text-lg leading-relaxed text-parchment-ink/85" x-text="activePlaque.significance"></p>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         EVENTS & PRE-PAY
+    ═══════════════════════════════════════ -->
+    <section id="events" class="py-20 sm:py-28" aria-labelledby="events-heading">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="max-w-2xl mb-14">
+          <p class="text-crimson text-xs sm:text-sm tracking-[0.22em] uppercase mb-3">Gatherings &amp; Commemorations</p>
+          <h2 id="events-heading" class="font-display text-charcoal text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-5">
+            Upcoming Events
+          </h2>
+          <div class="h-px w-16 bg-gold mb-5" aria-hidden="true"></div>
+          <p class="font-body text-lg leading-relaxed text-slate-weathered">
+            Join us for dinners, trail markers, and fellowship across the Magic Valley. Pre-pay when ready — secure payment links will appear here as each event opens.
+          </p>
+        </div>
+
+        <div class="space-y-8" role="list">
+          <template x-for="event in events" :key="event.id">
+            <article
+              class="border border-charcoal/10 bg-white/60 shadow-panel overflow-hidden"
+              role="listitem"
+            >
+              <div class="grid md:grid-cols-12">
+                <!-- Date rail -->
+                <div class="md:col-span-3 bg-charcoal text-parchment px-6 py-6 sm:py-8 flex md:flex-col items-center md:items-start justify-between md:justify-center gap-4">
+                  <div>
+                    <p class="text-gold text-xs tracking-[0.2em] uppercase mb-1" x-text="event.month"></p>
+                    <p class="font-display text-5xl font-bold leading-none" x-text="event.day"></p>
+                    <p class="mt-1 text-parchment/70 text-sm" x-text="event.year"></p>
+                  </div>
+                  <p class="text-sm text-parchment/80 md:mt-4" x-text="event.time"></p>
+                </div>
+
+                <!-- Details -->
+                <div class="md:col-span-5 px-6 py-6 sm:py-8 border-b md:border-b-0 md:border-r border-charcoal/10">
+                  <h3 class="font-display text-2xl sm:text-3xl text-charcoal font-semibold leading-snug mb-3" x-text="event.title"></h3>
+                  <p class="text-sm text-crimson tracking-wide mb-4" x-text="event.venue"></p>
+                  <p class="font-body text-base leading-relaxed text-parchment-ink/85" x-text="event.description"></p>
+                </div>
+
+                <!-- Pre-Pay module -->
+                <div class="md:col-span-4 px-6 py-6 sm:py-8 bg-parchment-deep/40 flex flex-col justify-center">
+                  <p class="text-xs tracking-[0.18em] uppercase text-slate-weathered mb-2">Pre-Pay for Event</p>
+                  <p class="font-display text-xl text-charcoal mb-1" x-text="event.priceLabel"></p>
+                  <p class="text-sm text-slate-weathered mb-5" x-text="event.priceNote"></p>
+                  <a
+                    :href="event.payUrl"
+                    class="focus-ring btn-primary inline-flex items-center justify-center px-5 py-3 text-base tracking-wide w-full sm:w-auto"
+                    :aria-label="'Pre-pay for ' + event.title"
+                    :class="event.payReady ? '' : 'opacity-90'"
+                  >
+                    <span x-text="event.payReady ? 'Pre-Pay Now' : 'Payment Link Coming Soon'"></span>
+                  </a>
+                  <p class="mt-3 text-xs text-slate-weathered leading-relaxed" x-show="!event.payReady">
+                    Stripe / bank checkout will be connected here. Contact us to reserve a seat in the meantime.
+                  </p>
+                </div>
+              </div>
+            </article>
+          </template>
+        </div>
+
+        <p class="mt-10 text-center font-body text-base text-slate-weathered">
+          Questions about an event?
+          <a href="#contact" class="focus-ring text-crimson underline underline-offset-4 hover:text-crimson-dark">Reach out to the lodge</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         CONTACT
+    ═══════════════════════════════════════ -->
+    <section id="contact" class="py-20 sm:py-28 bg-charcoal text-parchment" aria-labelledby="contact-heading">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          <div class="lg:col-span-5">
+            <p class="text-gold text-xs sm:text-sm tracking-[0.22em] uppercase mb-3">Outreach</p>
+            <h2 id="contact-heading" class="font-display text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-5">
+              Contact &amp; Submissions
+            </h2>
+            <div class="h-px w-16 bg-gold mb-6" aria-hidden="true"></div>
+            <p class="font-body text-lg leading-relaxed text-parchment/80 mb-10">
+              Share a forgotten landmark, ask about membership, or inquire about an upcoming gathering. We welcome historical submissions from across Southeast Idaho.
+            </p>
+
+            <dl class="space-y-6 font-body">
+              <div>
+                <dt class="text-xs tracking-[0.18em] uppercase text-gold mb-1">Service Area</dt>
+                <dd class="text-base text-parchment/90">Magic Valley &amp; Eastern Idaho</dd>
+              </div>
+              <div>
+                <dt class="text-xs tracking-[0.18em] uppercase text-gold mb-1">Phone</dt>
+                <dd>
+                  <a href="tel:+120855501904" class="focus-ring text-base text-parchment hover:text-gold underline-offset-4 hover:underline">
+                    (208) 555-1904
+                  </a>
+                  <span class="block text-sm text-parchment/60 mt-1">Placeholder — replace with lodge line</span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-xs tracking-[0.18em] uppercase text-gold mb-1">Hours</dt>
+                <dd class="text-base text-parchment/90 leading-relaxed">
+                  Inquiries answered evenings &amp; weekends<br />
+                  Event correspondence within 48 hours
+                </dd>
+              </div>
+              <div>
+                <dt class="text-xs tracking-[0.18em] uppercase text-gold mb-1">Social</dt>
+                <dd class="flex flex-wrap gap-4 mt-2">
+                  <a href="https://facebook.com" class="focus-ring text-parchment/85 hover:text-gold text-base underline underline-offset-4" target="_blank" rel="noopener noreferrer">Facebook</a>
+                  <a href="https://instagram.com" class="focus-ring text-parchment/85 hover:text-gold text-base underline underline-offset-4" target="_blank" rel="noopener noreferrer">Instagram</a>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="lg:col-span-7">
+            <form
+              class="bg-parchment text-parchment-ink p-6 sm:p-8 shadow-lift border border-gold/30"
+              action="https://formspree.io/f/YOUR_FORM_ID"
+              method="POST"
+              novalidate
+              @submit="validateContact($event)"
+            >
+              <h3 class="font-display text-2xl text-charcoal mb-6">Send a Message</h3>
+
+              <div class="grid sm:grid-cols-2 gap-5 mb-5">
+                <div>
+                  <label for="name" class="block text-sm font-body text-charcoal mb-2">Full Name <span class="text-crimson">*</span></label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    autocomplete="name"
+                    required
+                    class="focus-ring w-full border border-charcoal/20 bg-white px-4 py-3 text-base text-charcoal placeholder:text-slate-weathered/60"
+                    :class="errors.name && 'form-error'"
+                    x-model="form.name"
+                    @blur="touch('name')"
+                    placeholder="Your name"
+                  />
+                  <p class="mt-1 text-sm text-crimson" x-show="errors.name" x-text="errors.name" x-cloak></p>
+                </div>
+                <div>
+                  <label for="email" class="block text-sm font-body text-charcoal mb-2">Email <span class="text-crimson">*</span></label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    autocomplete="email"
+                    required
+                    class="focus-ring w-full border border-charcoal/20 bg-white px-4 py-3 text-base text-charcoal placeholder:text-slate-weathered/60"
+                    :class="errors.email && 'form-error'"
+                    x-model="form.email"
+                    @blur="touch('email')"
+                    placeholder="you@example.com"
+                  />
+                  <p class="mt-1 text-sm text-crimson" x-show="errors.email" x-text="errors.email" x-cloak></p>
+                </div>
+              </div>
+
+              <div class="mb-5">
+                <label for="topic" class="block text-sm font-body text-charcoal mb-2">Topic</label>
+                <select
+                  id="topic"
+                  name="topic"
+                  class="focus-ring w-full border border-charcoal/20 bg-white px-4 py-3 text-base text-charcoal"
+                  x-model="form.topic"
+                >
+                  <option value="historical-submission">Historical submission / plaque tip</option>
+                  <option value="membership">Membership inquiry</option>
+                  <option value="event">Event question</option>
+                  <option value="general">General outreach</option>
+                </select>
+              </div>
+
+              <div class="mb-5">
+                <label for="message" class="block text-sm font-body text-charcoal mb-2">Message <span class="text-crimson">*</span></label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  required
+                  class="focus-ring w-full border border-charcoal/20 bg-white px-4 py-3 text-base text-charcoal placeholder:text-slate-weathered/60 resize-y min-h-[140px]"
+                  :class="errors.message && 'form-error'"
+                  x-model="form.message"
+                  @blur="touch('message')"
+                  placeholder="Share a landmark, story, or question…"
+                ></textarea>
+                <p class="mt-1 text-sm text-crimson" x-show="errors.message" x-text="errors.message" x-cloak></p>
+              </div>
+
+              <!-- Honeypot -->
+              <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+              <button type="submit" class="focus-ring btn-primary inline-flex items-center justify-center px-7 py-3.5 text-base tracking-wide w-full sm:w-auto">
+                Send Inquiry
+              </button>
+              <p class="mt-4 text-xs text-slate-weathered leading-relaxed">
+                Form endpoint: replace <code class="text-crimson">YOUR_FORM_ID</code> in the form action with your Formspree or Getform ID.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════ -->
+  <footer class="bg-charcoal-soft border-t border-gold/20 text-parchment py-14" role="contentinfo">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div class="sm:col-span-2 lg:col-span-2">
+          <p class="font-display text-2xl text-parchment mb-2">Homeless Twenty <span class="text-gold">1904</span></p>
+          <p class="text-sm tracking-[0.15em] uppercase text-gold/90 mb-4">Preserving Western Heritage &amp; Magic Valley History</p>
+          <p class="font-body text-base leading-relaxed text-parchment/70 max-w-md">
+            A historical society dedicated to raising awareness, safeguarding local lore, and preserving the rugged western heritage of Southern and Eastern Idaho.
+          </p>
+        </div>
+        <div>
+          <p class="text-xs tracking-[0.2em] uppercase text-gold mb-4">Explore</p>
+          <ul class="space-y-2 font-body text-base">
+            <li><a href="#about" class="focus-ring text-parchment/80 hover:text-gold">About &amp; Mission</a></li>
+            <li><a href="#plaques" class="focus-ring text-parchment/80 hover:text-gold">Plaque Gallery</a></li>
+            <li><a href="#events" class="focus-ring text-parchment/80 hover:text-gold">Events</a></li>
+            <li><a href="#contact" class="focus-ring text-parchment/80 hover:text-gold">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-xs tracking-[0.2em] uppercase text-gold mb-4">Connect</p>
+          <ul class="space-y-2 font-body text-base">
+            <li><a href="https://facebook.com" class="focus-ring text-parchment/80 hover:text-gold" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+            <li><a href="https://instagram.com" class="focus-ring text-parchment/80 hover:text-gold" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+            <li><a href="mailto:info@homelesstwenty1904.org" class="focus-ring text-parchment/80 hover:text-gold">Email the Lodge</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ornament-rule max-w-sm mx-auto mb-8" aria-hidden="true">
+        <span class="ornament-diamond"></span>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-parchment/55">
+        <p>&copy; <span x-text="new Date().getFullYear()"></span> Homeless Twenty 1904. All rights reserved.</p>
+        <p class="text-center sm:text-right">
+          Southeast Idaho Historical Society · Magic Valley History Preservation
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function siteApp() {
+      return {
+        scrolled: false,
+        mobileOpen: false,
+        lightboxOpen: false,
+        lightboxIndex: 0,
+        openFaq: null,
+        navItems: [
+          { label: 'About', href: '#about' },
+          { label: 'Plaques', href: '#plaques' },
+          { label: 'Events', href: '#events' },
+          { label: 'Contact', href: '#contact' },
+        ],
+        faqs: [
+          {
+            q: 'What is Homeless Twenty 1904?',
+            a: 'We are a historical society devoted to western heritage in Southern and Eastern Idaho — especially Magic Valley history — through events, storytelling, and the placement of physical historical markers.',
+          },
+          {
+            q: 'Can the public attend events?',
+            a: 'Many gatherings welcome community members, friends of history, and guests. Check each event listing for details, and use Pre-Pay when available to reserve your place.',
+          },
+          {
+            q: 'How do I suggest a plaque or share local lore?',
+            a: 'Use the contact form and choose “Historical submission.” Include the place, what you know, and any photos or references. We review every tip with care.',
+          },
+        ],
+        plaques: [
+          {
+            id: 'snake-river-crossing',
+            title: 'Snake River Crossing Remembrance',
+            location: 'Near Twin Falls, ID',
+            significance: 'Honors early ford crossings and the perilous passage of wagon companies along the Snake River corridor.',
+            image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
+            alt: 'Sunlit desert canyon and river landscape recalling Snake River country',
+          },
+          {
+            id: 'oregon-trail-spur',
+            title: 'Oregon Trail Spur Marker',
+            location: 'Magic Valley, ID',
+            significance: 'Commemorates a lesser-known spur of the Oregon Trail used by settlers entering the Magic Valley.',
+            image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
+            alt: 'Open western highway through arid hills under a wide sky',
+          },
+          {
+            id: 'homestead-cabin',
+            title: 'Homestead Cabin Site',
+            location: 'Eastern Idaho',
+            significance: 'Marks the approximate site of an early homestead cabin and the families who weathered the high desert winters.',
+            image: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80',
+            alt: 'Weathered wooden cabin in a snowy mountain forest',
+          },
+          {
+            id: 'irrigation-era',
+            title: 'Irrigation Era Tribute',
+            location: 'Jerome County vicinity',
+            significance: 'Celebrates the canals and ditch riders who turned arid land into the productive Magic Valley.',
+            image: 'https://images.unsplash.com/photo-1444858291040-58f756a3bdd6?auto=format&fit=crop&w=800&q=80',
+            alt: 'Golden rural farmland under expansive clouds',
+          },
+          {
+            id: 'stage-stop',
+            title: 'Old Stage Stop',
+            location: 'Southeast Idaho',
+            significance: 'Remembers a stagecoach stop that linked remote ranches to town before the railroad’s full reach.',
+            image: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=800&q=80',
+            alt: 'Starry night sky over a dark western landscape',
+          },
+          {
+            id: 'veterans-of-the-range',
+            title: 'Veterans of the Range',
+            location: 'Regional — rotating placement',
+            significance: 'A fraternal dedication plaque honoring ranch hands, scouts, and community builders of the Magic Valley frontier.',
+            image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80',
+            alt: 'Misty forested hills at dawn suggesting untamed western country',
+          },
+        ],
+        events: [
+          {
+            id: 'autumn-plaque-dedication',
+            month: 'September',
+            day: '14',
+            year: '2026',
+            time: '1:00 PM',
+            title: 'Autumn Plaque Dedication',
+            venue: 'Magic Valley roadside site · Details upon registration',
+            description: 'Join the lodge for the unveiling of a new historical marker. Short remarks, fellowship, and a walk to the plaque site. Guests welcome.',
+            priceLabel: '$15 per person',
+            priceNote: 'Includes commemorative program & light refreshments',
+            payUrl: '#contact',
+            payReady: false,
+          },
+          {
+            id: 'heritage-dinner',
+            month: 'October',
+            day: '26',
+            year: '2026',
+            time: '6:00 PM',
+            title: 'Western Heritage Dinner',
+            venue: 'Lodge Hall · Twin Falls area',
+            description: 'An evening of frontier storytelling, fraternal fellowship, and a plated dinner. Bring a friend who loves local history.',
+            priceLabel: '$40 per plate',
+            priceNote: 'Pre-pay reserves your seat; dietary notes via contact form',
+            payUrl: '#contact',
+            payReady: false,
+          },
+          {
+            id: 'winter-lore-night',
+            month: 'January',
+            day: '17',
+            year: '2027',
+            time: '5:30 PM',
+            title: 'Winter Lore Night',
+            venue: 'Community hall · Eastern Idaho',
+            description: 'Fireside accounts of forgotten trails, snowbound mail routes, and Magic Valley characters. Open to the curious public.',
+            priceLabel: 'Freewill donation',
+            priceNote: 'Suggested $10 · Pre-pay optional when portal opens',
+            payUrl: '#contact',
+            payReady: false,
+          },
+        ],
+        form: {
+          name: '',
+          email: '',
+          topic: 'historical-submission',
+          message: '',
+        },
+        errors: {},
+        get activePlaque() {
+          return this.plaques[this.lightboxIndex] || null;
+        },
+        openLightbox(index) {
+          this.lightboxIndex = index;
+          this.lightboxOpen = true;
+          this.mobileOpen = false;
+          document.body.style.overflow = 'hidden';
+          this.$nextTick(() => {
+            const btn = this.$refs.lightboxPanel?.querySelector('button');
+            btn?.focus();
+          });
+        },
+        closeLightbox() {
+          if (!this.lightboxOpen) return;
+          this.lightboxOpen = false;
+          document.body.style.overflow = '';
+        },
+        touch(field) {
+          this.validateField(field);
+        },
+        validateField(field) {
+          const e = { ...this.errors };
+          if (field === 'name') {
+            if (!this.form.name.trim()) e.name = 'Please enter your name.';
+            else delete e.name;
+          }
+          if (field === 'email') {
+            const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email.trim());
+            if (!this.form.email.trim()) e.email = 'Please enter your email.';
+            else if (!ok) e.email = 'Please enter a valid email address.';
+            else delete e.email;
+          }
+          if (field === 'message') {
+            if (!this.form.message.trim() || this.form.message.trim().length < 10) {
+              e.message = 'Please share a message of at least 10 characters.';
+            } else delete e.message;
+          }
+          this.errors = e;
+          return !e[field];
+        },
+        validateContact(event) {
+          const nameOk = this.validateField('name');
+          const emailOk = this.validateField('email');
+          const messageOk = this.validateField('message');
+          if (!nameOk || !emailOk || !messageOk) {
+            event.preventDefault();
+            const firstError = event.target.querySelector('.form-error');
+            firstError?.focus();
+          }
+          // If Formspree ID is still placeholder, prevent silent failure
+          const action = event.target.getAttribute('action') || '';
+          if (action.includes('YOUR_FORM_ID')) {
+            event.preventDefault();
+            alert('Formspree is not configured yet. Replace YOUR_FORM_ID in the form action, or email the lodge directly.');
+          }
+        },
+      };
+    }
+  </script>
+</body>
+</html>

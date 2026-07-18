@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://homelesstwenty1904.org/sitemap.xml
