@@ -1,0 +1,497 @@
+@import "tailwindcss";
+
+:root {
+  --crimson: #990000;
+  --crimson-dark: #7a0000;
+  --crimson-deep: #5c0000;
+  --charcoal: #111111;
+  --charcoal-soft: #1a1a1a;
+  --gold: #d4af37;
+  --gold-light: #e4c65a;
+  --gold-muted: #b8942d;
+  --slate: #4a5568;
+  --parchment: #fafaf5;
+  --parchment-warm: #f5f2e8;
+  --parchment-deep: #ede8dc;
+  --parchment-ink: #2c2416;
+  --ease-museum: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-museum: 500ms;
+}
+
+@theme inline {
+  --color-crimson: var(--crimson);
+  --color-crimson-dark: var(--crimson-dark);
+  --color-crimson-deep: var(--crimson-deep);
+  --color-charcoal: var(--charcoal);
+  --color-charcoal-soft: var(--charcoal-soft);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-muted: var(--gold-muted);
+  --color-slate-weathered: var(--slate);
+  --color-parchment: var(--parchment);
+  --color-parchment-warm: var(--parchment-warm);
+  --color-parchment-deep: var(--parchment-deep);
+  --color-parchment-ink: var(--parchment-ink);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-western: var(--font-western);
+  --shadow-panel: 0 4px 24px rgba(17, 17, 17, 0.08);
+  --shadow-lift: 0 8px 32px rgba(17, 17, 17, 0.12);
+  --ease-museum: var(--ease-museum);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--parchment);
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(153, 0, 0, 0.04) 0%, transparent 45%),
+    linear-gradient(180deg, #fafaf5 0%, #f5f2e8 50%, #fafaf5 100%);
+  color: var(--parchment-ink);
+  font-family: var(--font-body), Georgia, "Times New Roman", serif;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgba(153, 0, 0, 0.2);
+  color: var(--charcoal);
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.font-western {
+  font-family: var(--font-western), var(--font-display), Georgia, serif;
+}
+
+.font-body {
+  font-family: var(--font-body), Georgia, serif;
+}
+
+.ornament-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ornament-rule::before,
+.ornament-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.ornament-diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Agency-grade structural transitions */
+.btn-primary {
+  background-color: var(--crimson);
+  color: var(--parchment);
+  transition:
+    background-color var(--duration-museum) ease-out,
+    color var(--duration-museum) ease-out,
+    transform var(--duration-museum) ease-out,
+    box-shadow var(--duration-museum) ease-out,
+    opacity var(--duration-museum) ease-out;
+}
+
+.btn-primary:hover {
+  background-color: var(--crimson-dark);
+  box-shadow: 0 8px 28px rgba(153, 0, 0, 0.28);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-gold {
+  border: 1.5px solid var(--gold);
+  color: var(--gold);
+  transition:
+    background-color var(--duration-museum) ease-out,
+    color var(--duration-museum) ease-out,
+    border-color var(--duration-museum) ease-out,
+    transform var(--duration-museum) ease-out;
+}
+
+.btn-gold:hover {
+  background-color: var(--gold);
+  color: var(--charcoal);
+}
+
+.museum-ease {
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow, filter;
+  transition-duration: 500ms;
+  transition-timing-function: ease-out;
+}
+
+/* Fine historic grain — used on hero matte field */
+.hero-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+}
+
+/* Legacy gradient frame — kept unused; Tailwind artifact frame is primary */
+.hero-graphic-frame {
+  position: relative;
+  padding: 3px;
+  background: linear-gradient(
+    145deg,
+    #e4c65a 0%,
+    #d4af37 28%,
+    #b8942d 55%,
+    #d4af37 78%,
+    #c9a227 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(184, 148, 45, 0.35),
+    0 16px 42px rgba(0, 0, 0, 0.55),
+    0 2px 0 rgba(228, 198, 90, 0.15);
+  transition:
+    box-shadow 500ms ease-out,
+    transform 500ms ease-out;
+}
+
+.hero-graphic-frame__inner {
+  border: 1px solid rgba(17, 17, 17, 0.85);
+  background: #0d0d0d;
+  padding: 6px;
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.35);
+}
+
+.hero-graphic-frame__inner img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hero-graphic-frame:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(228, 198, 90, 0.45),
+    0 20px 48px rgba(0, 0, 0, 0.6),
+    0 2px 0 rgba(228, 198, 90, 0.2);
+}
+
+/* Hero → parchment scroll seam sits on .hero-asymmetric */
+
+/* Gallery / event structural hovers */
+.museum-card {
+  transition:
+    transform 500ms ease-out,
+    box-shadow 500ms ease-out,
+    border-color 500ms ease-out;
+}
+
+.museum-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+  border-color: rgba(212, 175, 55, 0.35);
+}
+
+.museum-media {
+  transition: transform 500ms ease-out, filter 500ms ease-out;
+}
+
+.group:hover .museum-media {
+  transform: scale(1.05);
+}
+
+/* Admin parchment panel */
+.admin-panel {
+  background:
+    linear-gradient(180deg, rgba(250, 250, 245, 0.96) 0%, rgba(245, 242, 232, 0.98) 100%);
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  box-shadow: var(--shadow-panel);
+}
+
+.admin-deck {
+  border: 1.5px solid rgba(17, 17, 17, 0.18);
+  box-shadow:
+    var(--shadow-panel),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.admin-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  font-weight: 600;
+}
+
+.admin-input {
+  width: 100%;
+  border: 1.5px solid rgba(17, 17, 17, 0.28);
+  background: #fff;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  caret-color: var(--crimson);
+  transition:
+    border-color 280ms ease-out,
+    box-shadow 280ms ease-out,
+    background-color 280ms ease-out;
+}
+
+.admin-input::placeholder {
+  color: rgba(74, 85, 104, 0.55);
+  font-weight: 400;
+}
+
+.admin-input:hover {
+  border-color: rgba(17, 17, 17, 0.45);
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: var(--crimson);
+  box-shadow:
+    0 0 0 3px rgba(153, 0, 0, 0.18),
+    0 0 0 1px rgba(212, 175, 55, 0.35);
+  background: #fff;
+}
+
+/* Developer cockpit chrome */
+.cockpit-header {
+  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  background:
+    linear-gradient(135deg, rgba(26, 26, 26, 0.55) 0%, rgba(17, 17, 17, 0.35) 100%);
+  padding: 1.35rem 1.4rem;
+  backdrop-filter: blur(6px);
+}
+
+.cockpit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  padding: 0.55rem 0.75rem;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.cockpit-metric {
+  border: 1.5px solid rgba(17, 17, 17, 0.14);
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0.95rem 1rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.cockpit-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch;
+  border: 1.5px solid rgba(180, 120, 20, 0.45);
+  background:
+    linear-gradient(90deg, rgba(212, 175, 55, 0.16) 0%, rgba(255, 255, 255, 0.9) 55%);
+  padding: 1.1rem 1.15rem;
+}
+
+@media (min-width: 640px) {
+  .cockpit-banner {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.cockpit-ring {
+  position: relative;
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  background: rgba(74, 85, 104, 0.45);
+}
+
+.cockpit-ring::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  border: 1.5px solid currentColor;
+  opacity: 0;
+}
+
+.cockpit-ring--ok {
+  background: #059669;
+  color: #059669;
+  box-shadow: 0 0 8px rgba(5, 150, 105, 0.55);
+}
+
+.cockpit-ring--ok::after {
+  animation: cockpit-pulse 2.2s ease-out infinite;
+}
+
+.cockpit-ring--warn {
+  background: #d97706;
+  color: #d97706;
+  box-shadow: 0 0 8px rgba(217, 119, 6, 0.55);
+}
+
+.cockpit-ring--warn::after {
+  animation: cockpit-pulse 1.6s ease-out infinite;
+}
+
+.cockpit-ring--fail {
+  background: var(--crimson);
+  color: var(--crimson);
+  box-shadow: 0 0 8px rgba(153, 0, 0, 0.5);
+}
+
+.cockpit-ring--checking {
+  background: var(--gold);
+  color: var(--gold);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.cockpit-ring--checking::after {
+  animation: cockpit-pulse 1.2s ease-out infinite;
+}
+
+.cockpit-ring--idle {
+  background: rgba(74, 85, 104, 0.4);
+  color: rgba(74, 85, 104, 0.4);
+}
+
+@keyframes cockpit-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.65;
+  }
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+.drop-zone {
+  border: 1.5px dashed rgba(74, 85, 104, 0.35);
+  background: rgba(250, 250, 245, 0.65);
+  transition:
+    border-color 500ms ease-out,
+    background-color 500ms ease-out,
+    box-shadow 500ms ease-out,
+    transform 500ms ease-out;
+}
+
+.drop-zone:hover,
+.drop-zone[data-active="true"] {
+  border-color: var(--gold);
+  background: rgba(212, 175, 55, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.2);
+}
+
+.drop-cap::first-letter {
+  float: left;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 3.75rem;
+  line-height: 0.8;
+  padding-right: 0.5rem;
+  padding-top: 0.35rem;
+  color: var(--crimson);
+  font-weight: 700;
+}
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-fade-rise {
+  animation: fade-rise 0.7s ease-out both;
+}
+
+.animate-fade-rise-delay {
+  animation: fade-rise 0.7s ease-out 0.15s both;
+}
+
+.animate-fade-rise-delay-2 {
+  animation: fade-rise 0.7s ease-out 0.3s both;
+}
+
+.hero-rule {
+  transform-origin: center;
+  animation: rule-draw 0.9s ease-out 0.4s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-rise,
+  .animate-fade-rise-delay,
+  .animate-fade-rise-delay-2,
+  .hero-rule {
+    animation: none;
+  }
+
+  .cockpit-ring--ok::after,
+  .cockpit-ring--warn::after,
+  .cockpit-ring--checking,
+  .cockpit-ring--checking::after {
+    animation: none;
+  }
+
+  .btn-primary,
+  .btn-gold,
+  .museum-ease,
+  .museum-card,
+  .museum-media,
+  .hero-graphic-frame,
+  .admin-input,
+  .drop-zone {
+    transition: none !important;
+  }
+
+  .museum-card:hover,
+  .hero-graphic-frame:hover,
+  .group:hover .museum-media {
+    transform: none;
+  }
+}

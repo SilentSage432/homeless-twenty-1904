@@ -1,87 +1,97 @@
 # Homeless Twenty 1904 — Website
 
-Premium single-page site for **Homeless Twenty 1904**, a historical society preserving western heritage across Southern & Eastern Idaho and the Magic Valley.
+Premium offline-first hybrid site for **Homeless Twenty 1904**, preserving western heritage across Southern & Eastern Idaho and the Magic Valley.
 
 **Tagline:** Preserving Western Heritage & Magic Valley History
 
 ## Stack
 
-- HTML5 (semantic, accessible)
-- [Tailwind CSS](https://tailwindcss.com/) via CDN
-- [Alpine.js](https://alpinejs.dev/) via CDN (mobile nav, FAQ, plaque lightbox, form validation)
-- Google Fonts: Playfair Display + Merriweather
+- [Next.js 15](https://nextjs.org/) (App Router) + TypeScript
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [Supabase](https://supabase.com/) (Auth + Postgres + RLS)
+- [TanStack Query](https://tanstack.com/query) (client cache)
+- Google Fonts via `next/font`: Playfair Display, Rye, Merriweather
 
-No build step required.
+Mirrors the Wealth Engine hybrid pattern: cloud when configured, local seed + `localStorage` cache when offline.
 
-## Files
-
-| File | Purpose |
-|------|---------|
-| `index.html` | Full single-page experience |
-| `404.html` | Branded not-found page |
-| `favicon.svg` | Lodge mark (H20 / 1904) |
-| `robots.txt` | Crawler directives |
-| `sitemap.xml` | Search index map |
-| `README.md` | This file |
-
-## Local preview
-
-Open `index.html` in a browser, or serve the folder:
+## Quick start
 
 ```bash
-# Python
-python3 -m http.server 8080
-
-# Node
-npx serve .
+cp .env.example .env.local   # add Supabase URL + anon key + service role key
+npm install
+npm run dev
 ```
 
-Then visit `http://localhost:8080`.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Configuration before launch
+Without Supabase env vars, the public site still renders from offline seed data.
 
-1. **Formspree / Getform** — In `index.html`, replace `YOUR_FORM_ID` in the contact form `action` with your real endpoint.
-2. **Domain** — Update canonical URL, Open Graph URLs, `robots.txt` sitemap, and `sitemap.xml` locs from `https://homelesstwenty1904.org/` to your live domain.
-3. **Phone & email** — Replace the placeholder `(208) 555-1904` and `info@homelesstwenty1904.org` with lodge contacts.
-4. **Social links** — Point Facebook / Instagram anchors to official profiles.
-5. **Event pre-pay** — Set each event’s `payUrl` to your Stripe Payment Link (or bank URL) and `payReady: true` in the Alpine `events` array.
-6. **Plaque photos** — Swap Unsplash placeholders for authentic marker photography; keep descriptive `alt` text.
-7. **Hosting 404** — Point your host’s 404 handler to `404.html` (e.g. Netlify `_redirects`: `/* /404.html 404`).
+## Routes
 
-## Sections
+| Path | Purpose |
+|------|---------|
+| `/` | Hero, About, Plaques, Events |
+| `/about` | About Us |
+| `/plaques` | Historical Plaques Gallery |
+| `/events` | Events board + pre-pay links |
+| `/admin` | Steward login (redirects to dashboard) |
+| `/admin/dashboard` | Protected Manage Events + Manage Plaques |
 
-1. Hero — brand + “View Upcoming Events”
-2. About / Mission — story, pillars, FAQ
-3. Plaque Gallery — grid + Alpine lightbox
-4. Events — timeline cards with Pre-Pay modules
-5. Contact — validated outreach form
-6. Footer — legal, explore, connect
+## Supabase setup
+
+1. Create a project and run both SQL files in `supabase/migrations/` (schema, then `plaque-assets` bucket).
+2. Create an Auth user for lodge stewards.
+3. Elevate steward roles (and optional display name):
+
+```sql
+UPDATE public.profiles
+SET role = 'admin', full_name = 'Lodge Steward'
+WHERE id = '<auth-user-uuid>';
+
+-- or developer (unlocks System Telemetry on /admin/dashboard)
+UPDATE public.profiles
+SET role = 'developer', full_name = 'Platform Developer'
+WHERE id = '<auth-user-uuid>';
+```
+
+4. Set `.env.local` from `.env.example` with your project URL + publishable/anon key.
+
+RLS: public **read** on `events` / `plaques` and `plaque-assets`; **writes** when `role` is `admin` or `developer` (`can_manage_content()`). Role `user` is blocked from `/admin/dashboard`.
+
+Dashboard isolation:
+- `admin` — Event Manager + Plaque Uploader + Personnel (admin/user invites)
+- `developer` — System Telemetry control deck + content forms + Personnel (any role)
+
+Standard `user` roles cannot open the dashboard; payment URL fields and delete actions remain staff-only (`admin` / `developer`).
+
+Steward invites and storage setup checks call server routes that require `SUPABASE_SERVICE_ROLE_KEY` (never `NEXT_PUBLIC_`).
+
+## Assets
+
+Place organizational graphics in `public/assets/`:
+
+- `hero-oval.png` — centered oval historic photograph for the hero frame
+- `hero-logo.jpg` — archive / alternate source graphic
 
 ## Brand tokens
 
 | Token | Value |
 |-------|-------|
-| Crimson | `#990000` |
-| Charcoal | `#111111` |
+| Crimson (primary) | `#990000` |
+| Charcoal (accent black) | `#111111` |
 | Gold | `#D4AF37` |
 | Slate | `#4A5568` |
 | Parchment | `#FAFAF5` |
 
-## Accessibility notes
+## Scripts
 
-- Skip link, semantic landmarks, labeled form fields
-- Focus-visible gold rings on interactive controls
-- High-contrast charcoal/crimson on parchment; gold used as accent
-- Lightbox closes on Escape; body scroll locked while open
-- `prefers-reduced-motion` disables decorative hero animations
-- Body copy sized for comfortable reading (≈18px+)
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Turbopack dev server |
+| `npm run build` | Production build |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | ESLint |
 
-## SEO targets
+## Legacy static site
 
-Optimized meta for:
-
-- Homeless Twenty 1904
-- Southeast Idaho Historical Society
-- Magic Valley History Preservation
-
-Includes Open Graph and Twitter Card tags.
+The previous HTML5 single-page build is preserved under `archive/`.

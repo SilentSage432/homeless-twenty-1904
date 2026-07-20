@@ -1,0 +1,385 @@
+"use client";
+
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useState,
+  type DragEvent,
+  type ReactNode,
+  type RefObject,
+} from "react";
+
+export function AdminSection({
+  eyebrow,
+  title,
+  description,
+  children,
+  deck = false,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  children: ReactNode;
+  /** Sharper control-deck chrome for developer cockpit modules. */
+  deck?: boolean;
+}) {
+  return (
+    <section
+      className={
+        deck
+          ? "admin-panel admin-deck rounded-sm p-6 sm:p-7 space-y-6"
+          : "admin-panel rounded-sm p-6 sm:p-7 space-y-6"
+      }
+    >
+      <header>
+        <p className="text-crimson text-[10px] sm:text-xs tracking-[0.24em] uppercase mb-2 font-mono">
+          {eyebrow}
+        </p>
+        <h2 className="font-display text-2xl sm:text-[1.65rem] text-charcoal leading-tight">
+          {title}
+        </h2>
+        <div className="mt-3 mb-3 h-px w-12 bg-gold" aria-hidden="true" />
+        <p className="font-body text-sm leading-relaxed text-slate-weathered">
+          {description}
+        </p>
+      </header>
+      {children}
+    </section>
+  );
+}
+
+export function AdminAlert({
+  tone,
+  children,
+}: {
+  tone: "success" | "error";
+  children: ReactNode;
+}) {
+  return (
+    <p
+      role={tone === "error" ? "alert" : "status"}
+      className={
+        tone === "error"
+          ? "border border-crimson/25 bg-crimson/[0.06] px-4 py-3 text-sm text-crimson"
+          : "border border-gold/35 bg-parchment-deep/80 px-4 py-3 text-sm text-charcoal"
+      }
+    >
+      {children}
+    </p>
+  );
+}
+
+export function AdminField({
+  label,
+  value,
+  onChange,
+  type = "text",
+  required,
+  placeholder,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+  hint?: string;
+}) {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={id} className="admin-label">
+        {label}
+        {required ? <span className="text-crimson"> *</span> : null}
+      </label>
+      <input
+        id={id}
+        type={type}
+        required={required}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="admin-input focus-ring"
+      />
+      {hint ? (
+        <p className="mt-1.5 text-xs text-slate-weathered/90">{hint}</p>
+      ) : null}
+    </div>
+  );
+}
+
+export function AdminSelect({
+  label,
+  value,
+  onChange,
+  options,
+  required,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  required?: boolean;
+}) {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={id} className="admin-label">
+        {label}
+        {required ? <span className="text-crimson"> *</span> : null}
+      </label>
+      <select
+        id={id}
+        required={required}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="admin-input focus-ring"
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+export function AdminTextArea({
+  label,
+  value,
+  onChange,
+  required,
+  rows = 4,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean;
+  rows?: number;
+}) {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={id} className="admin-label">
+        {label}
+        {required ? <span className="text-crimson"> *</span> : null}
+      </label>
+      <textarea
+        id={id}
+        required={required}
+        rows={rows}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="admin-input focus-ring resize-y min-h-[100px]"
+      />
+    </div>
+  );
+}
+
+export function AdminListItem({
+  title,
+  meta,
+  onEdit,
+  onDelete,
+  thumbnailUrl,
+  canDelete = true,
+}: {
+  title: string;
+  meta: string;
+  onEdit: () => void;
+  onDelete?: () => void;
+  thumbnailUrl?: string | null;
+  canDelete?: boolean;
+}) {
+  return (
+    <li className="museum-card flex flex-col gap-3 border border-charcoal/10 bg-parchment/80 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-center gap-3">
+        {thumbnailUrl ? (
+          <div className="h-14 w-14 shrink-0 overflow-hidden border border-charcoal/15 bg-charcoal">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={thumbnailUrl}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : null}
+        <div className="min-w-0">
+          <p className="font-display text-lg text-charcoal truncate">{title}</p>
+          <p className="text-xs text-slate-weathered mt-0.5">{meta}</p>
+        </div>
+      </div>
+      <div className="flex gap-3 shrink-0">
+        <button
+          type="button"
+          onClick={onEdit}
+          className="focus-ring text-sm text-crimson underline underline-offset-4 decoration-crimson/40 museum-ease hover:decoration-crimson"
+        >
+          Edit
+        </button>
+        {canDelete && onDelete ? (
+          <button
+            type="button"
+            onClick={onDelete}
+            className="focus-ring text-sm text-slate-weathered underline underline-offset-4 museum-ease hover:text-charcoal"
+          >
+            Delete
+          </button>
+        ) : null}
+      </div>
+    </li>
+  );
+}
+
+type DropZoneProps = {
+  file: File | null;
+  existingUrl?: string | null;
+  required?: boolean;
+  disabled?: boolean;
+  onFileChange: (file: File | null) => void;
+  inputRef: RefObject<HTMLInputElement | null>;
+};
+
+export function ImageDropZone({
+  file,
+  existingUrl,
+  required,
+  disabled,
+  onFileChange,
+  inputRef,
+}: DropZoneProps) {
+  const id = useId();
+  const [active, setActive] = useState(false);
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
+
+  // Keep preview in sync when parent resets `file` to null
+  useEffect(() => {
+    if (!file) {
+      setObjectUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+    }
+  }, [file]);
+
+  const assignFile = useCallback(
+    (next: File | null) => {
+      setObjectUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return next ? URL.createObjectURL(next) : null;
+      });
+      onFileChange(next);
+    },
+    [onFileChange]
+  );
+
+  function onDragOver(e: DragEvent) {
+    e.preventDefault();
+    if (!disabled) setActive(true);
+  }
+
+  function onDragLeave(e: DragEvent) {
+    e.preventDefault();
+    setActive(false);
+  }
+
+  function onDrop(e: DragEvent) {
+    e.preventDefault();
+    setActive(false);
+    if (disabled) return;
+    const dropped = e.dataTransfer.files?.[0];
+    if (dropped && dropped.type.startsWith("image/")) {
+      assignFile(dropped);
+      if (inputRef.current) {
+        const dt = new DataTransfer();
+        dt.items.add(dropped);
+        inputRef.current.files = dt.files;
+      }
+    }
+  }
+
+  const preview = objectUrl || (!file ? existingUrl || null : null);
+
+  return (
+    <div>
+      <label htmlFor={id} className="admin-label">
+        Plaque photograph
+        {required ? <span className="text-crimson"> *</span> : null}
+      </label>
+
+      <div
+        role="button"
+        tabIndex={0}
+        data-active={active ? "true" : "false"}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        onClick={() => inputRef.current?.click()}
+        className="drop-zone focus-ring relative cursor-pointer rounded-sm px-4 py-8 text-center"
+      >
+        <input
+          id={id}
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif,image/heic"
+          required={required}
+          disabled={disabled}
+          className="sr-only"
+          onChange={(e) => assignFile(e.target.files?.[0] ?? null)}
+        />
+
+        {preview ? (
+          <div className="mx-auto mb-4 relative h-28 w-40 overflow-hidden border border-charcoal/15 bg-charcoal">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={preview}
+              alt="Selected plaque preview"
+              className="h-full w-full object-cover museum-media"
+            />
+          </div>
+        ) : (
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center border border-gold/40 text-gold">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+              />
+            </svg>
+          </div>
+        )}
+
+        <p className="font-display text-base text-charcoal">
+          {file
+            ? file.name
+            : active
+              ? "Release to attach"
+              : "Drag & drop a plaque photo"}
+        </p>
+        <p className="mt-1.5 text-xs text-slate-weathered">
+          {file
+            ? `${Math.round(file.size / 1024)} KB · click to replace`
+            : existingUrl && !file
+              ? "Current image kept · drop a new file to replace"
+              : "JPEG, PNG, or WebP · up to 8MB · uploads to plaque-assets"}
+        </p>
+      </div>
+    </div>
+  );
+}
