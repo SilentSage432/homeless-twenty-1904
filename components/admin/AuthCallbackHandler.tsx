@@ -81,6 +81,7 @@ export function AuthCallbackHandler() {
         return;
       }
 
+      // Invite/recovery links finish at the password setup page.
       router.replace(isInviteLike ? "/admin/update-password" : "/admin");
     }
 

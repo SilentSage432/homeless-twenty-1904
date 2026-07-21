@@ -4,7 +4,7 @@
 
 - `/auth/callback` (client route; localStorage session model): reads `?code=`, runs `exchangeCodeForSession`, falls back to hash/implicit session detection, then redirects to `/admin` — or `/admin/update-password` for `type=invite`/`recovery`.
 - Missing/expired/provider errors redirect to `/admin?error=…`; `AdminLoginForm` renders that param.
-- New `/admin/update-password` (invite activation) → `updateUserPassword` → `/admin/dashboard`.
+- New `/admin/update-password` (invite activation) → `updateUserPassword` → success notification, then redirect to `/admin`.
 - Note: chose a client callback because auth sessions live in localStorage, not SSR cookies; a server cookie route would be invisible to the existing gate.
 
 ---

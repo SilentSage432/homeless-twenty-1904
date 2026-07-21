@@ -8,7 +8,9 @@ import {
 } from "@/lib/supabase/auth";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 
-type Phase = "checking" | "ready" | "no-session";
+type Phase = "checking" | "ready" | "no-session" | "success";
+
+const REDIRECT_DELAY_MS = 1600;
 
 export function UpdatePasswordForm() {
   const router = useRouter();
@@ -32,6 +34,14 @@ export function UpdatePasswordForm() {
     void verify();
   }, [verify]);
 
+  useEffect(() => {
+    if (phase !== "success") return;
+    const timer = setTimeout(() => {
+      router.replace("/admin");
+    }, REDIRECT_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [phase, router]);
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -54,7 +64,9 @@ export function UpdatePasswordForm() {
       return;
     }
 
-    router.replace("/admin/dashboard");
+    setPassword("");
+    setConfirm("");
+    setPhase("success");
   }
 
   return (
@@ -77,6 +89,21 @@ export function UpdatePasswordForm() {
             Choose a password to finish activating your steward account.
           </p>
         </div>
+
+        {phase === "success" && (
+          <div
+            className="mb-6 border border-gold/40 bg-parchment-deep/80 px-4 py-4 text-sm text-charcoal"
+            role="status"
+            aria-live="polite"
+          >
+            <p className="font-display text-lg text-charcoal mb-1">
+              Password saved.
+            </p>
+            <p className="text-slate-weathered">
+              Your credentials are active. Redirecting to the login portal…
+            </p>
+          </div>
+        )}
 
         {phase === "no-session" && (
           <p
