@@ -28,6 +28,10 @@ CREATE TABLE public.events (
   label text NOT NULL DEFAULT '',
   payment_url text,
   image_url text,
+  location text,
+  latitude double precision,
+  longitude double precision,
+  map_url text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -39,6 +43,9 @@ CREATE TABLE public.plaques (
   description text NOT NULL DEFAULT '',
   image_url text NOT NULL DEFAULT '',
   location text NOT NULL DEFAULT '',
+  latitude double precision,
+  longitude double precision,
+  map_url text,
   date_placed date
 );
 

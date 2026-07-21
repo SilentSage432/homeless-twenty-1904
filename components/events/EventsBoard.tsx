@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { fetchEvents } from "@/lib/supabase/content";
-import { formatEventDate } from "@/lib/utils";
+import { buildMapUrl, formatEventDate } from "@/lib/utils";
 
 export function EventsBoard({ heading = true }: { heading?: boolean }) {
   const { data, isLoading } = useQuery({
@@ -56,6 +56,7 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
             const paymentUrl = event.payment_url?.trim() ?? "";
             const payReady = paymentUrl.length > 0;
             const imageUrl = event.image_url?.trim() ?? "";
+            const mapUrl = buildMapUrl(event);
 
             return (
               <article
@@ -100,6 +101,43 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
                     <p className="font-body text-base leading-relaxed text-parchment-ink/85">
                       {event.description}
                     </p>
+                    {event.location && (
+                      <p className="mt-3 flex items-start gap-1.5 text-sm text-slate-weathered">
+                        <svg
+                          className="mt-0.5 h-4 w-4 shrink-0 text-crimson"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+                          />
+                        </svg>
+                        <span>{event.location}</span>
+                      </p>
+                    )}
+                    {mapUrl && (
+                      <a
+                        href={mapUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="focus-ring mt-3 inline-flex items-center gap-2 border border-charcoal/20 px-3 py-2 text-sm tracking-wide text-charcoal museum-ease hover:border-crimson hover:text-crimson"
+                        aria-label={`Open ${event.title} location in Google Maps`}
+                      >
+                        View on Map
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    )}
                   </div>
 
                   <div className="md:col-span-4 px-6 py-6 sm:py-8 bg-parchment-deep/40 flex flex-col justify-center">

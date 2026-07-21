@@ -12,6 +12,7 @@ import {
   ImageDropZone,
 } from "@/components/admin/AdminUi";
 import { ImageCropEditor } from "@/components/admin/ImageCropEditor";
+import { LocationAutocompleteField } from "@/components/admin/LocationAutocompleteField";
 import {
   createPlaque,
   deletePlaque,
@@ -29,6 +30,9 @@ const EMPTY_PLAQUE = {
   title: "",
   location: "",
   description: "",
+  latitude: null as number | null,
+  longitude: null as number | null,
+  map_url: "",
 };
 
 export function ManagePlaquesForm({
@@ -139,6 +143,9 @@ export function ManagePlaquesForm({
       location: form.location.trim(),
       description: form.description.trim(),
       image_url: imageUrl,
+      latitude: form.latitude,
+      longitude: form.longitude,
+      map_url: form.map_url.trim() || null,
     };
 
     const result = editingId
@@ -167,6 +174,9 @@ export function ManagePlaquesForm({
       title: plaque.title,
       location: plaque.location,
       description: plaque.description,
+      latitude: plaque.latitude,
+      longitude: plaque.longitude,
+      map_url: plaque.map_url ?? "",
     });
     setExistingImageUrl(plaque.image_url || null);
     clearImageState();
@@ -213,11 +223,23 @@ export function ManagePlaquesForm({
           onChange={(v) => setForm((f) => ({ ...f, title: v }))}
           required
         />
-        <AdminField
+        <LocationAutocompleteField
           label="Location"
           value={form.location}
-          onChange={(v) => setForm((f) => ({ ...f, location: v }))}
+          latitude={form.latitude}
+          longitude={form.longitude}
           required
+          disabled={busy}
+          onChange={(v) => setForm((f) => ({ ...f, location: v }))}
+          onSelect={(sel) =>
+            setForm((f) => ({
+              ...f,
+              location: sel.location,
+              latitude: sel.latitude,
+              longitude: sel.longitude,
+              map_url: sel.mapUrl ?? "",
+            }))
+          }
         />
         <div>
           <ImageDropZone

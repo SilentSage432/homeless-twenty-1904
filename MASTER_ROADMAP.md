@@ -16,6 +16,8 @@
 - [x] Responsive & mobile polish pass (320px → wide, 44px touch targets)
 - [x] Plaque Uploader in-browser crop + rotate (react-easy-crop + image resizer, 4:3, client-side blob)
 - [x] Optional event images (shared crop editor, `events.image_url`, admin thumbs + public banner)
+- [x] Location: Places Autocomplete + map preview (events/plaques lat/lng/map_url) + public navigate buttons
+- [x] Interactive Plaque Discovery Map (`/plaques` Grid|Map toggle, custom pins, InfoWindow, directions)
 - [x] Typecheck + production build green
 
 ## Near-term

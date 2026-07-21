@@ -42,6 +42,10 @@ export type Database = {
           label: string;
           payment_url: string | null;
           image_url: string | null;
+          location: string | null;
+          latitude: number | null;
+          longitude: number | null;
+          map_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -52,6 +56,10 @@ export type Database = {
           label?: string;
           payment_url?: string | null;
           image_url?: string | null;
+          location?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          map_url?: string | null;
           created_at?: string;
         };
         Update: {
@@ -62,6 +70,10 @@ export type Database = {
           label?: string;
           payment_url?: string | null;
           image_url?: string | null;
+          location?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          map_url?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -73,6 +85,9 @@ export type Database = {
           description: string;
           image_url: string;
           location: string;
+          latitude: number | null;
+          longitude: number | null;
+          map_url: string | null;
           date_placed: string | null;
         };
         Insert: {
@@ -81,6 +96,9 @@ export type Database = {
           description?: string;
           image_url?: string;
           location?: string;
+          latitude?: number | null;
+          longitude?: number | null;
+          map_url?: string | null;
           date_placed?: string | null;
         };
         Update: {
@@ -89,6 +107,9 @@ export type Database = {
           description?: string;
           image_url?: string;
           location?: string;
+          latitude?: number | null;
+          longitude?: number | null;
+          map_url?: string | null;
           date_placed?: string | null;
         };
         Relationships: [];

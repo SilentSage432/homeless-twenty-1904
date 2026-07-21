@@ -33,7 +33,9 @@ export async function fetchEvents(): Promise<{
   if (supabase) {
     const { data, error } = await supabase
       .from("events")
-      .select("id, title, description, date, label, payment_url, image_url, created_at")
+      .select(
+        "id, title, description, date, label, payment_url, image_url, location, latitude, longitude, map_url, created_at"
+      )
       .order("date", { ascending: true });
 
     if (!error && Array.isArray(data)) {
@@ -67,7 +69,9 @@ export async function fetchPlaques(): Promise<{
   if (supabase) {
     const { data, error } = await supabase
       .from("plaques")
-      .select("id, title, description, image_url, location, date_placed")
+      .select(
+        "id, title, description, image_url, location, latitude, longitude, map_url, date_placed"
+      )
       .order("date_placed", { ascending: false, nullsFirst: false });
 
     if (!error && Array.isArray(data)) {

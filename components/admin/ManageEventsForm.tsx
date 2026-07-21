@@ -12,6 +12,7 @@ import {
   ImageDropZone,
 } from "@/components/admin/AdminUi";
 import { ImageCropEditor } from "@/components/admin/ImageCropEditor";
+import { LocationAutocompleteField } from "@/components/admin/LocationAutocompleteField";
 import {
   createEvent,
   deleteEvent,
@@ -31,6 +32,10 @@ const EMPTY_EVENT = {
   date: "",
   label: "",
   payment_url: "",
+  location: "",
+  latitude: null as number | null,
+  longitude: null as number | null,
+  map_url: "",
 };
 
 function toLocalInputValue(iso: string): string {
@@ -144,6 +149,10 @@ export function ManageEventsForm({
       label: form.label.trim(),
       payment_url: canSensitive ? form.payment_url.trim() || null : null,
       image_url: imageUrl || null,
+      location: form.location.trim() || null,
+      latitude: form.latitude,
+      longitude: form.longitude,
+      map_url: form.map_url.trim() || null,
     };
 
     // Preserve existing payment_url when a non-sensitive role edits.
@@ -180,6 +189,10 @@ export function ManageEventsForm({
       date: toLocalInputValue(event.date),
       label: event.label,
       payment_url: canSensitive ? event.payment_url ?? "" : "",
+      location: event.location ?? "",
+      latitude: event.latitude,
+      longitude: event.longitude,
+      map_url: event.map_url ?? "",
     });
     setExistingImageUrl(event.image_url || null);
     clearImageState();
@@ -244,6 +257,23 @@ export function ManageEventsForm({
           value={form.label}
           onChange={(v) => setForm((f) => ({ ...f, label: v }))}
           placeholder="Dinner, Dedication, Lore Night…"
+        />
+        <LocationAutocompleteField
+          label="Location (optional)"
+          value={form.location}
+          latitude={form.latitude}
+          longitude={form.longitude}
+          disabled={busy}
+          onChange={(v) => setForm((f) => ({ ...f, location: v }))}
+          onSelect={(sel) =>
+            setForm((f) => ({
+              ...f,
+              location: sel.location,
+              latitude: sel.latitude,
+              longitude: sel.longitude,
+              map_url: sel.mapUrl ?? "",
+            }))
+          }
         />
         <div>
           <ImageDropZone

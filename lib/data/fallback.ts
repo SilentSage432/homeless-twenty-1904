@@ -14,6 +14,10 @@ export const FALLBACK_EVENTS: EventRow[] = [
     label: "Dedication",
     payment_url: null,
     image_url: null,
+    location: null,
+    latitude: null,
+    longitude: null,
+    map_url: null,
     created_at: "2026-07-01T00:00:00.000Z",
   },
   {
@@ -25,6 +29,10 @@ export const FALLBACK_EVENTS: EventRow[] = [
     label: "Dinner",
     payment_url: null,
     image_url: null,
+    location: null,
+    latitude: null,
+    longitude: null,
+    map_url: null,
     created_at: "2026-07-01T00:00:00.000Z",
   },
   {
@@ -36,6 +44,10 @@ export const FALLBACK_EVENTS: EventRow[] = [
     label: "Lore Night",
     payment_url: null,
     image_url: null,
+    location: null,
+    latitude: null,
+    longitude: null,
+    map_url: null,
     created_at: "2026-07-01T00:00:00.000Z",
   },
 ];
@@ -49,6 +61,9 @@ export const FALLBACK_PLAQUES: PlaqueRow[] = [
     image_url:
       "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80",
     location: "Near Twin Falls, ID",
+    latitude: null,
+    longitude: null,
+    map_url: null,
     date_placed: "2022-06-12",
   },
   {
@@ -59,6 +74,9 @@ export const FALLBACK_PLAQUES: PlaqueRow[] = [
     image_url:
       "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
     location: "Magic Valley, ID",
+    latitude: null,
+    longitude: null,
+    map_url: null,
     date_placed: "2021-09-04",
   },
   {
@@ -69,6 +87,9 @@ export const FALLBACK_PLAQUES: PlaqueRow[] = [
     image_url:
       "https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80",
     location: "Eastern Idaho",
+    latitude: null,
+    longitude: null,
+    map_url: null,
     date_placed: "2020-05-18",
   },
   {
@@ -79,6 +100,9 @@ export const FALLBACK_PLAQUES: PlaqueRow[] = [
     image_url:
       "https://images.unsplash.com/photo-1444858291040-58f756a3bdd6?auto=format&fit=crop&w=800&q=80",
     location: "Jerome County vicinity",
+    latitude: null,
+    longitude: null,
+    map_url: null,
     date_placed: "2023-04-22",
   },
   {
@@ -89,6 +113,9 @@ export const FALLBACK_PLAQUES: PlaqueRow[] = [
     image_url:
       "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=800&q=80",
     location: "Southeast Idaho",
+    latitude: null,
+    longitude: null,
+    map_url: null,
     date_placed: "2019-08-30",
   },
   {
@@ -99,6 +126,9 @@ export const FALLBACK_PLAQUES: PlaqueRow[] = [
     image_url:
       "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80",
     location: "Regional — rotating placement",
+    latitude: null,
+    longitude: null,
+    map_url: null,
     date_placed: null,
   },
 ];

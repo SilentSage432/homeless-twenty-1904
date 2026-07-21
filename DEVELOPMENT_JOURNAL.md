@@ -1,5 +1,25 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — Interactive Plaque Discovery Map + Grid/Map toggle
+
+- New `components/plaques/PlaqueMap.tsx`: `@react-google-maps/api` map styled with a warm/vintage `VINTAGE_MAP_STYLES`. Fetches plaques, filters to non-null lat/lng, renders custom crimson+gold teardrop `MarkerF` pins, and auto-fits bounds. Marker click opens an `InfoWindowF` card (thumbnail, title, location, **View Details** → full modal, **Get Directions** → external Maps URL). Empty/loading/no-key states handled gracefully.
+- **Composition (Rule 5):** extracted the full plaque modal into shared `components/plaques/PlaqueLightbox.tsx` — consumed by both the grid gallery and the map. Centralized Maps config in `lib/maps.ts` (`GOOGLE_MAPS_API_KEY`, loader id, libraries, `MAGIC_VALLEY_CENTER`, `VINTAGE_MAP_STYLES`, `isGoogleMapsConfigured`); `LocationAutocompleteField` now imports from it (single loader singleton).
+- New `components/plaques/PlaquesExplorer.tsx` client wrapper owns the section/heading + a **[ Grid View | Map View ]** tablist toggle; `PlaquesGallery` gained a `bare` mode (grid + lightbox, no section) so it embeds cleanly. `app/plaques/page.tsx` now renders the explorer. Home page still uses the self-contained `PlaquesGallery`.
+- Schema/admin (lat/lng columns + plaque write path) already delivered in the prior Location task — verified `ManagePlaquesForm` persists `latitude`/`longitude`.
+- Typecheck + lint + build green (`/plaques` first-load JS 247 kB with Maps).
+
+---
+
+## 2026-07-20 — Location: Places Autocomplete + map preview + navigate buttons
+
+- Added `@react-google-maps/api`. New shared `components/admin/LocationAutocompleteField.tsx`: Places Autocomplete input + live `<GoogleMap>`/`<Marker>` preview. On select it captures formatted address, lat/lng, and Google Maps `place.url` (or a constructed `search/?api=1&query=…` URL). **Graceful degradation:** renders a plain address input when `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is unset or the loader errors, so forms stay usable.
+- Schema: migration `20260720_location_maps.sql` adds `latitude double precision`, `longitude double precision`, `map_url text` to both tables, plus a `location text` to `events` (events had none). Reflected in init schema, `database.types.ts`, `fetchEvents`/`fetchPlaques` selects, and fallback seeds.
+- Wired the field into Component A (Events Manager — optional) and Component B (Plaque Uploader — required); both persist location + coords + map_url.
+- Public: `lib/utils.ts` `buildMapUrl()` (prefers `map_url` → lat/lng → address). EventsBoard shows the location + a "View on Map" link; plaque lightbox shows a "Navigate / View on Map" button. One-tap GPS on mobile.
+- `.env.example` documents `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`. Typecheck + lint + build green (`/admin/dashboard` first-load JS 259 kB with Maps).
+
+---
+
 ## 2026-07-20 — Optional event images (crop flow reused)
 
 - `events` gained optional `image_url text` — migration `20260720_events_image_url.sql` (+ added to init schema for fresh installs). Reuses the existing public `plaque-assets` bucket, so no new bucket/RLS.
