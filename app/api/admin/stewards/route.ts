@@ -59,12 +59,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const origin = request.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL;
-  const redirectTo = origin ? `${origin.replace(/\/$/, "")}/admin` : undefined;
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "https://www.thehomelesstwenty1904.org");
+  const redirectTo = `${origin.replace(/\/$/, "")}/auth/callback`;
 
   const { data: invited, error: inviteError } =
     await gate.admin.auth.admin.inviteUserByEmail(email, {
-      data: { full_name: fullName },
+      data: { full_name: fullName, role },
       redirectTo,
     });
 

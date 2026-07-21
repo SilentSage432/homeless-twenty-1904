@@ -1,5 +1,12 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — Invite redirect uses production origin
+
+- `inviteUserByEmail` origin: `NEXT_PUBLIC_SITE_URL` → `VERCEL_URL` → `https://www.thehomelesstwenty1904.org`; `redirectTo = ${origin}/auth/callback`.
+- Invite `user_metadata` now carries `{ full_name, role }`.
+
+---
+
 ## 2026-07-20 — Steward revoke (Auth admin deleteUser)
 
 - `DELETE /api/admin/stewards` with `{ id }` → `auth.admin.deleteUser` (service role). Blocks self-revoke; admins cannot revoke developers.
