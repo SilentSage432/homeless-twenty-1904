@@ -1,5 +1,14 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — SQL Console UX upgrade
+
+- `SqlConsole.tsx`: client-side `sanitizeQuery()` trims and strips trailing semicolons before POST, so Postgres subquery wrapping in `admin_exec_sql` never hits a syntax error.
+- Run button now shows an inline spinner + "Running…" and disables (also disabled when the sanitized query is empty) to prevent duplicate submits.
+- Write/DDL success renders a prominent green banner ("Query executed successfully · N rows affected") and clears the textarea. Read results render in a horizontally-scrollable data table with a "Results (N rows)" header + column count and zebra striping. Errors render in a red left-bordered banner showing the exact Postgres message (+ optional hint).
+- Typecheck + lint green.
+
+---
+
 ## 2026-07-20 — Database & Schema Management Portal (`/admin/database`)
 
 - New protected route `app/admin/database/page.tsx` (noindex) + client shell `components/admin/DatabasePortalShell.tsx`. Gate reuses `requireStaffSession()` (admin/developer; `user`/anon bounced to `/admin`). Responsive nav: `<select>` dropdown on mobile, segmented tab bar on `sm+`, switching **Tables / Storage Assets / SQL Console**. The SQL tab is developer-only (hidden for admins, with a fallback effect if selected).

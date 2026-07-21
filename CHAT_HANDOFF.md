@@ -18,7 +18,7 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 - Client gate reuses `requireStaffSession()` (admin/developer). Responsive shell `DatabasePortalShell.tsx`: mobile dropdown + tablet segmented tab bar switching Tables / Storage Assets / SQL Console.
 - `TableExplorer.tsx` — paginated stacked cards for `plaques`/`events`/`profiles` (limit/offset, PAGE_SIZE 10). Plaques & events get Quick Edit modal + Delete via the browser client (RLS staff writes). Profiles are **read-only** here (no delete policy; manage via Personnel panel — single ownership).
 - `StorageInspector.tsx` — lists `plaque-assets` objects via browser Storage API (public read + staff delete RLS), thumbnail grid, file size, Delete Asset.
-- `SqlConsole.tsx` (developer tab only) — posts to `POST /api/admin/query`. Read statements render as a table; write/DDL confirm + report rows affected.
+- `SqlConsole.tsx` (developer tab only) — posts to `POST /api/admin/query`. Client sanitizes (trim + strip trailing `;`) before send. Run button shows a spinner + "Running…" and disables to block double-submits. Reads render in a scrollable data table headed "Results (N rows)"; write/DDL confirm → prominent green success banner + input cleared; errors surface in a red left-bordered banner with the exact Postgres message.
 
 **Server**
 - `POST /api/admin/stewards` → invite; `DELETE /api/admin/stewards` → `auth.admin.deleteUser` (no self-revoke; admins cannot revoke developers)
