@@ -1,5 +1,24 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-21 — Platform resilience & performance upgrades
+
+- **Instant on-demand revalidation**: new staff-gated `POST /api/admin/revalidate` (Node runtime, `requireStaffRequest`, path allowlist `/ · /about · /plaques · /events`) calls `revalidatePath`. Client helper `requestRevalidate()` in `staff-api.ts` (best-effort, never throws) is fired after every CMS save — `SiteSettingsManager` (banner/lodge/flags), `ContentManager` hero + section + FAQ mutations — so public pages update immediately instead of waiting on the 30s ISR window.
+- **Content revision history & one-click undo**: migration `20260721_content_revisions.sql` (`content_revisions`: id/section_slug/content/created_at/created_by, staff-only RLS via `can_manage_content()`). `upsertSection` now snapshots the prior content into `content_revisions` before overwriting (single ownership in `cms.ts`); added `fetchRevisions(slug)`. `ContentManager` gains a **Revision history** modal per section (newest-first list, plaintext preview, Escape/backdrop close) with one-click **Restore** — restoring re-saves (which itself snapshots the current state, so restores are reversible).
+- **Client-side image compression**: new `lib/utils/imageCompressor.ts` — canvas scale to ≤1920px + WebP re-encode at 0.82 quality, passthrough for GIF/SVG, keeps original if compression doesn't help, never throws. Wired into the shared `uploadImageAsset` path in `storage.ts`, so all plaque/event uploads shrink before hitting Supabase Storage (size check now runs on the compressed file; `.webp` extension + contentType).
+- **Database backup exporter**: `DatabasePortalShell` gains an **Export Site Data Snapshot (JSON)** button that queries `plaques · site_settings · site_content_sections · faqs · public_documents` (browser client, public-read RLS) and downloads `homelesstwenty-snapshot-YYYY-MM-DD.json` with metadata header.
+- **Transactional email alert**: `/api/contact` staff alert email already fires on every logged inquiry; responses now carry a clean `message` acknowledgment payload (`ACK_MESSAGE`) consumed by `ContactModal`'s success screen.
+- Typecheck + lint + production build green.
+
+---
+
+## 2026-07-21 — Navigation UX refinement
+
+- `AdminNav`: replaced the mobile horizontal overflow bar with a custom dropdown showing the active section (icon + label + chevron); tapping reveals a vertical menu of all six routes with icons and a live **new-inquiries badge** (`fetchNewInquiryCount`, staff RLS). Desktop keeps the wrapping horizontal tab bar. Closes on route change, outside click, and Escape; zero horizontal scroll on mobile.
+- `SiteHeader` (the site navbar; project has no `components/Navbar.tsx`): staff detection via `getCurrentUserRole()` (no query for anon). Desktop shows a subtle gold **"Admin Cockpit"** pill (shield/key icon) only when authenticated staff. Mobile drawer gains a discrete **"Steward Portal"** link (→ `/admin` unauth, `/admin/dashboard` staff → labeled "Admin Cockpit") in a divided section below the public links. Footer link unchanged.
+- Typecheck + lint + build green.
+
+---
+
 ## 2026-07-21 — CMS & Operational Control Suite
 
 - **Schema** (`20260721_site_settings_and_cms.sql`): `site_settings` (singleton `global` row with `announcement_banner` / `lodge_info` / `hero_config` / `feature_flags` jsonb), `site_content_sections` (slug-keyed HTML blocks, seeded `about-lore` + `president-message`), `faqs`, `inquiries`, `public_documents`, plus a public `lodge-documents` storage bucket. RLS: public read for settings/sections/documents + published faqs; staff (admin/developer) full write; inquiries staff-only (public submissions persist via the service-role contact route). Hero/about defaults seeded to current copy so nothing changes until edited.

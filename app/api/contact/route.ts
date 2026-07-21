@@ -14,6 +14,9 @@ const FROM_EMAIL =
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const ACK_MESSAGE =
+  "Thank you — your message has reached lodge leadership. We'll reply to your email as soon as we can.";
+
 function clean(value: unknown, max = 5000): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
@@ -100,7 +103,7 @@ export async function POST(request: Request) {
   if (!apiKey) {
     // Message is safe in the inbox even without email delivery configured.
     if (persisted) {
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true, message: ACK_MESSAGE });
     }
     return NextResponse.json(
       {
@@ -143,6 +146,7 @@ export async function POST(request: Request) {
     </div>
   `;
 
+  // Instant staff alert for the new inquiry.
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: [TARGET_EMAIL],
@@ -155,7 +159,7 @@ export async function POST(request: Request) {
   if (error) {
     // Delivery failed, but the inquiry is preserved in the inbox.
     if (persisted) {
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true, message: ACK_MESSAGE });
     }
     return NextResponse.json(
       { ok: false, error: "We couldn't send your message. Please try again." },
@@ -163,5 +167,5 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, message: ACK_MESSAGE });
 }

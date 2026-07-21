@@ -293,6 +293,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      content_revisions: {
+        Row: {
+          id: string;
+          section_slug: string;
+          content: string;
+          created_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          section_slug: string;
+          content?: string;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          section_slug?: string;
+          content?: string;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -339,6 +363,8 @@ export type FaqUpdate = Database["public"]["Tables"]["faqs"]["Update"];
 export type InquiryRow = Database["public"]["Tables"]["inquiries"]["Row"];
 export type PublicDocument =
   Database["public"]["Tables"]["public_documents"]["Row"];
+export type ContentRevision =
+  Database["public"]["Tables"]["content_revisions"]["Row"];
 
 export const CONTENT_MANAGER_ROLES: readonly ProfileRole[] = [
   "admin",

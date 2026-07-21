@@ -5,6 +5,29 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useContactModal } from "@/components/contact/ContactModalContext";
+import { getCurrentUserRole } from "@/lib/supabase/auth";
+import { canManageContent } from "@/lib/supabase/database.types";
+
+function ShieldKeyIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+        d="M12 3l7 3v5c0 4.25-2.9 7.7-7 9-4.1-1.3-7-4.75-7-9V6l7-3z"
+      />
+      <circle cx="12" cy="10.5" r="1.6" strokeWidth="1.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 12.1V15" />
+    </svg>
+  );
+}
 
 const NAV = [
   { href: "/#top", label: "Home", hash: "top" },
@@ -19,6 +42,7 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("top");
+  const [isStaff, setIsStaff] = useState(false);
   const isAdmin = pathname.startsWith("/admin");
 
   useEffect(() => {
@@ -31,6 +55,20 @@ export function SiteHeader() {
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  // Detect staff clearance to reveal the portal shortcut (no query for anon).
+  useEffect(() => {
+    let cancelled = false;
+    void getCurrentUserRole().then((role) => {
+      if (!cancelled) setIsStaff(canManageContent(role));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
+
+  const portalHref = isStaff ? "/admin/dashboard" : "/admin";
+  const portalLabel = isStaff ? "Admin Cockpit" : "Steward Portal";
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -120,6 +158,15 @@ export function SiteHeader() {
             >
               Contact
             </button>
+            {isStaff ? (
+              <Link
+                href="/admin/dashboard"
+                className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-gold/50 px-3.5 py-1.5 text-xs tracking-wide text-gold transition-colors hover:border-gold hover:bg-gold/10"
+              >
+                <ShieldKeyIcon className="h-4 w-4" />
+                Admin Cockpit
+              </Link>
+            ) : null}
             <Link
               href="/#events"
               className="focus-ring btn-primary inline-flex items-center px-4 py-2 text-sm font-body tracking-wide"
@@ -185,6 +232,17 @@ export function SiteHeader() {
             >
               View Upcoming Events
             </Link>
+
+            <div className="mt-3 border-t border-parchment/10 pt-3">
+              <Link
+                href={portalHref}
+                onClick={() => setMobileOpen(false)}
+                className="focus-ring flex items-center gap-2.5 px-3 py-3 text-sm tracking-wide text-parchment/60 hover:text-gold"
+              >
+                <ShieldKeyIcon className="h-4 w-4 shrink-0" />
+                {portalLabel}
+              </Link>
+            </div>
           </nav>
         </div>
       )}

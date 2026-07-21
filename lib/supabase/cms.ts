@@ -1,6 +1,7 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import type {
   AnnouncementBanner,
+  ContentRevision,
   FaqInsert,
   FaqRow,
   FaqUpdate,
@@ -151,6 +152,21 @@ export async function upsertSection(
 ): Promise<{ error: string | null }> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return { error: "Supabase is not configured." };
+
+  // Snapshot the prior state into revision history before overwriting.
+  const { data: existing } = await supabase
+    .from("site_content_sections")
+    .select("content")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (existing?.content) {
+    await supabase.from("content_revisions").insert({
+      section_slug: slug,
+      content: existing.content,
+      created_by: userId,
+    });
+  }
+
   const { error } = await supabase.from("site_content_sections").upsert(
     {
       slug,
@@ -162,6 +178,22 @@ export async function upsertSection(
     { onConflict: "slug" }
   );
   return { error: error?.message ?? null };
+}
+
+/** Revision snapshots for a section, newest first. */
+export async function fetchRevisions(
+  slug: string
+): Promise<ContentRevision[]> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("content_revisions")
+    .select("*")
+    .eq("section_slug", slug)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error || !data) return [];
+  return data;
 }
 
 // --- FAQs --------------------------------------------------------------------
@@ -217,6 +249,18 @@ export async function fetchInquiries(): Promise<InquiryRow[]> {
     .order("created_at", { ascending: false });
   if (error || !data) return [];
   return data;
+}
+
+/** Count of inquiries still in the `new` state (staff-only via RLS). */
+export async function fetchNewInquiryCount(): Promise<number> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return 0;
+  const { count, error } = await supabase
+    .from("inquiries")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "new");
+  if (error || count == null) return 0;
+  return count;
 }
 
 export async function updateInquiry(

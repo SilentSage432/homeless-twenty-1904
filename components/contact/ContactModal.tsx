@@ -45,6 +45,7 @@ export function ContactModal({
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [ack, setAck] = useState<string | null>(null);
 
   const firstFieldRef = useRef<HTMLInputElement>(null);
 
@@ -59,6 +60,7 @@ export function ContactModal({
     setHoneypot("");
     setStatus("idle");
     setError(null);
+    setAck(null);
 
     const raf = requestAnimationFrame(() => firstFieldRef.current?.focus());
     const prevOverflow = document.body.style.overflow;
@@ -95,6 +97,7 @@ export function ContactModal({
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
         error?: string;
+        message?: string;
       };
 
       if (!res.ok || !data.ok) {
@@ -102,6 +105,7 @@ export function ContactModal({
         setError(data.error ?? "Something went wrong. Please try again.");
         return;
       }
+      setAck(data.message ?? null);
       setStatus("success");
     } catch {
       setStatus("error");
@@ -158,8 +162,8 @@ export function ContactModal({
               Message Delivered!
             </h3>
             <p className="font-body text-slate-weathered mb-6">
-              Thank you for reaching out. Lodge leadership will reply to your
-              email as soon as possible.
+              {ack ??
+                "Thank you for reaching out. Lodge leadership will reply to your email as soon as possible."}
             </p>
             <button
               type="button"

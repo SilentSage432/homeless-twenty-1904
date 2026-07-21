@@ -27,7 +27,15 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 - `/admin/content` (`ContentManager`): Hero Manager, Section Editor (HTML), FAQ Manager (add/edit/publish/reorder/delete).
 - `/admin/documents` (`DocumentManager`): upload to `lodge-documents`, list/remove.
 - Public: `AnnouncementBanner` (top of layout, dismissible per session, `--ann-height` offsets header/main; hidden on `/admin`); `FaqAccordion` + `DocumentDownloadList` + optional `president-message` on `/about`. `HeroSection`/`AboutSection` read `hero_config`/`about-lore` (async, `revalidate=30` on `/` + `/about`).
+- Nav UX: `AdminNav` = mobile dropdown (active section + new-inquiry badge) / desktop tabs. `SiteHeader` shows an "Admin Cockpit" pill for staff on desktop and a "Steward Portal" link in the mobile drawer (staff detected via `getCurrentUserRole`).
 - Feature flags: `allow_inquiries` gates `/api/contact` (persists to `inquiries` via service role; friendly 403 when off); `show_interactive_map` hides the `/plaques` map toggle; `allow_rsvps` stored.
+
+**Resilience & performance**
+- Instant publish: every CMS save calls `requestRevalidate()` (staff-api) → `POST /api/admin/revalidate` (`requireStaffRequest`, path allowlist) → `revalidatePath`, so `/ · /about · /plaques` update immediately (ISR `revalidate=30` remains as a safety net).
+- Revision history: `content_revisions` (migration `20260721_content_revisions.sql`, staff-only RLS). `upsertSection` snapshots prior content before overwriting; `ContentManager` has a per-section **Revision history** modal with one-click Restore.
+- Image compression: `lib/utils/imageCompressor.ts` (canvas → ≤1920px WebP @0.82, GIF/SVG passthrough) runs inside `uploadImageAsset`, so all plaque/event uploads are compressed before Storage.
+- Backup export: Database portal **Export Site Data Snapshot (JSON)** downloads `plaques/site_settings/site_content_sections/faqs/public_documents`.
+- Contact route returns a `message` acknowledgment consumed by `ContactModal`'s success screen; staff alert email fires on each logged inquiry.
 
 **Server**
 - `POST /api/admin/stewards` → invite; `DELETE /api/admin/stewards` → `auth.admin.deleteUser` (no self-revoke; admins cannot revoke developers)
@@ -46,6 +54,7 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 7. Add `RESEND_API_KEY` + verify a sending domain in Resend; set `RESEND_FROM_EMAIL`/`RESEND_TARGET_EMAIL` (contact form).
 8. Apply `supabase/migrations/20260720_admin_exec_sql.sql` to enable the developer SQL Console (`/admin/database`).
 9. Apply `supabase/migrations/20260721_site_settings_and_cms.sql` to enable the CMS suite (site_settings/sections/faqs/inquiries/documents + `lodge-documents` bucket).
+10. Apply `supabase/migrations/20260721_content_revisions.sql` to enable content revision history / one-click undo.
 
 ## Do not
 - Do not put the service role key in `NEXT_PUBLIC_*`.

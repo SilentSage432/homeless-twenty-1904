@@ -24,3 +24,20 @@ export async function authorizedFetch(
 
   return fetch(input, { ...init, headers });
 }
+
+/**
+ * Best-effort on-demand revalidation of public pages after a CMS save.
+ * Never throws — a failed revalidation should not block the editor.
+ */
+export async function requestRevalidate(
+  paths: string[] = ["/", "/about", "/plaques"]
+): Promise<void> {
+  try {
+    await authorizedFetch("/api/admin/revalidate", {
+      method: "POST",
+      body: JSON.stringify({ paths }),
+    });
+  } catch {
+    // Ignore — ISR will still refresh on its own interval.
+  }
+}

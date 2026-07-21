@@ -8,11 +8,13 @@ import {
   AdminTextArea,
 } from "@/components/admin/AdminUi";
 import { getSessionUserId } from "@/lib/supabase/auth";
+import { requestRevalidate } from "@/lib/supabase/staff-api";
 import {
   createFaq,
   defaultSiteSettings,
   deleteFaq,
   fetchFaqs,
+  fetchRevisions,
   fetchSections,
   fetchSiteSettings,
   updateFaq,
@@ -20,6 +22,7 @@ import {
   upsertSection,
 } from "@/lib/supabase/cms";
 import type {
+  ContentRevision,
   FaqRow,
   HeroConfig,
   SiteContentSection,
@@ -64,7 +67,8 @@ function HeroManager() {
     const { error: e } = await updateSiteSettings({ hero_config: hero }, userId);
     setSaving(false);
     if (e) return setError(e);
-    setMessage("Hero updated.");
+    await requestRevalidate(["/"]);
+    setMessage("Hero updated and published.");
   }
 
   return (
@@ -134,6 +138,7 @@ function SectionEditor() {
   const [savingSlug, setSavingSlug] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [historySlug, setHistorySlug] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -160,14 +165,31 @@ function SectionEditor() {
     const { error: e } = await upsertSection(slug, draft, userId);
     setSavingSlug(null);
     if (e) return setError(e);
-    setMessage(`Saved “${slug}”.`);
+    await requestRevalidate(["/", "/about"]);
+    setMessage(`Saved “${slug}” and published.`);
+  }
+
+  async function restore(slug: string, content: string) {
+    setHistorySlug(null);
+    setSavingSlug(slug);
+    setError(null);
+    setMessage(null);
+    const userId = await getSessionUserId();
+    const title = drafts[slug]?.title ?? "";
+    const { error: e } = await upsertSection(slug, { title, content }, userId);
+    setSavingSlug(null);
+    if (e) return setError(e);
+    setDrafts((d) => ({ ...d, [slug]: { title, content } }));
+    await load();
+    await requestRevalidate(["/", "/about"]);
+    setMessage(`Restored a previous version of “${slug}”.`);
   }
 
   return (
     <AdminSection
       eyebrow="Pages · Static Content"
       title="Section Editor"
-      description="Edit reusable page blocks. Content accepts basic HTML (paragraphs, links, lists)."
+      description="Edit reusable page blocks. Content accepts basic HTML (paragraphs, links, lists). Every save is snapshotted to revision history."
       deck
     >
       {loading ? (
@@ -185,9 +207,18 @@ function SectionEditor() {
               key={section.slug}
               className="border border-charcoal/12 bg-white/70 p-4 space-y-3"
             >
-              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-gold-muted">
-                {section.slug}
-              </p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-gold-muted">
+                  {section.slug}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setHistorySlug(section.slug)}
+                  className="focus-ring px-1 text-xs tracking-wide text-crimson underline underline-offset-4"
+                >
+                  Revision history
+                </button>
+              </div>
               <AdminField
                 label="Title"
                 value={drafts[section.slug]?.title ?? ""}
@@ -221,7 +252,111 @@ function SectionEditor() {
           ))}
         </div>
       )}
+
+      {historySlug ? (
+        <RevisionHistoryModal
+          slug={historySlug}
+          onClose={() => setHistorySlug(null)}
+          onRestore={(content) => void restore(historySlug, content)}
+        />
+      ) : null}
     </AdminSection>
+  );
+}
+
+function RevisionHistoryModal({
+  slug,
+  onClose,
+  onRestore,
+}: {
+  slug: string;
+  onClose: () => void;
+  onRestore: (content: string) => void;
+}) {
+  const [revisions, setRevisions] = useState<ContentRevision[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchRevisions(slug).then((data) => {
+      if (cancelled) return;
+      setRevisions(data);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Revision history for ${slug}`}
+    >
+      <div className="absolute inset-0 bg-charcoal/90" aria-hidden="true" onClick={onClose} />
+      <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col border border-gold/40 bg-parchment shadow-[var(--shadow-lift)]">
+        <div className="flex items-center justify-between gap-3 border-b border-charcoal/10 bg-charcoal px-5 py-4">
+          <div>
+            <p className="font-mono text-gold text-[10px] tracking-[0.24em] uppercase">
+              Revision history
+            </p>
+            <p className="font-mono text-[11px] text-parchment/70">{slug}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="focus-ring flex h-8 w-8 items-center justify-center text-parchment/80 hover:text-gold"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="overflow-y-auto px-5 py-4">
+          {loading ? (
+            <p className="font-body text-sm text-slate-weathered">Loading…</p>
+          ) : revisions.length === 0 ? (
+            <p className="font-body text-sm text-slate-weathered">
+              No prior versions yet. Snapshots are captured each time you save.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {revisions.map((rev) => (
+                <li key={rev.id} className="border border-charcoal/12 bg-white/70 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-mono text-[11px] text-slate-weathered">
+                      {new Date(rev.created_at).toLocaleString()}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onRestore(rev.content)}
+                      className="focus-ring px-1 text-sm text-crimson underline underline-offset-4"
+                    >
+                      Restore
+                    </button>
+                  </div>
+                  <p className="mt-2 line-clamp-3 font-mono text-xs text-charcoal/80">
+                    {rev.content.replace(/<[^>]+>/g, " ").slice(0, 240) || "(empty)"}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -264,6 +399,7 @@ function FaqManager() {
     setNewQ("");
     setNewA("");
     await load();
+    await requestRevalidate(["/about"]);
   }
 
   async function patch(id: string, payload: Partial<FaqRow>) {
@@ -273,6 +409,7 @@ function FaqManager() {
     setBusyId(null);
     if (e) return setError(e);
     await load();
+    await requestRevalidate(["/about"]);
   }
 
   async function remove(id: string) {
@@ -283,6 +420,7 @@ function FaqManager() {
     setBusyId(null);
     if (e) return setError(e);
     await load();
+    await requestRevalidate(["/about"]);
   }
 
   async function move(index: number, dir: -1 | 1) {
@@ -295,6 +433,7 @@ function FaqManager() {
     await updateFaq(swap.id, { display_order: target.display_order });
     setBusyId(null);
     await load();
+    await requestRevalidate(["/about"]);
   }
 
   return (

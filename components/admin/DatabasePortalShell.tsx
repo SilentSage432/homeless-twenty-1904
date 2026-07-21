@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { requireStaffSession } from "@/lib/supabase/auth";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   isDeveloperRole,
   type Profile,
@@ -61,6 +62,8 @@ export function DatabasePortalShell() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [deniedRole, setDeniedRole] = useState<ProfileRole | null>(null);
   const [tab, setTab] = useState<TabKey>("tables");
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const verify = useCallback(async () => {
     const session = await requireStaffSession();
@@ -128,6 +131,54 @@ export function DatabasePortalShell() {
     );
   }
 
+  async function exportSnapshot() {
+    setExporting(true);
+    setExportError(null);
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      setExportError("Supabase is not configured.");
+      setExporting(false);
+      return;
+    }
+    const tables = [
+      "plaques",
+      "site_settings",
+      "site_content_sections",
+      "faqs",
+      "public_documents",
+    ] as const;
+
+    try {
+      const snapshot: Record<string, unknown> = {
+        exported_at: new Date().toISOString(),
+        exported_by: profile?.full_name?.trim() || profile?.role || null,
+        source: "homelesstwenty",
+      };
+      for (const table of tables) {
+        const { data, error } = await supabase.from(table).select("*");
+        if (error) throw new Error(`${table}: ${error.message}`);
+        snapshot[table] = data ?? [];
+      }
+
+      const blob = new Blob([JSON.stringify(snapshot, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const stamp = new Date().toISOString().slice(0, 10);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `homelesstwenty-snapshot-${stamp}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : "Export failed.");
+    } finally {
+      setExporting(false);
+    }
+  }
+
   const active = visibleTabs.find((t) => t.key === tab) ?? visibleTabs[0];
 
   return (
@@ -155,13 +206,28 @@ export function DatabasePortalShell() {
                 · <span className="font-mono text-gold">{role}</span>
               </p>
             </div>
-            <Link
-              href="/admin/dashboard"
-              className="focus-ring btn-gold shrink-0 self-start bg-transparent px-5 py-2.5 text-sm"
-            >
-              ← Dashboard
-            </Link>
+            <div className="flex shrink-0 flex-wrap gap-3 self-start">
+              <button
+                type="button"
+                onClick={() => void exportSnapshot()}
+                disabled={exporting}
+                className="focus-ring btn-gold bg-transparent px-5 py-2.5 text-sm disabled:opacity-60"
+              >
+                {exporting ? "Exporting…" : "Export Site Data Snapshot (JSON)"}
+              </button>
+              <Link
+                href="/admin/dashboard"
+                className="focus-ring btn-gold bg-transparent px-5 py-2.5 text-sm"
+              >
+                ← Dashboard
+              </Link>
+            </div>
           </div>
+          {exportError ? (
+            <p className="mt-3 border border-crimson/40 bg-crimson/[0.08] px-4 py-2 text-sm text-crimson">
+              {exportError}
+            </p>
+          ) : null}
         </header>
 
         <AdminNav />

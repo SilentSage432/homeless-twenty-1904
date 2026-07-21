@@ -10,6 +10,7 @@ import {
 } from "@/components/admin/AdminUi";
 import { AnnouncementBannerView } from "@/components/AnnouncementBanner";
 import { getSessionUserId } from "@/lib/supabase/auth";
+import { requestRevalidate } from "@/lib/supabase/staff-api";
 import {
   fetchSiteSettings,
   updateSiteSettings,
@@ -100,7 +101,8 @@ export function SiteSettingsManager() {
       setError(saveError);
       return;
     }
-    setMessage("Settings saved. Public site updates on next load.");
+    await requestRevalidate(["/", "/about", "/plaques"]);
+    setMessage("Settings saved and published — the public site updates now.");
   }
 
   if (loading) {

@@ -1,4 +1,5 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { compressImage } from "@/lib/utils/imageCompressor";
 
 export const PLAQUE_ASSETS_BUCKET = "plaque-assets";
 // Event images reuse the existing public plaque-assets bucket (already
@@ -39,20 +40,23 @@ async function uploadImageAsset(
     return { ok: false, message: "Please choose an image file." };
   }
 
+  // Scale + re-encode (WebP) client-side before upload to shrink the payload.
+  const compressed = await compressImage(file, { maxWidth: 1920, quality: 0.82 });
+
   const maxBytes = 8 * 1024 * 1024;
-  if (file.size > maxBytes) {
+  if (compressed.size > maxBytes) {
     return { ok: false, message: "Image must be 8MB or smaller." };
   }
 
-  const safeName = sanitizeFileName(file.name) || `${prefix}.jpg`;
+  const safeName = sanitizeFileName(compressed.name) || `${prefix}.webp`;
   const path = `${prefix}-${Date.now()}-${crypto
     .randomUUID()
     .slice(0, 8)}-${safeName}`;
 
-  const { error } = await supabase.storage.from(bucket).upload(path, file, {
+  const { error } = await supabase.storage.from(bucket).upload(path, compressed, {
     cacheControl: "3600",
     upsert: false,
-    contentType: file.type,
+    contentType: compressed.type,
   });
 
   if (error) {
