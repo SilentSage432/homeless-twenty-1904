@@ -1,5 +1,14 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — Auth callback + invite password activation
+
+- `/auth/callback` (client route; localStorage session model): reads `?code=`, runs `exchangeCodeForSession`, falls back to hash/implicit session detection, then redirects to `/admin` — or `/admin/update-password` for `type=invite`/`recovery`.
+- Missing/expired/provider errors redirect to `/admin?error=…`; `AdminLoginForm` renders that param.
+- New `/admin/update-password` (invite activation) → `updateUserPassword` → `/admin/dashboard`.
+- Note: chose a client callback because auth sessions live in localStorage, not SSR cookies; a server cookie route would be invisible to the existing gate.
+
+---
+
 ## 2026-07-20 — Invite redirect uses production origin
 
 - `inviteUserByEmail` origin: `NEXT_PUBLIC_SITE_URL` → `VERCEL_URL` → `https://www.thehomelesstwenty1904.org`; `redirectTo = ${origin}/auth/callback`.

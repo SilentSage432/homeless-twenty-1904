@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   requireStaffSession,
   signInWithPassword,
@@ -14,6 +14,8 @@ type AuthState = "loading" | "guest" | "denied" | "authorized";
 
 export function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackError = searchParams.get("error");
   const [authState, setAuthState] = useState<AuthState>("loading");
   const [role, setRole] = useState<ProfileRole | null>(null);
   const [email, setEmail] = useState("");
@@ -118,6 +120,15 @@ export function AdminLoginForm() {
             Supabase env vars are missing. Copy{" "}
             <code className="font-mono">.env.example</code> to{" "}
             <code className="font-mono">.env.local</code>.
+          </p>
+        )}
+
+        {callbackError && (
+          <p
+            className="mb-6 border border-crimson/30 bg-crimson/5 px-4 py-3 text-sm text-crimson"
+            role="alert"
+          >
+            {callbackError}
           </p>
         )}
 

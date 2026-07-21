@@ -64,6 +64,26 @@ export async function signOutSession(): Promise<AuthResult> {
   return { ok: true, userId: "" };
 }
 
+/** Set a new password for the currently authenticated (e.g. invited) user. */
+export async function updateUserPassword(
+  password: string
+): Promise<AuthResult> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) {
+    return {
+      ok: false,
+      message: "Supabase is not configured.",
+    };
+  }
+
+  const { data, error } = await supabase.auth.updateUser({ password });
+  if (error || !data.user) {
+    return { ok: false, message: mapAuthError(error) };
+  }
+
+  return { ok: true, userId: data.user.id };
+}
+
 export async function getSessionUserId(): Promise<string | null> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return null;

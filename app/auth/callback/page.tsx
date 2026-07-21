@@ -1,23 +1,23 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
+import { AuthCallbackHandler } from "@/components/admin/AuthCallbackHandler";
 
 export const metadata: Metadata = {
-  title: "Admin Login",
+  title: "Finalizing sign-in",
   robots: { index: false, follow: false },
 };
 
-export default function AdminLoginPage() {
+export default function AuthCallbackPage() {
   return (
     <div className="min-h-[80vh] bg-parchment-warm/40">
       <Suspense
         fallback={
           <div className="mx-auto max-w-lg px-4 py-28 text-center font-body text-slate-weathered">
-            Checking credentials…
+            Finalizing sign-in…
           </div>
         }
       >
-        <AdminLoginForm />
+        <AuthCallbackHandler />
       </Suspense>
     </div>
   );
