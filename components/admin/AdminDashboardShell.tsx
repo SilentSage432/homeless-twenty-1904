@@ -102,7 +102,7 @@ export function AdminDashboardShell() {
               <p className="font-mono text-gold text-[10px] sm:text-xs tracking-[0.28em] uppercase mb-3">
                 Secure Steward Portal · RBAC
               </p>
-              <h1 className="font-display text-3xl sm:text-4xl md:text-[2.75rem] text-parchment font-semibold leading-tight">
+              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] text-parchment font-semibold leading-tight">
                 {showDeveloperCockpit
                   ? "Developer Cockpit"
                   : "Administrative Ledger"}

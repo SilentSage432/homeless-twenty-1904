@@ -1,5 +1,14 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — Responsive & mobile polish pass
+
+- `<main>` gets `overflow-x-hidden` (body already `overflow-x: clip`) to kill horizontal scroll.
+- Fluid heading bases (`text-2xl sm:text-3xl md:text-4xl…`) on hero + dashboard title so 320px phones don't push content offscreen.
+- Touch targets: `.admin-input` min-height 44px; new `.tap-target` (min-h 44px inline-flex) applied to roster Edit/Delete/Revoke/Refresh and telemetry re-run controls.
+- Verified multi-column grids (events/plaques managers, Component D, telemetry) collapse to single column on mobile and rebalance on tablet; rosters stack/wrap without clipping; containers stay capped at `max-w-6xl`.
+
+---
+
 ## 2026-07-20 — Auth callback + invite password activation
 
 - `/auth/callback` (client route; localStorage session model): reads `?code=`, runs `exchangeCodeForSession`, falls back to hash/implicit session detection, then redirects to `/admin` — or `/admin/update-password` for `type=invite`/`recovery`.

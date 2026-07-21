@@ -229,7 +229,7 @@ export function ManagePlaquesForm({
             type="button"
             onClick={() => void refreshRoster()}
             disabled={plaquesQuery.isFetching}
-            className="focus-ring text-xs tracking-wide text-crimson underline underline-offset-4 disabled:opacity-60"
+            className="focus-ring tap-target px-1 text-xs tracking-wide text-crimson underline underline-offset-4 disabled:opacity-60"
           >
             {plaquesQuery.isFetching ? "Refreshing…" : "Refresh list"}
           </button>

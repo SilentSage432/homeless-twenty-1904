@@ -12,6 +12,8 @@
 - [x] Developer System Overrides panel on `/admin/dashboard`
 - [x] Developer cockpit visual overhaul + steward invite API
 - [x] Admin + developer personnel invites; live event/plaque edit-delete rosters
+- [x] Invite email flow: production redirect + /auth/callback + password activation
+- [x] Responsive & mobile polish pass (320px → wide, 44px touch targets)
 - [x] Typecheck + production build green
 
 ## Near-term

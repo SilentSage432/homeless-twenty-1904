@@ -234,7 +234,7 @@ export function StewardManagementPanel({
             type="button"
             onClick={() => void refreshRoster()}
             disabled={listLoading}
-            className="focus-ring text-xs tracking-wide text-crimson underline underline-offset-4 disabled:opacity-60"
+            className="focus-ring tap-target px-1 text-xs tracking-wide text-crimson underline underline-offset-4 disabled:opacity-60"
           >
             {listLoading ? "Refreshing…" : "Refresh list"}
           </button>
@@ -289,7 +289,7 @@ export function StewardManagementPanel({
                     type="button"
                     onClick={() => void handleRevoke(row)}
                     disabled={revokingId === row.id || busy}
-                    className="focus-ring text-sm text-crimson underline underline-offset-4 decoration-crimson/40 museum-ease hover:decoration-crimson disabled:opacity-60"
+                    className="focus-ring tap-target px-1 text-sm text-crimson underline underline-offset-4 decoration-crimson/40 museum-ease hover:decoration-crimson disabled:opacity-60"
                   >
                     {revokingId === row.id ? "Revoking…" : "Revoke"}
                   </button>

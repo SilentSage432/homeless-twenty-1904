@@ -294,7 +294,7 @@ export function SystemOverridesPanel() {
           type="button"
           onClick={() => void runDiagnostics()}
           disabled={running}
-          className="focus-ring btn-gold bg-transparent px-4 py-2 text-xs tracking-wide disabled:opacity-60"
+          className="focus-ring btn-gold tap-target justify-center bg-transparent px-4 py-2 text-xs tracking-wide disabled:opacity-60"
         >
           {running ? "Scanning…" : "Re-run diagnostics"}
         </button>

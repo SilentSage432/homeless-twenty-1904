@@ -249,6 +249,7 @@ body {
 
 .admin-input {
   width: 100%;
+  min-height: 44px;
   border: 1.5px solid rgba(17, 17, 17, 0.28);
   background: #fff;
   padding: 0.75rem 0.9rem;
@@ -260,6 +261,13 @@ body {
     border-color 280ms ease-out,
     box-shadow 280ms ease-out,
     background-color 280ms ease-out;
+}
+
+/* Comfortable touch target for inline action links (>= 44px). */
+.tap-target {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .admin-input::placeholder {

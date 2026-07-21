@@ -212,11 +212,11 @@ export function AdminListItem({
           <p className="text-xs text-slate-weathered mt-0.5">{meta}</p>
         </div>
       </div>
-      <div className="flex gap-3 shrink-0">
+      <div className="flex gap-4 shrink-0">
         <button
           type="button"
           onClick={onEdit}
-          className="focus-ring text-sm text-crimson underline underline-offset-4 decoration-crimson/40 museum-ease hover:decoration-crimson"
+          className="focus-ring tap-target px-1 text-sm text-crimson underline underline-offset-4 decoration-crimson/40 museum-ease hover:decoration-crimson"
         >
           Edit
         </button>
@@ -224,7 +224,7 @@ export function AdminListItem({
           <button
             type="button"
             onClick={onDelete}
-            className="focus-ring text-sm text-slate-weathered underline underline-offset-4 museum-ease hover:text-charcoal"
+            className="focus-ring tap-target px-1 text-sm text-slate-weathered underline underline-offset-4 museum-ease hover:text-charcoal"
           >
             Delete
           </button>

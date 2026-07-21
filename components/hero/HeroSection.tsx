@@ -33,7 +33,7 @@ export function HeroSection() {
 
             <h1
               id="hero-brand"
-              className="font-display text-parchment text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold leading-[1.2] tracking-wide max-w-xl mx-auto md:mx-0"
+              className="font-display text-parchment text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold leading-[1.2] tracking-wide max-w-xl mx-auto md:mx-0"
             >
               Guardians of Western Heritage across Southern &amp; Eastern Idaho
             </h1>

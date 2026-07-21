@@ -88,7 +88,7 @@ export default function RootLayout({
             Skip to main content
           </a>
           <SiteHeader />
-          <main id="main" className="min-h-[70vh]">
+          <main id="main" className="min-h-[70vh] overflow-x-hidden">
             {children}
           </main>
           <SiteFooter />
