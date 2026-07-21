@@ -1,5 +1,14 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — Responsive pass II: 7xl wrappers + section titles
+
+- Standardized all main wrappers (header both variants + mobile drawer, hero, about, plaques, events, footer, dashboard) to `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`.
+- Public section titles (About, Plaques, Events) scaled to `text-2xl sm:text-3xl md:text-4xl`.
+- Added `overflow-x-hidden` to `<body>` (belt-and-suspenders with `<main>` + `overflow-x: clip`).
+- Events kept as full-width stacked rows (each is a 3-panel horizontal card); `md:grid-cols-2` would crush the internal date/detail/registration layout. Plaque gallery already satisfies 2-col tablet (`sm:grid-cols-2 lg:grid-cols-3`).
+
+---
+
 ## 2026-07-20 — Responsive & mobile polish pass
 
 - `<main>` gets `overflow-x-hidden` (body already `overflow-x: clip`) to kill horizontal scroll.

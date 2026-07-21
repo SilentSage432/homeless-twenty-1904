@@ -94,7 +94,7 @@ export function AdminDashboardShell() {
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         {/* Control deck header */}
         <header className="cockpit-header mb-8 sm:mb-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-stretch lg:justify-between">

@@ -23,7 +23,7 @@ export function HeroSection() {
 
       <div className="hero-grain pointer-events-none absolute inset-0" aria-hidden="true" />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 py-16 sm:py-20 lg:py-24">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
         <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-12 lg:gap-16">
           {/* Column 1 — mission copy + CTA */}
           <div className="animate-fade-rise order-2 md:order-1 text-center md:text-left">

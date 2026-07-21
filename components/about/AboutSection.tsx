@@ -22,7 +22,7 @@ export function AboutSection() {
       className="scroll-mt-24 relative py-20 sm:py-28"
       aria-labelledby="about-heading"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="ornament-rule mb-10 max-w-md mx-auto sm:mx-0" aria-hidden="true">
           <span className="ornament-diamond" />
         </div>
@@ -34,7 +34,7 @@ export function AboutSection() {
             </p>
             <h2
               id="about-heading"
-              className="font-display text-charcoal text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-6"
+              className="font-display text-charcoal text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight mb-6"
             >
               Guardians of Magic Valley Lore
             </h2>

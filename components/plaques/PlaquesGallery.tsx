@@ -29,7 +29,7 @@ export function PlaquesGallery({
       className="scroll-mt-24 py-20 sm:py-28 bg-parchment-warm/50"
       aria-labelledby="plaques-heading"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {heading && (
           <div className="text-center max-w-2xl mx-auto mb-14">
             <p className="text-crimson text-xs sm:text-sm tracking-[0.22em] uppercase mb-3">
@@ -37,7 +37,7 @@ export function PlaquesGallery({
             </p>
             <h2
               id="plaques-heading"
-              className="font-display text-charcoal text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-5"
+              className="font-display text-charcoal text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight mb-5"
             >
               Historical Plaque Gallery
             </h2>

@@ -45,7 +45,7 @@ export function SiteHeader() {
   if (isAdmin) {
     return (
       <header className="bg-charcoal border-b border-gold/20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 h-14 flex items-center justify-between">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           <Link
             href="/"
             className="focus-ring font-display text-parchment text-sm tracking-wide hover:text-gold"
@@ -69,7 +69,7 @@ export function SiteHeader() {
           : "bg-charcoal"
       )}
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 sm:h-[4.5rem] items-center justify-between gap-4">
           <Link
             href="/#top"
@@ -145,7 +145,7 @@ export function SiteHeader() {
           className="lg:hidden border-t border-parchment/10 bg-charcoal"
         >
           <nav
-            className="mx-auto max-w-6xl px-4 py-4 flex flex-col gap-1"
+            className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-1"
             aria-label="Mobile"
           >
             {NAV.map((item) => (

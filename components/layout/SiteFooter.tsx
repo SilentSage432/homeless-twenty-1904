@@ -8,7 +8,7 @@ export function SiteFooter() {
       className="bg-charcoal-soft border-t border-gold/20 text-parchment py-14"
       role="contentinfo"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           <div className="sm:col-span-2 lg:col-span-2">
             <p className="font-display text-2xl text-parchment mb-2">

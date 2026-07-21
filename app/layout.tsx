@@ -78,7 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${display.variable} ${western.variable} ${body.variable} antialiased`}
+        className={`${display.variable} ${western.variable} ${body.variable} antialiased overflow-x-hidden`}
       >
         <Providers>
           <a

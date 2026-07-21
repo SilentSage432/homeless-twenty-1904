@@ -19,7 +19,7 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
       className="scroll-mt-24 py-20 sm:py-28"
       aria-labelledby="events-heading"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {heading && (
           <div className="max-w-2xl mb-14">
             <p className="text-crimson text-xs sm:text-sm tracking-[0.22em] uppercase mb-3">
@@ -27,7 +27,7 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
             </p>
             <h2
               id="events-heading"
-              className="font-display text-charcoal text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight mb-5"
+              className="font-display text-charcoal text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight mb-5"
             >
               Upcoming Events
             </h2>
