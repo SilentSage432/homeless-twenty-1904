@@ -3,8 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchEvents } from "@/lib/supabase/content";
 import { buildMapUrl, formatEventDate } from "@/lib/utils";
+import { useContactModal } from "@/components/contact/ContactModalContext";
 
 export function EventsBoard({ heading = true }: { heading?: boolean }) {
+  const { open: openContact } = useContactModal();
   const { data, isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: fetchEvents,
@@ -46,7 +48,15 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
 
         {!isLoading && upcoming.length === 0 && (
           <p className="font-body text-lg text-slate-weathered">
-            No upcoming events posted. Check back soon, or contact the lodge.
+            No upcoming events posted. Check back soon, or{" "}
+            <button
+              type="button"
+              onClick={() => openContact("Event / RSVP")}
+              className="focus-ring text-crimson underline underline-offset-4 hover:text-crimson/80"
+            >
+              contact the lodge
+            </button>
+            .
           </p>
         )}
 
@@ -164,7 +174,15 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
                         </span>
                         <p className="mt-3 text-xs text-slate-weathered leading-relaxed">
                           A live payment link has not been published for this
-                          event yet. Contact the lodge to reserve a seat.
+                          event yet.{" "}
+                          <button
+                            type="button"
+                            onClick={() => openContact("Event / RSVP")}
+                            className="focus-ring text-crimson underline underline-offset-2 hover:text-crimson/80"
+                          >
+                            Contact the lodge
+                          </button>{" "}
+                          to reserve a seat.
                         </p>
                       </>
                     )}

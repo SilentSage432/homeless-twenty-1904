@@ -18,6 +18,7 @@
 - [x] Optional event images (shared crop editor, `events.image_url`, admin thumbs + public banner)
 - [x] Location: Places Autocomplete + map preview (events/plaques lat/lng/map_url) + public navigate buttons
 - [x] Interactive Plaque Discovery Map (`/plaques` Grid|Map toggle, custom pins, InfoWindow, directions)
+- [x] In-app Contact Lodge modal + `/api/contact` (Resend, honeypot, reply-to) — replaces mailto links
 - [x] Typecheck + production build green
 
 ## Near-term
@@ -26,7 +27,7 @@
 - [ ] Final hero-oval historic photograph drop-in
 - [ ] Authentic plaque photography via dashboard uploads
 - [ ] Stripe Payment Links on events
-- [ ] Contact / submissions surface
+- [x] Contact / submissions surface (in-app modal + Resend)
 - [ ] Production domain + HTTPS deploy
 
 ## Later

@@ -28,6 +28,7 @@ Infrastructure (Supabase client, Next.js, Tailwind)
 | Image uploads | `lib/supabase/storage.ts` → `uploadPlaqueAsset` / `uploadEventAsset` (both use bucket `plaque-assets`) |
 | Location + maps | `components/admin/LocationAutocompleteField.tsx` (Places Autocomplete + preview) → `events`/`plaques` `latitude`/`longitude`/`map_url`; public nav via `buildMapUrl()` in `lib/utils.ts`. Shared Maps config in `lib/maps.ts`. Needs `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`. |
 | Plaque discovery map | `components/plaques/PlaqueMap.tsx` + `PlaquesExplorer.tsx` (Grid/Map toggle); shared detail modal `PlaqueLightbox.tsx` |
+| Contact lodge | `components/contact/*` (modal + `ContactModalProvider` + `ContactButton`) → `POST /api/contact` (Resend). Needs `RESEND_API_KEY`. |
 | System telemetry | `components/admin/SystemOverridesPanel.tsx` |
 | Schema + RLS + storage | `supabase/migrations/*` |
 | Typed DB contracts | `lib/supabase/database.types.ts` |

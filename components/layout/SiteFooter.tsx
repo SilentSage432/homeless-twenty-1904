@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContactButton } from "@/components/contact/ContactButton";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -51,12 +52,12 @@ export function SiteFooter() {
             </p>
             <ul className="space-y-2 font-body text-base">
               <li>
-                <a
-                  href="mailto:info@homelesstwenty1904.org"
-                  className="focus-ring text-parchment/80 hover:text-gold"
+                <ContactButton
+                  subject="General Inquiry"
+                  className="focus-ring text-left text-parchment/80 hover:text-gold"
                 >
                   Email the Lodge
-                </a>
+                </ContactButton>
               </li>
               <li>
                 <Link href="/admin" className="focus-ring text-parchment/55 hover:text-gold text-sm">

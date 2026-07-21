@@ -1,5 +1,14 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — In-app Contact Lodge modal + Resend API
+
+- New `app/api/contact/route.ts` (POST, node runtime): validates name/email/subject/message (phone optional), honeypot → silent success, sends via `resend` to `RESEND_TARGET_EMAIL` (default `info@thehomelesstwenty1904.org`) with `replyTo` = sender. Friendly 503 when `RESEND_API_KEY` unset; 400/502 for validation/provider errors. HTML is escaped.
+- New `components/contact/`: `ContactModal.tsx` (vintage brass/parchment modal — Name/Email/Subject-category/Phone/Message + hidden honeypot; idle→sending→success/error states, autofocus first field, ESC + backdrop close, body scroll lock), `ContactModalContext.tsx` (single shared instance via `useContactModal().open(subject?)`), `ContactButton.tsx` (client trigger for server components).
+- `ContactModalProvider` wraps the app in `providers.tsx`. Replaced the footer `mailto:` with a modal trigger; added "Contact" to header desktop+mobile nav; wired EventsBoard "contact the lodge" prompts (prefill subject "Event / RSVP"). No `mailto:` links remain in the app (only the archived static HTML).
+- `.env.example` documents `RESEND_API_KEY`, `RESEND_TARGET_EMAIL`, `RESEND_FROM_EMAIL`. Typecheck + lint + build green.
+
+---
+
 ## 2026-07-20 — Interactive Plaque Discovery Map + Grid/Map toggle
 
 - New `components/plaques/PlaqueMap.tsx`: `@react-google-maps/api` map styled with a warm/vintage `VINTAGE_MAP_STYLES`. Fetches plaques, filters to non-null lat/lng, renders custom crimson+gold teardrop `MarkerF` pins, and auto-fits bounds. Marker click opens an `InfoWindowF` card (thumbnail, title, location, **View Details** → full modal, **Get Directions** → external Maps URL). Empty/loading/no-key states handled gracefully.

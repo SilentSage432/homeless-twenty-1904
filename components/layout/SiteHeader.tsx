@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useContactModal } from "@/components/contact/ContactModalContext";
 
 const NAV = [
   { href: "/#top", label: "Home", hash: "top" },
@@ -14,6 +15,7 @@ const NAV = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const { open: openContact } = useContactModal();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("top");
@@ -110,6 +112,13 @@ export function SiteHeader() {
                 </Link>
               );
             })}
+            <button
+              type="button"
+              onClick={() => openContact()}
+              className="focus-ring text-sm tracking-wide text-parchment/85 transition-colors hover:text-gold"
+            >
+              Contact
+            </button>
             <Link
               href="/#events"
               className="focus-ring btn-primary inline-flex items-center px-4 py-2 text-sm font-body tracking-wide"
@@ -158,6 +167,16 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                openContact();
+              }}
+              className="focus-ring block px-3 py-3 text-left text-parchment/90 hover:text-gold hover:bg-white/5 text-base"
+            >
+              Contact the Lodge
+            </button>
             <Link
               href="/#events"
               className="focus-ring btn-primary mt-2 text-center px-3 py-3 text-base"
