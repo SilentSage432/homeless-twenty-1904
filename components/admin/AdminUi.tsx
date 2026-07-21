@@ -76,29 +76,66 @@ export function AdminToggle({
   onChange,
   hint,
   disabled,
+  showStatus = false,
+  previewHref,
+  previewLabel = "Preview page ↗",
 }: {
   label: string;
   checked: boolean;
   onChange: (v: boolean) => void;
   hint?: string;
   disabled?: boolean;
+  /** Shows a “Live on site” / “Disabled” badge beside the label. */
+  showStatus?: boolean;
+  /** Optional public route so stewards can verify the live page. */
+  previewHref?: string;
+  previewLabel?: string;
 }) {
   const id = useId();
   return (
-    <label
-      htmlFor={id}
+    <div
       className={`flex items-center justify-between gap-4 border border-charcoal/15 bg-white/70 px-4 py-3 ${
-        disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+        disabled ? "opacity-60" : ""
       }`}
     >
-      <span className="min-w-0">
-        <span className="block font-body text-sm text-charcoal">{label}</span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <label
+            htmlFor={id}
+            className={`font-body text-sm text-charcoal ${
+              disabled ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
+          >
+            {label}
+          </label>
+          {showStatus ? (
+            <span
+              className={
+                checked
+                  ? "inline-flex items-center border border-emerald-700/25 bg-emerald-700/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800"
+                  : "inline-flex items-center border border-charcoal/15 bg-charcoal/5 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-weathered"
+              }
+            >
+              {checked ? "Live on site" : "Disabled"}
+            </span>
+          ) : null}
+        </div>
         {hint ? (
-          <span className="mt-0.5 block text-xs text-slate-weathered/90">
+          <p className="mt-1.5 max-w-xl font-body text-xs leading-relaxed text-slate-weathered">
             {hint}
-          </span>
+          </p>
         ) : null}
-      </span>
+        {previewHref ? (
+          <a
+            href={previewHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="focus-ring mt-2 inline-flex text-xs text-crimson/80 underline underline-offset-4 decoration-crimson/30 museum-ease hover:text-crimson hover:decoration-crimson"
+          >
+            {previewLabel}
+          </a>
+        ) : null}
+      </div>
       <button
         id={id}
         type="button"
@@ -108,7 +145,7 @@ export function AdminToggle({
         onClick={() => onChange(!checked)}
         className={`focus-ring relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
           checked ? "bg-crimson" : "bg-charcoal/25"
-        }`}
+        } ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
       >
         <span
           className={`absolute left-0.5 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-parchment shadow-sm transition-transform duration-200 ease-in-out ${
@@ -116,7 +153,7 @@ export function AdminToggle({
           }`}
         />
       </button>
-    </label>
+    </div>
   );
 }
 

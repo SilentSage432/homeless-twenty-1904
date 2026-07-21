@@ -1,5 +1,13 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-21 — Feature Flags steward UX (hints, status, preview links)
+
+- Extended canonical `AdminToggle` with optional `showStatus` (“Live on site” green / “Disabled” gray) and `previewHref` / `previewLabel` (opens the relevant public route in a new tab). Restructured the control so the preview link sits outside a wrapping `<label>` and won’t accidentally flip the switch.
+- `/admin/settings` Feature Flags: plain-English helper text for inquiries (contact form), event RSVPs (registration/pre-pay buttons), and plaque map (pin map on `/plaques`); each row links to `/`, `/events`, or `/plaques` for live checks. Section copy reminds stewards to save before previewing.
+- Typecheck green.
+
+---
+
 ## 2026-07-21 — Canonical admin toggle switch (alignment fix + ownership)
 
 - **Single ownership (Rule 4):** promoted the ad-hoc `Toggle` that lived inside `SiteSettingsManager` into a canonical `AdminToggle` primitive in `components/admin/AdminUi.tsx` (beside `AdminField`/`AdminSelect`/`AdminTextArea`). `SiteSettingsManager` now composes it (Rule 5) for all four switches (banner enable + 3 feature flags); the local component was deleted so there is exactly one toggle owner for every future admin surface.

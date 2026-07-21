@@ -189,24 +189,38 @@ export function SiteSettingsManager() {
       <AdminSection
         eyebrow="Operations · Feature Flags"
         title="Feature Flags"
-        description="Turn public capabilities on or off without a redeploy."
+        description="Simple on/off switches for public-site features. Save settings, then use Preview page to confirm what visitors see."
         deck
       >
         <div className="space-y-3">
           <AdminToggle
-            label="Allow inquiries (Contact the Lodge form)"
+            label="Allow inquiries"
             checked={flags.allow_inquiries}
             onChange={(v) => setFlags((f) => ({ ...f, allow_inquiries: v }))}
+            showStatus
+            previewHref="/"
+            previewLabel="Preview home page ↗"
+            hint="On: the Contact the Lodge form is available across the site (header, footer, and contact buttons). Off: the form is hidden and new messages are not accepted."
           />
           <AdminToggle
-            label="Allow event RSVPs / pre-pay prompts"
+            label="Allow event RSVPs"
             checked={flags.allow_rsvps}
             onChange={(v) => setFlags((f) => ({ ...f, allow_rsvps: v }))}
+            showStatus
+            previewHref="/events"
+            previewLabel="Preview events page ↗"
+            hint="On: registration and pre-pay buttons appear on event listings. Off: those buttons are hidden so visitors cannot start RSVP or payment from the Events page."
           />
           <AdminToggle
             label="Show interactive plaque map"
             checked={flags.show_interactive_map}
-            onChange={(v) => setFlags((f) => ({ ...f, show_interactive_map: v }))}
+            onChange={(v) =>
+              setFlags((f) => ({ ...f, show_interactive_map: v }))
+            }
+            showStatus
+            previewHref="/plaques"
+            previewLabel="Preview plaques page ↗"
+            hint="On: the Plaque Gallery (/plaques) includes a map with location pins alongside the photo grid. Off: only the photo grid is shown — the map toggle is hidden."
           />
         </div>
       </AdminSection>
