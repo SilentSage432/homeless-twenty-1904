@@ -24,6 +24,8 @@ Infrastructure (Supabase client, Next.js, Tailwind)
 | Developer admin APIs | `lib/supabase/admin.ts` + `app/api/admin/*` (service role; never client) |
 | Steward invites / roster | `components/admin/StewardManagementPanel.tsx` → `POST /api/admin/stewards` |
 | Event / plaque forms | `components/admin/ManageEventsForm.tsx`, `ManagePlaquesForm.tsx` |
+| Image crop/rotate editor | `components/admin/ImageCropEditor.tsx` (shared by plaque + event uploaders) → `lib/utils/crop-image.ts` (canvas + resizer → JPEG blob) |
+| Image uploads | `lib/supabase/storage.ts` → `uploadPlaqueAsset` / `uploadEventAsset` (both use bucket `plaque-assets`) |
 | System telemetry | `components/admin/SystemOverridesPanel.tsx` |
 | Schema + RLS + storage | `supabase/migrations/*` |
 | Typed DB contracts | `lib/supabase/database.types.ts` |

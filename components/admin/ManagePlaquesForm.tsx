@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -11,6 +11,7 @@ import {
   AdminTextArea,
   ImageDropZone,
 } from "@/components/admin/AdminUi";
+import { ImageCropEditor } from "@/components/admin/ImageCropEditor";
 import {
   createPlaque,
   deletePlaque,
@@ -47,19 +48,61 @@ export function ManagePlaquesForm({
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Image-editing workflow: raw picked source feeds the crop modal; the
+  // confirmed cropped File becomes `file` and drives the preview.
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [croppedPreviewUrl, setCroppedPreviewUrl] = useState<string | null>(null);
+
   const plaquesQuery = useQuery({
     queryKey: ["plaques"],
     queryFn: fetchPlaques,
   });
 
-  function resetForm() {
-    setForm(EMPTY_PLAQUE);
+  // Revoke each object URL when it is replaced or on unmount. Each URL has its
+  // own effect so updating one preview never invalidates the other.
+  useEffect(() => {
+    if (!rawImageSrc) return;
+    return () => URL.revokeObjectURL(rawImageSrc);
+  }, [rawImageSrc]);
+
+  useEffect(() => {
+    if (!croppedPreviewUrl) return;
+    return () => URL.revokeObjectURL(croppedPreviewUrl);
+  }, [croppedPreviewUrl]);
+
+  function clearImageState() {
     setFile(null);
-    setEditingId(null);
-    setExistingImageUrl(null);
+    setEditorOpen(false);
+    setRawImageSrc(null);
+    setCroppedPreviewUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  }
+
+  function resetForm() {
+    setForm(EMPTY_PLAQUE);
+    setEditingId(null);
+    setExistingImageUrl(null);
+    clearImageState();
+  }
+
+  // A file was picked/dropped — open the editor instead of committing it.
+  function handlePick(picked: File) {
+    setError(null);
+    setRawImageSrc(URL.createObjectURL(picked));
+    setEditorOpen(true);
+  }
+
+  function handleEditorConfirm(cropped: File) {
+    setFile(cropped);
+    setCroppedPreviewUrl(URL.createObjectURL(cropped));
+    setEditorOpen(false);
+  }
+
+  function handleEditorCancel() {
+    setEditorOpen(false);
   }
 
   async function refreshRoster() {
@@ -126,10 +169,7 @@ export function ManagePlaquesForm({
       description: plaque.description,
     });
     setExistingImageUrl(plaque.image_url || null);
-    setFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    clearImageState();
     setNotice(null);
     setError(null);
   }
@@ -179,14 +219,28 @@ export function ManagePlaquesForm({
           onChange={(v) => setForm((f) => ({ ...f, location: v }))}
           required
         />
-        <ImageDropZone
-          file={file}
-          existingUrl={existingImageUrl}
-          required={!editingId || !existingImageUrl}
-          disabled={busy}
-          onFileChange={setFile}
-          inputRef={fileInputRef}
-        />
+        <div>
+          <ImageDropZone
+            file={file}
+            existingUrl={existingImageUrl}
+            previewUrl={croppedPreviewUrl}
+            required={!editingId || !existingImageUrl}
+            disabled={busy}
+            onFileChange={setFile}
+            onPick={handlePick}
+            inputRef={fileInputRef}
+          />
+          {rawImageSrc && !editorOpen ? (
+            <button
+              type="button"
+              onClick={() => setEditorOpen(true)}
+              disabled={busy}
+              className="focus-ring tap-target mt-2 px-1 text-xs tracking-wide text-crimson underline underline-offset-4 disabled:opacity-60"
+            >
+              Adjust crop &amp; rotation
+            </button>
+          ) : null}
+        </div>
         <AdminTextArea
           label="Description"
           value={form.description}
@@ -263,6 +317,17 @@ export function ManagePlaquesForm({
           )}
         </ul>
       </div>
+
+      {editorOpen && rawImageSrc ? (
+        <ImageCropEditor
+          imageSrc={rawImageSrc}
+          onCancel={handleEditorCancel}
+          onConfirm={handleEditorConfirm}
+          eyebrow="Component B · Image editor"
+          title="Crop & rotate photograph"
+          hint="Frame the plaque to a 4:3 ratio. Adjustments are applied client-side before upload to plaque-assets."
+        />
+      ) : null}
     </AdminSection>
   );
 }

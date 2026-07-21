@@ -55,6 +55,7 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
             const d = formatEventDate(event.date);
             const paymentUrl = event.payment_url?.trim() ?? "";
             const payReady = paymentUrl.length > 0;
+            const imageUrl = event.image_url?.trim() ?? "";
 
             return (
               <article
@@ -62,6 +63,17 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
                 className="museum-card border border-charcoal/10 bg-white/60 shadow-[var(--shadow-panel)] overflow-hidden"
                 role="listitem"
               >
+                {imageUrl && (
+                  <div className="relative h-48 w-full overflow-hidden border-b border-charcoal/10 bg-charcoal sm:h-64">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={imageUrl}
+                      alt={`${event.title} event image`}
+                      className="h-full w-full object-cover museum-media"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
                 <div className="grid md:grid-cols-12">
                   <div className="md:col-span-3 bg-charcoal text-parchment px-6 py-6 sm:py-8 flex md:flex-col items-center md:items-start justify-between md:justify-center gap-4">
                     <div>

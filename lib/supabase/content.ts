@@ -33,7 +33,7 @@ export async function fetchEvents(): Promise<{
   if (supabase) {
     const { data, error } = await supabase
       .from("events")
-      .select("id, title, description, date, label, payment_url, created_at")
+      .select("id, title, description, date, label, payment_url, image_url, created_at")
       .order("date", { ascending: true });
 
     if (!error && Array.isArray(data)) {

@@ -13,6 +13,7 @@ export const FALLBACK_EVENTS: EventRow[] = [
     date: "2026-09-14T13:00:00.000Z",
     label: "Dedication",
     payment_url: null,
+    image_url: null,
     created_at: "2026-07-01T00:00:00.000Z",
   },
   {
@@ -23,6 +24,7 @@ export const FALLBACK_EVENTS: EventRow[] = [
     date: "2026-10-26T18:00:00.000Z",
     label: "Dinner",
     payment_url: null,
+    image_url: null,
     created_at: "2026-07-01T00:00:00.000Z",
   },
   {
@@ -33,6 +35,7 @@ export const FALLBACK_EVENTS: EventRow[] = [
     date: "2027-01-17T17:30:00.000Z",
     label: "Lore Night",
     payment_url: null,
+    image_url: null,
     created_at: "2026-07-01T00:00:00.000Z",
   },
 ];

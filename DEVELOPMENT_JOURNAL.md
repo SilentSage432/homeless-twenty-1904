@@ -1,5 +1,28 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — Optional event images (crop flow reused)
+
+- `events` gained optional `image_url text` — migration `20260720_events_image_url.sql` (+ added to init schema for fresh installs). Reuses the existing public `plaque-assets` bucket, so no new bucket/RLS.
+- `database.types.ts` events Row/Insert/Update carry `image_url: string | null`; `fetchEvents` selects it; fallback seed events set `image_url: null`.
+- `storage.ts` generalized: internal `uploadImageAsset(file, bucket, prefix)` powers `uploadPlaqueAsset` (`plaque-` prefix) + new `uploadEventAsset` (`event-` prefix); both target `plaque-assets`.
+- **Composition (Rule 5):** `PlaqueImageEditor` generalized → `components/admin/ImageCropEditor.tsx` (props: `aspect`, `eyebrow`, `title`, `hint`). Both managers consume it. `ImageDropZone` gained an optional `label` prop.
+- `ManageEventsForm`: optional image drop zone → crop editor (4:3, zoom/rotate) → cropped preview → upload on submit; "Adjust crop" + "Remove image" controls; roster rows show a thumbnail.
+- Public `EventsBoard`: renders a full-width banner image (`h-48 sm:h-64`, `object-cover`, lazy) atop the card when `image_url` is present; text-only layout unchanged otherwise.
+- Typecheck + lint + production build green.
+
+---
+
+## 2026-07-20 — Plaque Uploader: in-browser crop + rotate
+
+- Added `react-easy-crop` (Cropper UI) + `react-image-file-resizer` (client-side compress/downscale).
+- New `lib/utils/crop-image.ts`: `generateCroppedImage(src, cropAreaPixels, rotation)` → canvas rotate+crop to JPEG blob → Resizer downscale to 1600×1200 @ q82 → returns a `File`. Owns all pixel manipulation; presentation never re-derives it.
+- New `components/admin/PlaqueImageEditor.tsx`: modal over the dashboard with `<Cropper>` (4:3 aspect), zoom slider, rotation slider + 90° buttons, Confirm/Cancel. Renders processing/error state.
+- `ImageDropZone` (AdminUi) extended with optional `onPick` (intercept a freshly picked/dropped file instead of committing) + `previewUrl` (externally controlled cropped preview). Native `required` is dropped when `onPick` is set (the input never holds the final file); JS validation still guards submit.
+- `ManagePlaquesForm` flow: Select/drop → editor opens (raw object URL) → Adjust/rotate/crop → Confirm → cropped `File` becomes `file`, cropped preview shows → **Publish/Update Plaque** uploads the processed File to `plaque-assets`. "Adjust crop & rotation" reopens the editor on the retained raw source. Per-URL cleanup effects revoke object URLs on replace/unmount.
+- Typecheck + lint + production build green (`/admin/dashboard` first-load JS 226 kB).
+
+---
+
 ## 2026-07-20 — Responsive pass II: 7xl wrappers + section titles
 
 - Standardized all main wrappers (header both variants + mobile drawer, hero, about, plaques, events, footer, dashboard) to `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`.

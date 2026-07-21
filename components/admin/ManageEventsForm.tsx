@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -9,13 +9,16 @@ import {
   AdminListItem,
   AdminSection,
   AdminTextArea,
+  ImageDropZone,
 } from "@/components/admin/AdminUi";
+import { ImageCropEditor } from "@/components/admin/ImageCropEditor";
 import {
   createEvent,
   deleteEvent,
   fetchEvents,
   updateEvent,
 } from "@/lib/supabase/content";
+import { uploadEventAsset } from "@/lib/supabase/storage";
 import {
   canManageSensitiveContent,
   type EventRow,
@@ -45,20 +48,71 @@ export function ManageEventsForm({
   const router = useRouter();
   const queryClient = useQueryClient();
   const canSensitive = canManageSensitiveContent(role);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState(EMPTY_EVENT);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Optional image-editing workflow (mirrors the Plaque Uploader).
+  const [file, setFile] = useState<File | null>(null);
+  const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [croppedPreviewUrl, setCroppedPreviewUrl] = useState<string | null>(null);
+
   const eventsQuery = useQuery({
     queryKey: ["events"],
     queryFn: fetchEvents,
   });
 
+  useEffect(() => {
+    if (!rawImageSrc) return;
+    return () => URL.revokeObjectURL(rawImageSrc);
+  }, [rawImageSrc]);
+
+  useEffect(() => {
+    if (!croppedPreviewUrl) return;
+    return () => URL.revokeObjectURL(croppedPreviewUrl);
+  }, [croppedPreviewUrl]);
+
+  function clearImageState() {
+    setFile(null);
+    setEditorOpen(false);
+    setRawImageSrc(null);
+    setCroppedPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
   function resetForm() {
     setForm(EMPTY_EVENT);
     setEditingId(null);
+    setExistingImageUrl(null);
+    clearImageState();
+  }
+
+  function handlePick(picked: File) {
+    setError(null);
+    setRawImageSrc(URL.createObjectURL(picked));
+    setEditorOpen(true);
+  }
+
+  function handleEditorConfirm(cropped: File) {
+    setFile(cropped);
+    setCroppedPreviewUrl(URL.createObjectURL(cropped));
+    setEditorOpen(false);
+  }
+
+  function handleEditorCancel() {
+    setEditorOpen(false);
+  }
+
+  function clearEventImage() {
+    setExistingImageUrl(null);
+    clearImageState();
   }
 
   async function refreshRoster() {
@@ -72,12 +126,24 @@ export function ManageEventsForm({
     setError(null);
     setBusy(true);
 
+    let imageUrl = existingImageUrl;
+    if (file) {
+      const upload = await uploadEventAsset(file);
+      if (!upload.ok) {
+        setBusy(false);
+        setError(upload.message);
+        return;
+      }
+      imageUrl = upload.publicUrl;
+    }
+
     const payload = {
       title: form.title.trim(),
       description: form.description.trim(),
       date: new Date(form.date).toISOString(),
       label: form.label.trim(),
       payment_url: canSensitive ? form.payment_url.trim() || null : null,
+      image_url: imageUrl || null,
     };
 
     // Preserve existing payment_url when a non-sensitive role edits.
@@ -115,6 +181,8 @@ export function ManageEventsForm({
       label: event.label,
       payment_url: canSensitive ? event.payment_url ?? "" : "",
     });
+    setExistingImageUrl(event.image_url || null);
+    clearImageState();
     setNotice(null);
     setError(null);
   }
@@ -143,7 +211,7 @@ export function ManageEventsForm({
     <AdminSection
       eyebrow="Component A"
       title="Events Manager"
-      description="Create gatherings with title, description, date/time, badge label, and an optional payment URL. Submissions write to the live events table. Edit or delete any row from the roster below."
+      description="Create gatherings with title, description, date/time, badge label, an optional image, and an optional payment URL. Submissions write to the live events table. Edit or delete any row from the roster below."
     >
       {(notice || error) && (
         <AdminAlert tone={error ? "error" : "success"}>
@@ -177,6 +245,41 @@ export function ManageEventsForm({
           onChange={(v) => setForm((f) => ({ ...f, label: v }))}
           placeholder="Dinner, Dedication, Lore Night…"
         />
+        <div>
+          <ImageDropZone
+            label="Event image (optional)"
+            file={file}
+            existingUrl={existingImageUrl}
+            previewUrl={croppedPreviewUrl}
+            required={false}
+            disabled={busy}
+            onFileChange={setFile}
+            onPick={handlePick}
+            inputRef={fileInputRef}
+          />
+          <div className="mt-2 flex flex-wrap gap-4">
+            {rawImageSrc && !editorOpen ? (
+              <button
+                type="button"
+                onClick={() => setEditorOpen(true)}
+                disabled={busy}
+                className="focus-ring tap-target px-1 text-xs tracking-wide text-crimson underline underline-offset-4 disabled:opacity-60"
+              >
+                Adjust crop &amp; rotation
+              </button>
+            ) : null}
+            {file || existingImageUrl ? (
+              <button
+                type="button"
+                onClick={clearEventImage}
+                disabled={busy}
+                className="focus-ring tap-target px-1 text-xs tracking-wide text-slate-weathered underline underline-offset-4 hover:text-charcoal disabled:opacity-60"
+              >
+                Remove image
+              </button>
+            ) : null}
+          </div>
+        </div>
         {canSensitive ? (
           <AdminField
             label="Payment URL"
@@ -231,6 +334,7 @@ export function ManageEventsForm({
             <AdminListItem
               key={event.id}
               title={event.title}
+              thumbnailUrl={event.image_url || null}
               meta={`${new Date(event.date).toLocaleString()}${
                 event.label ? ` · ${event.label}` : ""
               }${canSensitive && event.payment_url ? " · Payment live" : ""}`}
@@ -251,6 +355,17 @@ export function ManageEventsForm({
           )}
         </ul>
       </div>
+
+      {editorOpen && rawImageSrc ? (
+        <ImageCropEditor
+          imageSrc={rawImageSrc}
+          onCancel={handleEditorCancel}
+          onConfirm={handleEditorConfirm}
+          eyebrow="Component A · Image editor"
+          title="Crop & rotate event image"
+          hint="Frame the image to a 4:3 ratio. Adjustments are applied client-side before upload."
+        />
+      ) : null}
     </AdminSection>
   );
 }

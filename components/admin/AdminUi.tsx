@@ -241,6 +241,15 @@ type DropZoneProps = {
   disabled?: boolean;
   onFileChange: (file: File | null) => void;
   inputRef: RefObject<HTMLInputElement | null>;
+  /**
+   * When provided, a freshly-picked/dropped file is handed to `onPick`
+   * (e.g. to open a crop editor) instead of being committed directly.
+   */
+  onPick?: (file: File) => void;
+  /** Externally-controlled preview (e.g. the cropped result). */
+  previewUrl?: string | null;
+  /** Field label shown above the drop zone. */
+  label?: string;
 };
 
 export function ImageDropZone({
@@ -250,12 +259,15 @@ export function ImageDropZone({
   disabled,
   onFileChange,
   inputRef,
+  onPick,
+  previewUrl,
+  label = "Plaque photograph",
 }: DropZoneProps) {
   const id = useId();
   const [active, setActive] = useState(false);
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
 
-  // Keep preview in sync when parent resets `file` to null
+  // Keep internal preview in sync when parent resets `file` to null
   useEffect(() => {
     if (!file) {
       setObjectUrl((prev) => {
@@ -276,6 +288,17 @@ export function ImageDropZone({
     [onFileChange]
   );
 
+  const acceptFile = useCallback(
+    (next: File | null) => {
+      if (next && onPick) {
+        onPick(next);
+        return;
+      }
+      assignFile(next);
+    },
+    [assignFile, onPick]
+  );
+
   function onDragOver(e: DragEvent) {
     e.preventDefault();
     if (!disabled) setActive(true);
@@ -292,8 +315,8 @@ export function ImageDropZone({
     if (disabled) return;
     const dropped = e.dataTransfer.files?.[0];
     if (dropped && dropped.type.startsWith("image/")) {
-      assignFile(dropped);
-      if (inputRef.current) {
+      acceptFile(dropped);
+      if (!onPick && inputRef.current) {
         const dt = new DataTransfer();
         dt.items.add(dropped);
         inputRef.current.files = dt.files;
@@ -301,12 +324,13 @@ export function ImageDropZone({
     }
   }
 
-  const preview = objectUrl || (!file ? existingUrl || null : null);
+  const preview =
+    previewUrl || objectUrl || (!file ? existingUrl || null : null);
 
   return (
     <div>
       <label htmlFor={id} className="admin-label">
-        Plaque photograph
+        {label}
         {required ? <span className="text-crimson"> *</span> : null}
       </label>
 
@@ -331,10 +355,10 @@ export function ImageDropZone({
           ref={inputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif,image/heic"
-          required={required}
+          required={onPick ? false : required}
           disabled={disabled}
           className="sr-only"
-          onChange={(e) => assignFile(e.target.files?.[0] ?? null)}
+          onChange={(e) => acceptFile(e.target.files?.[0] ?? null)}
         />
 
         {preview ? (
@@ -374,10 +398,14 @@ export function ImageDropZone({
         </p>
         <p className="mt-1.5 text-xs text-slate-weathered">
           {file
-            ? `${Math.round(file.size / 1024)} KB · click to replace`
-            : existingUrl && !file
+            ? `${Math.round(file.size / 1024)} KB · ${
+                onPick ? "cropped · click to choose another" : "click to replace"
+              }`
+            : previewUrl || (existingUrl && !file)
               ? "Current image kept · drop a new file to replace"
-              : "JPEG, PNG, or WebP · up to 8MB · uploads to plaque-assets"}
+              : onPick
+                ? "JPEG, PNG, or WebP · you'll crop & rotate before saving"
+                : "JPEG, PNG, or WebP · up to 8MB · uploads to plaque-assets"}
         </p>
       </div>
     </div>

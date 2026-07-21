@@ -16,6 +16,8 @@
     "next": "15.5.20",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-easy-crop": "^6.2.2",
+    "react-image-file-resizer": "^0.4.8",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {

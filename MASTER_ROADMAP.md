@@ -14,6 +14,8 @@
 - [x] Admin + developer personnel invites; live event/plaque edit-delete rosters
 - [x] Invite email flow: production redirect + /auth/callback + password activation
 - [x] Responsive & mobile polish pass (320px → wide, 44px touch targets)
+- [x] Plaque Uploader in-browser crop + rotate (react-easy-crop + image resizer, 4:3, client-side blob)
+- [x] Optional event images (shared crop editor, `events.image_url`, admin thumbs + public banner)
 - [x] Typecheck + production build green
 
 ## Near-term

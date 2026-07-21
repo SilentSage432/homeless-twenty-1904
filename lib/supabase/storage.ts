@@ -1,6 +1,9 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export const PLAQUE_ASSETS_BUCKET = "plaque-assets";
+// Event images reuse the existing public plaque-assets bucket (already
+// provisioned with RLS) — a filename prefix keeps them distinguishable.
+export const EVENT_ASSETS_BUCKET = "plaque-assets";
 
 export type UploadResult =
   | { ok: true; publicUrl: string; path: string }
@@ -15,10 +18,14 @@ function sanitizeFileName(name: string): string {
 }
 
 /**
- * Upload a plaque image to the public `plaque-assets` storage bucket
- * and return its public URL for `plaques.image_url`.
+ * Upload an image to a public storage bucket and return its public URL.
+ * Shared by plaque and event uploaders (both target `plaque-assets`).
  */
-export async function uploadPlaqueAsset(file: File): Promise<UploadResult> {
+async function uploadImageAsset(
+  file: File,
+  bucket: string,
+  prefix: string
+): Promise<UploadResult> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) {
     return {
@@ -37,28 +44,36 @@ export async function uploadPlaqueAsset(file: File): Promise<UploadResult> {
     return { ok: false, message: "Image must be 8MB or smaller." };
   }
 
-  const safeName = sanitizeFileName(file.name) || "plaque.jpg";
-  const path = `${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safeName}`;
+  const safeName = sanitizeFileName(file.name) || `${prefix}.jpg`;
+  const path = `${prefix}-${Date.now()}-${crypto
+    .randomUUID()
+    .slice(0, 8)}-${safeName}`;
 
-  const { error } = await supabase.storage
-    .from(PLAQUE_ASSETS_BUCKET)
-    .upload(path, file, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: file.type,
-    });
+  const { error } = await supabase.storage.from(bucket).upload(path, file, {
+    cacheControl: "3600",
+    upsert: false,
+    contentType: file.type,
+  });
 
   if (error) {
     return { ok: false, message: error.message };
   }
 
-  const { data } = supabase.storage
-    .from(PLAQUE_ASSETS_BUCKET)
-    .getPublicUrl(path);
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
 
   if (!data.publicUrl) {
     return { ok: false, message: "Upload succeeded but no public URL was returned." };
   }
 
   return { ok: true, publicUrl: data.publicUrl, path };
+}
+
+/** Upload a plaque image and return its public URL for `plaques.image_url`. */
+export function uploadPlaqueAsset(file: File): Promise<UploadResult> {
+  return uploadImageAsset(file, PLAQUE_ASSETS_BUCKET, "plaque");
+}
+
+/** Upload an event image and return its public URL for `events.image_url`. */
+export function uploadEventAsset(file: File): Promise<UploadResult> {
+  return uploadImageAsset(file, EVENT_ASSETS_BUCKET, "event");
 }

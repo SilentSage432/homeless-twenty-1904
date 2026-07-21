@@ -27,6 +27,7 @@ CREATE TABLE public.events (
   date timestamptz NOT NULL,
   label text NOT NULL DEFAULT '',
   payment_url text,
+  image_url text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 

@@ -41,6 +41,7 @@ export type Database = {
           date: string;
           label: string;
           payment_url: string | null;
+          image_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -50,6 +51,7 @@ export type Database = {
           date: string;
           label?: string;
           payment_url?: string | null;
+          image_url?: string | null;
           created_at?: string;
         };
         Update: {
@@ -59,6 +61,7 @@ export type Database = {
           date?: string;
           label?: string;
           payment_url?: string | null;
+          image_url?: string | null;
           created_at?: string;
         };
         Relationships: [];
