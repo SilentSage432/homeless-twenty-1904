@@ -1,5 +1,16 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-20 — Database & Schema Management Portal (`/admin/database`)
+
+- New protected route `app/admin/database/page.tsx` (noindex) + client shell `components/admin/DatabasePortalShell.tsx`. Gate reuses `requireStaffSession()` (admin/developer; `user`/anon bounced to `/admin`). Responsive nav: `<select>` dropdown on mobile, segmented tab bar on `sm+`, switching **Tables / Storage Assets / SQL Console**. The SQL tab is developer-only (hidden for admins, with a fallback effect if selected).
+- `components/admin/TableExplorer.tsx`: per-table config for `plaques`/`events`/`profiles`. Limit/offset pagination (fetch `PAGE_SIZE+1` to detect "more"), stacked cards showing primary key + title/name + timestamp (`date_placed`/`created_at`/`updated_at`) + key metadata. Plaques & events get a **Quick Edit** modal and **Delete** (browser client, RLS staff writes). **Ownership (Rule 4):** profiles are read-only here — no delete RLS policy and personnel is owned by `StewardManagementPanel`; a note points there.
+- `components/admin/StorageInspector.tsx`: lists `plaque-assets` via the browser Storage API (public read + staff delete RLS), thumbnail grid + human file size + **Delete Asset** (confirm → `remove`). Paginated via `list({ limit, offset })`.
+- `components/admin/SqlConsole.tsx` + `app/api/admin/query/route.ts`: developer-only emergency executor. Route uses `requireDeveloperRequest` (JWT verified server-side) then service-role `rpc('admin_exec_sql', { query })`. Migration `20260720_admin_exec_sql.sql` defines that SECURITY DEFINER function — reads are wrapped/aggregated to JSON rows, writes/DDL report affected count — with EXECUTE revoked from anon/authenticated and granted only to `service_role`, so the browser client can never reach it. UI renders row results as a table and confirms before write/DDL. Added `admin_exec_sql` to `database.types.ts` Functions.
+- Dashboard integration: added a **Database** link beside Sign out in `AdminDashboardShell` header.
+- Typecheck + lint + production build green (`/admin/database` first-load JS ~212 kB; `/api/admin/query` dynamic).
+
+---
+
 ## 2026-07-20 — In-app Contact Lodge modal + Resend API
 
 - New `app/api/contact/route.ts` (POST, node runtime): validates name/email/subject/message (phone optional), honeypot → silent success, sends via `resend` to `RESEND_TARGET_EMAIL` (default `info@thehomelesstwenty1904.org`) with `replyTo` = sender. Friendly 503 when `RESEND_API_KEY` unset; 400/502 for validation/provider errors. HTML is escaped.

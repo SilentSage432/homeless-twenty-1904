@@ -129,6 +129,10 @@ export type Database = {
         Args: Record<string, never>;
         Returns: boolean;
       };
+      admin_exec_sql: {
+        Args: { query: string };
+        Returns: Json;
+      };
     };
     Enums: {
       profile_role: ProfileRole;

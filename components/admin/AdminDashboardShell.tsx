@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { requireStaffSession, signOutSession } from "@/lib/supabase/auth";
 import {
@@ -130,13 +131,21 @@ export function AdminDashboardShell() {
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="focus-ring btn-gold px-5 py-2.5 text-sm self-start sm:self-auto bg-transparent"
-              >
-                Sign out
-              </button>
+              <div className="flex flex-wrap gap-3 self-start sm:self-auto lg:flex-col lg:items-stretch">
+                <Link
+                  href="/admin/database"
+                  className="focus-ring btn-gold px-5 py-2.5 text-sm bg-transparent text-center"
+                >
+                  Database
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="focus-ring btn-gold px-5 py-2.5 text-sm bg-transparent"
+                >
+                  Sign out
+                </button>
+              </div>
             </div>
           </div>
         </header>

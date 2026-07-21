@@ -14,8 +14,15 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 - `/plaques` has a **Grid View | Map View** toggle (`PlaquesExplorer`). Map View = `PlaqueMap.tsx` (vintage-styled Google Map, custom pins, InfoWindow with thumbnail + View Details + Get Directions). Shared modal is `PlaqueLightbox.tsx`; Maps config centralized in `lib/maps.ts`.
 - Contact is an in-app modal (`components/contact/*`), opened anywhere via `useContactModal().open()` or `<ContactButton>`. Header/footer/EventsBoard triggers replaced the old `mailto:`. `POST /api/contact` sends via `resend` (`replyTo` = sender) to `RESEND_TARGET_EMAIL`; honeypot spam trap. Needs `RESEND_API_KEY` + verified `RESEND_FROM_EMAIL`.
 
+**Database Portal** (`/admin/database`, linked from dashboard header)
+- Client gate reuses `requireStaffSession()` (admin/developer). Responsive shell `DatabasePortalShell.tsx`: mobile dropdown + tablet segmented tab bar switching Tables / Storage Assets / SQL Console.
+- `TableExplorer.tsx` — paginated stacked cards for `plaques`/`events`/`profiles` (limit/offset, PAGE_SIZE 10). Plaques & events get Quick Edit modal + Delete via the browser client (RLS staff writes). Profiles are **read-only** here (no delete policy; manage via Personnel panel — single ownership).
+- `StorageInspector.tsx` — lists `plaque-assets` objects via browser Storage API (public read + staff delete RLS), thumbnail grid, file size, Delete Asset.
+- `SqlConsole.tsx` (developer tab only) — posts to `POST /api/admin/query`. Read statements render as a table; write/DDL confirm + report rows affected.
+
 **Server**
 - `POST /api/admin/stewards` → invite; `DELETE /api/admin/stewards` → `auth.admin.deleteUser` (no self-revoke; admins cannot revoke developers)
+- `POST /api/admin/query` → `requireDeveloperRequest` + service-role `rpc('admin_exec_sql')`. Function is SECURITY DEFINER with EXECUTE revoked from anon/authenticated, granted only to `service_role` (migration `20260720_admin_exec_sql.sql`).
 - Storage verify uses `storage.from('plaque-assets').list`
 - Needs `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`
 
@@ -27,6 +34,7 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 5. Apply `supabase/migrations/20260720_location_maps.sql` (location/lat/lng/map_url) to the live DB.
 6. Add `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` to `.env.local` (enable Maps JavaScript API + Places API; restrict by HTTP referrer).
 7. Add `RESEND_API_KEY` + verify a sending domain in Resend; set `RESEND_FROM_EMAIL`/`RESEND_TARGET_EMAIL` (contact form).
+8. Apply `supabase/migrations/20260720_admin_exec_sql.sql` to enable the developer SQL Console (`/admin/database`).
 
 ## Do not
 - Do not put the service role key in `NEXT_PUBLIC_*`.

@@ -29,6 +29,7 @@ Infrastructure (Supabase client, Next.js, Tailwind)
 | Location + maps | `components/admin/LocationAutocompleteField.tsx` (Places Autocomplete + preview) → `events`/`plaques` `latitude`/`longitude`/`map_url`; public nav via `buildMapUrl()` in `lib/utils.ts`. Shared Maps config in `lib/maps.ts`. Needs `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`. |
 | Plaque discovery map | `components/plaques/PlaqueMap.tsx` + `PlaquesExplorer.tsx` (Grid/Map toggle); shared detail modal `PlaqueLightbox.tsx` |
 | Contact lodge | `components/contact/*` (modal + `ContactModalProvider` + `ContactButton`) → `POST /api/contact` (Resend). Needs `RESEND_API_KEY`. |
+| Database portal | `app/admin/database/page.tsx` + `DatabasePortalShell.tsx` (Tables / Storage / SQL tabs). `TableExplorer.tsx` (RLS reads/writes; profiles read-only), `StorageInspector.tsx` (`plaque-assets`), `SqlConsole.tsx` → `POST /api/admin/query` (developer-only) → service-role `rpc('admin_exec_sql')` (`supabase/migrations/20260720_admin_exec_sql.sql`). |
 | System telemetry | `components/admin/SystemOverridesPanel.tsx` |
 | Schema + RLS + storage | `supabase/migrations/*` |
 | Typed DB contracts | `lib/supabase/database.types.ts` |
@@ -47,5 +48,5 @@ Admin mutations require a live Supabase session whose `profiles.role` is `admin`
 
 `/admin` → email/password Auth → `profiles.role` RBAC check → CRUD via RLS (`can_manage_content()`) on `events` and `plaques`.
 
-- `admin` surface: Event Manager + Plaque Uploader + Personnel (assign admin|user only)
-- `developer` surface: control-deck telemetry + content managers + Personnel (any role)
+- `admin` surface: Event Manager + Plaque Uploader + Personnel (assign admin|user only) + Database portal (Tables + Storage)
+- `developer` surface: control-deck telemetry + content managers + Personnel (any role) + Database portal (Tables + Storage + SQL Console)
