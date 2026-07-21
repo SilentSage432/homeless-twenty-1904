@@ -1,5 +1,15 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-21 — Canonical admin toggle switch (alignment fix + ownership)
+
+- **Single ownership (Rule 4):** promoted the ad-hoc `Toggle` that lived inside `SiteSettingsManager` into a canonical `AdminToggle` primitive in `components/admin/AdminUi.tsx` (beside `AdminField`/`AdminSelect`/`AdminTextArea`). `SiteSettingsManager` now composes it (Rule 5) for all four switches (banner enable + 3 feature flags); the local component was deleted so there is exactly one toggle owner for every future admin surface.
+- **Vertical centering fix:** the switch knob previously used a hardcoded `top-0.5` with `translate-x-0.5`/`translate-x-5`, which drifted off-center. New track is `relative inline-flex h-6 w-11 shrink-0 items-center rounded-full`; the knob is `absolute left-0.5 top-1/2 h-5 w-5 -translate-y-1/2` and moves horizontally only (`translate-x-0` ↔ `translate-x-5`), so the thumb is perfectly centered in both ON and OFF states (Tailwind composes `--tw-translate-x`/`--tw-translate-y` into one transform).
+- **Motion + a11y polish:** `transition-colors`/`transition-transform` now carry `duration-200 ease-in-out`; added a subtle knob `shadow-sm`. `AdminToggle` keeps `role="switch"` + `aria-checked`, associates the `<label htmlFor>` with the button `id` (via `useId`), and supports optional `hint` and `disabled` props.
+- **Site-wide audit:** confirmed this is the *only* true toggle-switch UI in the codebase. The FAQ "publish", document visibility, and inquiry status controls are text/action buttons and `<select>`s (not switches), so no other switch markup needed alignment changes.
+- Typecheck + lint + production build green.
+
+---
+
 ## 2026-07-21 — Platform resilience & performance upgrades
 
 - **Instant on-demand revalidation**: new staff-gated `POST /api/admin/revalidate` (Node runtime, `requireStaffRequest`, path allowlist `/ · /about · /plaques · /events`) calls `revalidatePath`. Client helper `requestRevalidate()` in `staff-api.ts` (best-effort, never throws) is fired after every CMS save — `SiteSettingsManager` (banner/lodge/flags), `ContentManager` hero + section + FAQ mutations — so public pages update immediately instead of waiting on the 30s ISR window.

@@ -22,7 +22,7 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 
 **CMS & Operational Control Suite** (`/admin` nav via `AdminNav`)
 - Tables (migration `20260721_site_settings_and_cms.sql`): `site_settings` (singleton `global`: `announcement_banner`/`lodge_info`/`hero_config`/`feature_flags` jsonb), `site_content_sections` (seeded `about-lore`, `president-message`), `faqs`, `inquiries`, `public_documents` + public `lodge-documents` bucket. All reads/writes via `lib/supabase/cms.ts`.
-- `/admin/settings` (`SiteSettingsManager`): announcement banner (with live preview), lodge info, feature-flag toggles.
+- `/admin/settings` (`SiteSettingsManager`): announcement banner (with live preview), lodge info, feature-flag toggles. All switches use the canonical `AdminToggle` (in `components/admin/AdminUi.tsx`) — `role="switch"`, vertically-centered knob (`inline-flex items-center` track + `top-1/2 -translate-y-1/2` knob, `duration-200 ease-in-out`), optional `hint`/`disabled`. **Use `AdminToggle` for any new on/off control — it is the single toggle owner.**
 - `/admin/inquiries` (`InquiryInbox`): triage new/replied/archived, edit internal notes.
 - `/admin/content` (`ContentManager`): Hero Manager, Section Editor (HTML), FAQ Manager (add/edit/publish/reorder/delete).
 - `/admin/documents` (`DocumentManager`): upload to `lodge-documents`, list/remove.

@@ -70,6 +70,56 @@ export function AdminAlert({
   );
 }
 
+export function AdminToggle({
+  label,
+  checked,
+  onChange,
+  hint,
+  disabled,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  hint?: string;
+  disabled?: boolean;
+}) {
+  const id = useId();
+  return (
+    <label
+      htmlFor={id}
+      className={`flex items-center justify-between gap-4 border border-charcoal/15 bg-white/70 px-4 py-3 ${
+        disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+      }`}
+    >
+      <span className="min-w-0">
+        <span className="block font-body text-sm text-charcoal">{label}</span>
+        {hint ? (
+          <span className="mt-0.5 block text-xs text-slate-weathered/90">
+            {hint}
+          </span>
+        ) : null}
+      </span>
+      <button
+        id={id}
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        onClick={() => onChange(!checked)}
+        className={`focus-ring relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
+          checked ? "bg-crimson" : "bg-charcoal/25"
+        }`}
+      >
+        <span
+          className={`absolute left-0.5 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-parchment shadow-sm transition-transform duration-200 ease-in-out ${
+            checked ? "translate-x-5" : "translate-x-0"
+          }`}
+        />
+      </button>
+    </label>
+  );
+}
+
 export function AdminField({
   label,
   value,

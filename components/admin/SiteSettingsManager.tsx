@@ -7,6 +7,7 @@ import {
   AdminSection,
   AdminSelect,
   AdminTextArea,
+  AdminToggle,
 } from "@/components/admin/AdminUi";
 import { AnnouncementBannerView } from "@/components/AnnouncementBanner";
 import { getSessionUserId } from "@/lib/supabase/auth";
@@ -28,37 +29,6 @@ const BANNER_TYPES: { value: AnnouncementType; label: string }[] = [
   { value: "alert", label: "Alert — crimson" },
   { value: "event", label: "Event — gold" },
 ];
-
-function Toggle({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <label className="flex cursor-pointer items-center justify-between gap-4 border border-charcoal/15 bg-white/70 px-4 py-3">
-      <span className="font-body text-sm text-charcoal">{label}</span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={`focus-ring relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-          checked ? "bg-crimson" : "bg-charcoal/25"
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 h-5 w-5 rounded-full bg-parchment transition-transform ${
-            checked ? "translate-x-5" : "translate-x-0.5"
-          }`}
-        />
-      </button>
-    </label>
-  );
-}
 
 export function SiteSettingsManager() {
   const [banner, setBanner] = useState<AnnouncementBanner>(
@@ -123,7 +93,7 @@ export function SiteSettingsManager() {
         deck
       >
         <div className="space-y-4">
-          <Toggle
+          <AdminToggle
             label="Show announcement banner on the public site"
             checked={banner.enabled}
             onChange={(v) => setBanner((b) => ({ ...b, enabled: v }))}
@@ -223,17 +193,17 @@ export function SiteSettingsManager() {
         deck
       >
         <div className="space-y-3">
-          <Toggle
+          <AdminToggle
             label="Allow inquiries (Contact the Lodge form)"
             checked={flags.allow_inquiries}
             onChange={(v) => setFlags((f) => ({ ...f, allow_inquiries: v }))}
           />
-          <Toggle
+          <AdminToggle
             label="Allow event RSVPs / pre-pay prompts"
             checked={flags.allow_rsvps}
             onChange={(v) => setFlags((f) => ({ ...f, allow_rsvps: v }))}
           />
-          <Toggle
+          <AdminToggle
             label="Show interactive plaque map"
             checked={flags.show_interactive_map}
             onChange={(v) => setFlags((f) => ({ ...f, show_interactive_map: v }))}
