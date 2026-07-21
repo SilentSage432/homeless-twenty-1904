@@ -30,6 +30,8 @@ Infrastructure (Supabase client, Next.js, Tailwind)
 | Plaque discovery map | `components/plaques/PlaqueMap.tsx` + `PlaquesExplorer.tsx` (Grid/Map toggle); shared detail modal `PlaqueLightbox.tsx` |
 | Contact lodge | `components/contact/*` (modal + `ContactModalProvider` + `ContactButton`) → `POST /api/contact` (Resend). Needs `RESEND_API_KEY`. |
 | Database portal | `app/admin/database/page.tsx` + `DatabasePortalShell.tsx` (Tables / Storage / SQL tabs). `TableExplorer.tsx` (RLS reads/writes; profiles read-only), `StorageInspector.tsx` (`plaque-assets`), `SqlConsole.tsx` → `POST /api/admin/query` (developer-only) → service-role `rpc('admin_exec_sql')` (`supabase/migrations/20260720_admin_exec_sql.sql`). |
+| CMS suite | `AdminNav.tsx` + `AdminPageShell.tsx` gate `/admin/{settings,inquiries,content,documents}`. Managers: `SiteSettingsManager`, `InquiryInbox`, `ContentManager` (hero/sections/FAQs), `DocumentManager`. Data access in `lib/supabase/cms.ts`; schema `supabase/migrations/20260721_site_settings_and_cms.sql`. |
+| Public CMS output | `AnnouncementBanner.tsx` (layout top, dismissible), `FaqAccordion.tsx`, `DocumentDownloadList.tsx`; `HeroSection`/`AboutSection` consume `hero_config`/`about-lore` (ISR `revalidate=30`). Feature flags gate contact + plaque map. |
 | System telemetry | `components/admin/SystemOverridesPanel.tsx` |
 | Schema + RLS + storage | `supabase/migrations/*` |
 | Typed DB contracts | `lib/supabase/database.types.ts` |

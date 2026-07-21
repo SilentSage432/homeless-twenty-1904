@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
@@ -61,8 +62,46 @@ export async function POST(request: Request) {
     );
   }
 
+  // Persist to the inquiries inbox and honor the allow_inquiries flag using the
+  // service-role client (bypasses RLS; never shipped to the browser).
+  const admin = getSupabaseAdminClient();
+  let persisted = false;
+
+  if (admin) {
+    const { data: settings } = await admin
+      .from("site_settings")
+      .select("feature_flags")
+      .eq("id", "global")
+      .maybeSingle();
+
+    if (settings?.feature_flags?.allow_inquiries === false) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "The lodge is not accepting inquiries through the site right now. Please try again later.",
+        },
+        { status: 403 }
+      );
+    }
+
+    const { error: insertError } = await admin.from("inquiries").insert({
+      name,
+      email,
+      phone: phone || null,
+      subject,
+      message,
+      status: "new",
+    });
+    persisted = !insertError;
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
+    // Message is safe in the inbox even without email delivery configured.
+    if (persisted) {
+      return NextResponse.json({ ok: true });
+    }
     return NextResponse.json(
       {
         ok: false,
@@ -114,6 +153,10 @@ export async function POST(request: Request) {
   });
 
   if (error) {
+    // Delivery failed, but the inquiry is preserved in the inbox.
+    if (persisted) {
+      return NextResponse.json({ ok: true });
+    }
     return NextResponse.json(
       { ok: false, error: "We couldn't send your message. Please try again." },
       { status: 502 }

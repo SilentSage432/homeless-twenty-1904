@@ -1,13 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlaquesGallery } from "@/components/plaques/PlaquesGallery";
 import { PlaqueMap } from "@/components/plaques/PlaqueMap";
+import { fetchFeatureFlags } from "@/lib/supabase/cms";
 
 type View = "grid" | "map";
 
 export function PlaquesExplorer() {
   const [view, setView] = useState<View>("grid");
+  const [showMap, setShowMap] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchFeatureFlags().then((flags) => {
+      if (cancelled) return;
+      setShowMap(flags.show_interactive_map);
+      if (!flags.show_interactive_map) setView("grid");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <section
@@ -35,24 +49,26 @@ export function PlaquesExplorer() {
           </p>
         </div>
 
-        <div
-          className="mx-auto mb-10 flex w-full max-w-xs items-center rounded-sm border border-charcoal/20 bg-parchment p-1"
-          role="tablist"
-          aria-label="Plaque view"
-        >
-          <ViewTab
-            active={view === "grid"}
-            onClick={() => setView("grid")}
-            label="Grid View"
-          />
-          <ViewTab
-            active={view === "map"}
-            onClick={() => setView("map")}
-            label="Map View"
-          />
-        </div>
+        {showMap ? (
+          <div
+            className="mx-auto mb-10 flex w-full max-w-xs items-center rounded-sm border border-charcoal/20 bg-parchment p-1"
+            role="tablist"
+            aria-label="Plaque view"
+          >
+            <ViewTab
+              active={view === "grid"}
+              onClick={() => setView("grid")}
+              label="Grid View"
+            />
+            <ViewTab
+              active={view === "map"}
+              onClick={() => setView("map")}
+              label="Map View"
+            />
+          </div>
+        ) : null}
 
-        {view === "grid" ? <PlaquesGallery bare /> : <PlaqueMap />}
+        {showMap && view === "map" ? <PlaqueMap /> : <PlaquesGallery bare />}
       </div>
     </section>
   );

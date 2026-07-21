@@ -10,6 +10,7 @@ import {
   type ProfileRole,
 } from "@/lib/supabase/database.types";
 import { AdminSection } from "@/components/admin/AdminUi";
+import { AdminNav } from "@/components/admin/AdminNav";
 import { TableExplorer } from "@/components/admin/TableExplorer";
 import { StorageInspector } from "@/components/admin/StorageInspector";
 import { SqlConsole } from "@/components/admin/SqlConsole";
@@ -162,6 +163,8 @@ export function DatabasePortalShell() {
             </Link>
           </div>
         </header>
+
+        <AdminNav />
 
         {/* Mobile: dropdown navigation */}
         <div className="mb-6 sm:hidden">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { requireStaffSession, signOutSession } from "@/lib/supabase/auth";
 import {
@@ -9,6 +8,7 @@ import {
   type Profile,
   type ProfileRole,
 } from "@/lib/supabase/database.types";
+import { AdminNav } from "@/components/admin/AdminNav";
 import { ManageEventsForm } from "@/components/admin/ManageEventsForm";
 import { ManagePlaquesForm } from "@/components/admin/ManagePlaquesForm";
 import { SystemOverridesPanel } from "@/components/admin/SystemOverridesPanel";
@@ -131,24 +131,18 @@ export function AdminDashboardShell() {
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-3 self-start sm:self-auto lg:flex-col lg:items-stretch">
-                <Link
-                  href="/admin/database"
-                  className="focus-ring btn-gold px-5 py-2.5 text-sm bg-transparent text-center"
-                >
-                  Database
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="focus-ring btn-gold px-5 py-2.5 text-sm bg-transparent"
-                >
-                  Sign out
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="focus-ring btn-gold px-5 py-2.5 text-sm self-start sm:self-auto bg-transparent"
+              >
+                Sign out
+              </button>
             </div>
           </div>
         </header>
+
+        <AdminNav />
 
         {showDeveloperCockpit && (
           <div className="mb-10 space-y-8">

@@ -1,13 +1,37 @@
 import Link from "next/link";
 import { HeroGraphicFrame } from "@/components/hero/HeroGraphicFrame";
+import { fetchSiteSettings, DEFAULT_HERO } from "@/lib/supabase/cms";
 
-export function HeroSection() {
+export async function HeroSection() {
+  const settings = await fetchSiteSettings().catch(() => null);
+  const hero = settings?.hero_config ?? DEFAULT_HERO;
+
+  const title =
+    hero.title.trim() ||
+    "Guardians of Western Heritage across Southern & Eastern Idaho";
+  const subtitle =
+    hero.subtitle.trim() ||
+    "Preserving the rugged frontier history of the Magic Valley — one plaque, one gathering, one story at a time.";
+  const buttonText = hero.button_text.trim() || "View Upcoming Events";
+  const buttonLink = hero.button_link.trim() || "/#events";
+
   return (
     <section
       id="top"
       className="hero-asymmetric relative flex min-h-[100svh] scroll-mt-20 items-center overflow-hidden bg-[#0a0a0a] pt-20"
       aria-labelledby="hero-brand"
     >
+      {hero.bg_image_url.trim() ? (
+        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={hero.bg_image_url}
+            alt=""
+            className="h-full w-full object-cover opacity-40"
+          />
+        </div>
+      ) : null}
+
       {/* Matte field + ambient crimson/bronze glow toward the artifact column */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -35,7 +59,7 @@ export function HeroSection() {
               id="hero-brand"
               className="font-display text-parchment text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold leading-[1.2] tracking-wide max-w-xl mx-auto md:mx-0"
             >
-              Guardians of Western Heritage across Southern &amp; Eastern Idaho
+              {title}
             </h1>
 
             <div
@@ -44,16 +68,15 @@ export function HeroSection() {
             />
 
             <p className="font-body text-parchment/75 text-base sm:text-lg leading-[1.85] tracking-wide max-w-md mx-auto md:mx-0 mb-10">
-              Preserving the rugged frontier history of the Magic Valley — one
-              plaque, one gathering, one story at a time.
+              {subtitle}
             </p>
 
             <div className="flex justify-center md:justify-start">
               <Link
-                href="/#events"
+                href={buttonLink}
                 className="focus-ring btn-primary inline-flex w-fit items-center gap-2 px-7 sm:px-8 py-3.5 text-base sm:text-lg tracking-wide"
               >
-                View Upcoming Events
+                {buttonText}
                 <svg
                   className="h-5 w-5"
                   fill="none"

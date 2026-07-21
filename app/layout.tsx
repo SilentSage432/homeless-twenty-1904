@@ -3,6 +3,7 @@ import { Merriweather, Playfair_Display, Rye } from "next/font/google";
 import { Providers } from "@/app/providers";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import "./globals.css";
 
 const display = Playfair_Display({
@@ -87,8 +88,13 @@ export default function RootLayout({
           >
             Skip to main content
           </a>
+          <AnnouncementBanner />
           <SiteHeader />
-          <main id="main" className="min-h-[70vh] overflow-x-hidden">
+          <main
+            id="main"
+            className="min-h-[70vh] overflow-x-hidden"
+            style={{ paddingTop: "var(--ann-height, 0px)" }}
+          >
             {children}
           </main>
           <SiteFooter />

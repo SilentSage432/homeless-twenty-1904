@@ -3,6 +3,9 @@ import { AboutSection } from "@/components/about/AboutSection";
 import { PlaquesGallery } from "@/components/plaques/PlaquesGallery";
 import { EventsBoard } from "@/components/events/EventsBoard";
 
+// Revalidate so CMS-managed hero/about copy refreshes without a redeploy.
+export const revalidate = 30;
+
 export default function HomePage() {
   return (
     <>

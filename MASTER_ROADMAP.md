@@ -20,12 +20,14 @@
 - [x] Interactive Plaque Discovery Map (`/plaques` Grid|Map toggle, custom pins, InfoWindow, directions)
 - [x] In-app Contact Lodge modal + `/api/contact` (Resend, honeypot, reply-to) — replaces mailto links
 - [x] Database & Schema Portal (`/admin/database`): mobile-first Tables / Storage Assets / SQL Console (developer-gated `/api/admin/query`)
+- [x] CMS & Operational Control Suite: Site Settings/banner, Inquiry Inbox, Content & FAQ editor, Public Documents; public announcement banner + FAQ/documents; feature flags
 - [x] Typecheck + production build green
 
 ## Near-term
 - [ ] Wire live Supabase project + role elevation + run SQL migrations
 - [ ] Add `SUPABASE_SERVICE_ROLE_KEY` for steward invites / storage setup
 - [ ] Apply `supabase/migrations/20260720_admin_exec_sql.sql` (developer SQL console) to the live DB
+- [ ] Apply `supabase/migrations/20260721_site_settings_and_cms.sql` (CMS suite + lodge-documents bucket) to the live DB
 - [ ] Final hero-oval historic photograph drop-in
 - [ ] Authentic plaque photography via dashboard uploads
 - [ ] Stripe Payment Links on events

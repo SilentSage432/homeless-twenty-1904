@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { fetchSection } from "@/lib/supabase/cms";
 
 const PILLARS = [
   {
@@ -15,7 +16,11 @@ const PILLARS = [
   },
 ] as const;
 
-export function AboutSection() {
+export async function AboutSection() {
+  const lore = await fetchSection("about-lore").catch(() => null);
+  const heading = lore?.title?.trim() || "Guardians of Magic Valley Lore";
+  const loreHtml = lore?.content?.trim() || null;
+
   return (
     <section
       id="about"
@@ -36,7 +41,7 @@ export function AboutSection() {
               id="about-heading"
               className="font-display text-charcoal text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight mb-6"
             >
-              Guardians of Magic Valley Lore
+              {heading}
             </h2>
             <div className="h-px w-16 bg-gold mb-8" aria-hidden="true" />
             <figure className="relative">
@@ -57,18 +62,29 @@ export function AboutSection() {
           </div>
 
           <div className="lg:col-span-7">
-            <p className="drop-cap font-body text-lg sm:text-[1.125rem] leading-[1.85] text-parchment-ink/90 mb-6">
-              Homeless Twenty 1904 is a historical society interested in raising
-              awareness of western heritage in Southern and Eastern Idaho. We
-              focus heavily on preserving Eastern Idaho and Magic Valley history
-              through community engagement, events, and the physical placement of
-              historical markers and plaques that honor our region&apos;s rich past.
-            </p>
-            <p className="font-body text-lg leading-[1.85] text-parchment-ink/85 mb-10">
-              We gather as neighbors and keepers of memory — educators, outdoor
-              wanderers, long-time locals, and anyone who believes a plaque on a
-              quiet roadside can outlast a generation of forgetting.
-            </p>
+            {loreHtml ? (
+              <div
+                className="cms-prose font-body text-lg leading-[1.85] text-parchment-ink/90 mb-10 space-y-6"
+                dangerouslySetInnerHTML={{ __html: loreHtml }}
+              />
+            ) : (
+              <>
+                <p className="drop-cap font-body text-lg sm:text-[1.125rem] leading-[1.85] text-parchment-ink/90 mb-6">
+                  Homeless Twenty 1904 is a historical society interested in
+                  raising awareness of western heritage in Southern and Eastern
+                  Idaho. We focus heavily on preserving Eastern Idaho and Magic
+                  Valley history through community engagement, events, and the
+                  physical placement of historical markers and plaques that honor
+                  our region&apos;s rich past.
+                </p>
+                <p className="font-body text-lg leading-[1.85] text-parchment-ink/85 mb-10">
+                  We gather as neighbors and keepers of memory — educators,
+                  outdoor wanderers, long-time locals, and anyone who believes a
+                  plaque on a quiet roadside can outlast a generation of
+                  forgetting.
+                </p>
+              </>
+            )}
 
             <ul className="space-y-6 border-l-2 border-crimson/30 pl-6" role="list">
               {PILLARS.map((pillar) => (

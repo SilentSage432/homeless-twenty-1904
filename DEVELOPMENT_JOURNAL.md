@@ -1,5 +1,20 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-21 — CMS & Operational Control Suite
+
+- **Schema** (`20260721_site_settings_and_cms.sql`): `site_settings` (singleton `global` row with `announcement_banner` / `lodge_info` / `hero_config` / `feature_flags` jsonb), `site_content_sections` (slug-keyed HTML blocks, seeded `about-lore` + `president-message`), `faqs`, `inquiries`, `public_documents`, plus a public `lodge-documents` storage bucket. RLS: public read for settings/sections/documents + published faqs; staff (admin/developer) full write; inquiries staff-only (public submissions persist via the service-role contact route). Hero/about defaults seeded to current copy so nothing changes until edited.
+- **Types + data access**: `database.types.ts` gained the 5 tables + config interfaces (`AnnouncementBanner`, `LodgeInfo`, `HeroConfig`, `FeatureFlags`, `InquiryStatus`). New `lib/supabase/cms.ts` owns all reads/writes (settings, sections, faqs, inquiries, documents) + `uploadDocumentFile` and default/merge helpers.
+- **Admin**: shared `AdminNav` (📢 Settings · 📥 Inquiries · 📝 Content · 📄 Documents · 🗄️ Database · 🏛️ Dashboard) added to every admin shell. New `AdminPageShell` (client gate reusing `requireStaffSession`, optional `requireDeveloper`) wraps four new pages:
+  - `/admin/settings` — `SiteSettingsManager`: banner + lodge info + feature-flag toggles with a **live banner preview** (shares `AnnouncementBannerView`).
+  - `/admin/inquiries` — `InquiryInbox`: filterable table (new/replied/archived), Mark Replied, Archive/Restore, editable internal notes.
+  - `/admin/content` — `ContentManager`: Hero Manager, Section Editor (HTML), FAQ Manager (add/edit/publish/reorder/delete).
+  - `/admin/documents` — `DocumentManager`: upload to `lodge-documents` + title/category, list + remove.
+- **Public**: `AnnouncementBanner` (fixed, dismissible per session, publishes `--ann-height` so the fixed header + `main` offset cleanly; hidden on `/admin`) rendered at the top of `layout.tsx`. `FaqAccordion` + `DocumentDownloadList` surfaced on `/about` (+ optional `president-message` block). `HeroSection` and `AboutSection` are now async and consume `hero_config` / `about-lore` with exact-copy fallbacks; `/` and `/about` use `revalidate = 30` (ISR) so edits appear without a redeploy.
+- **Feature flags wired**: `/api/contact` now persists every submission to `inquiries` via the service-role client and rejects with a friendly 403 when `allow_inquiries` is off (message still saved if email is unconfigured). `PlaquesExplorer` hides the Map toggle when `show_interactive_map` is off. `allow_rsvps` is stored/editable.
+- Typecheck + lint + production build green (20 routes; 4 new admin pages ~211 kB first load).
+
+---
+
 ## 2026-07-20 — SQL Console UX upgrade
 
 - `SqlConsole.tsx`: client-side `sanitizeQuery()` trims and strips trailing semicolons before POST, so Postgres subquery wrapping in `admin_exec_sql` never hits a syntax error.

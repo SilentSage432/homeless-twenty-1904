@@ -64,8 +64,9 @@ export function SiteHeader() {
 
   return (
     <header
+      style={{ top: "var(--ann-height, 0px)" }}
       className={cn(
-        "fixed top-0 inset-x-0 z-50 transition-shadow duration-300",
+        "fixed inset-x-0 z-50 transition-shadow duration-300",
         scrolled
           ? "bg-charcoal/95 shadow-[var(--shadow-lift)] backdrop-blur-sm"
           : "bg-charcoal"

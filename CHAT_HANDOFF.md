@@ -20,8 +20,18 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 - `StorageInspector.tsx` — lists `plaque-assets` objects via browser Storage API (public read + staff delete RLS), thumbnail grid, file size, Delete Asset.
 - `SqlConsole.tsx` (developer tab only) — posts to `POST /api/admin/query`. Client sanitizes (trim + strip trailing `;`) before send. Run button shows a spinner + "Running…" and disables to block double-submits. Reads render in a scrollable data table headed "Results (N rows)"; write/DDL confirm → prominent green success banner + input cleared; errors surface in a red left-bordered banner with the exact Postgres message.
 
+**CMS & Operational Control Suite** (`/admin` nav via `AdminNav`)
+- Tables (migration `20260721_site_settings_and_cms.sql`): `site_settings` (singleton `global`: `announcement_banner`/`lodge_info`/`hero_config`/`feature_flags` jsonb), `site_content_sections` (seeded `about-lore`, `president-message`), `faqs`, `inquiries`, `public_documents` + public `lodge-documents` bucket. All reads/writes via `lib/supabase/cms.ts`.
+- `/admin/settings` (`SiteSettingsManager`): announcement banner (with live preview), lodge info, feature-flag toggles.
+- `/admin/inquiries` (`InquiryInbox`): triage new/replied/archived, edit internal notes.
+- `/admin/content` (`ContentManager`): Hero Manager, Section Editor (HTML), FAQ Manager (add/edit/publish/reorder/delete).
+- `/admin/documents` (`DocumentManager`): upload to `lodge-documents`, list/remove.
+- Public: `AnnouncementBanner` (top of layout, dismissible per session, `--ann-height` offsets header/main; hidden on `/admin`); `FaqAccordion` + `DocumentDownloadList` + optional `president-message` on `/about`. `HeroSection`/`AboutSection` read `hero_config`/`about-lore` (async, `revalidate=30` on `/` + `/about`).
+- Feature flags: `allow_inquiries` gates `/api/contact` (persists to `inquiries` via service role; friendly 403 when off); `show_interactive_map` hides the `/plaques` map toggle; `allow_rsvps` stored.
+
 **Server**
 - `POST /api/admin/stewards` → invite; `DELETE /api/admin/stewards` → `auth.admin.deleteUser` (no self-revoke; admins cannot revoke developers)
+- `POST /api/contact` → persists inquiry (service role) + emails via Resend; honors `allow_inquiries`
 - `POST /api/admin/query` → `requireDeveloperRequest` + service-role `rpc('admin_exec_sql')`. Function is SECURITY DEFINER with EXECUTE revoked from anon/authenticated, granted only to `service_role` (migration `20260720_admin_exec_sql.sql`).
 - Storage verify uses `storage.from('plaque-assets').list`
 - Needs `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`
@@ -35,6 +45,7 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 6. Add `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` to `.env.local` (enable Maps JavaScript API + Places API; restrict by HTTP referrer).
 7. Add `RESEND_API_KEY` + verify a sending domain in Resend; set `RESEND_FROM_EMAIL`/`RESEND_TARGET_EMAIL` (contact form).
 8. Apply `supabase/migrations/20260720_admin_exec_sql.sql` to enable the developer SQL Console (`/admin/database`).
+9. Apply `supabase/migrations/20260721_site_settings_and_cms.sql` to enable the CMS suite (site_settings/sections/faqs/inquiries/documents + `lodge-documents` bucket).
 
 ## Do not
 - Do not put the service role key in `NEXT_PUBLIC_*`.
