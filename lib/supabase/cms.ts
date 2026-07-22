@@ -18,14 +18,14 @@ import type {
 export const SITE_SETTINGS_ID = "global";
 export const LODGE_DOCUMENTS_BUCKET = "lodge-documents";
 
-export const DEFAULT_ANNOUNCEMENT: AnnouncementBanner = {
+const DEFAULT_ANNOUNCEMENT: AnnouncementBanner = {
   enabled: false,
   message: "",
   link_url: "",
   type: "info",
 };
 
-export const DEFAULT_LODGE_INFO: LodgeInfo = {
+const DEFAULT_LODGE_INFO: LodgeInfo = {
   phone: "",
   address: "",
   hours: "",
@@ -42,7 +42,7 @@ export const DEFAULT_HERO: HeroConfig = {
   bg_image_url: "",
 };
 
-export const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
+const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
   allow_inquiries: true,
   allow_rsvps: true,
   show_interactive_map: true,

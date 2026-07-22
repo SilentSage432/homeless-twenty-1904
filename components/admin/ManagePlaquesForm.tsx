@@ -162,8 +162,8 @@ export function ManagePlaquesForm({
     resetForm();
     setNotice(
       editingId
-        ? "Plaque updated. Gallery will refresh with the new image URL."
-        : "Plaque created. Image stored in plaque-assets and linked on image_url."
+        ? "Plaque updated on the public gallery."
+        : "Plaque published. It now appears in the public gallery."
     );
     await refreshRoster();
   }
@@ -186,7 +186,13 @@ export function ManagePlaquesForm({
 
   async function handleDelete(id: string) {
     if (!canSensitive) return;
-    if (!confirm("Delete this plaque permanently? This cannot be undone.")) {
+    const plaque = plaques.find((p) => p.id === id);
+    const title = plaque?.title?.trim() || "this plaque";
+    if (
+      !confirm(
+        `Delete the plaque “${title}”?\n\nIt will disappear from the public gallery. This cannot be undone.`
+      )
+    ) {
       return;
     }
     setBusy(true);
@@ -206,9 +212,9 @@ export function ManagePlaquesForm({
 
   return (
     <AdminSection
-      eyebrow="Component B"
+      eyebrow="Public · Plaques"
       title="Plaque Uploader"
-      description="Drag and drop physical plaque photography into the secure plaque-assets storage bucket. The resolved public URL is written to plaques.image_url. Edit or delete any row from the live roster below."
+      description="Add plaque photos and details for the public gallery. Edit or remove plaques from the list below."
     >
       {(notice || error) && (
         <AdminAlert tone={error ? "error" : "success"}>
@@ -278,7 +284,7 @@ export function ManagePlaquesForm({
           >
             {busy
               ? file
-                ? "Uploading to plaque-assets…"
+                ? "Uploading photo…"
                 : "Saving…"
               : editingId
                 ? "Update Plaque"
@@ -347,7 +353,7 @@ export function ManagePlaquesForm({
           onConfirm={handleEditorConfirm}
           eyebrow="Component B · Image editor"
           title="Crop & rotate photograph"
-          hint="Frame the plaque to a 4:3 ratio. Adjustments are applied client-side before upload to plaque-assets."
+          hint="You'll crop and rotate here before the photo is uploaded."
         />
       ) : null}
     </AdminSection>

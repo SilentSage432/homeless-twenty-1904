@@ -8,7 +8,6 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   isDeveloperRole,
   type Profile,
-  type ProfileRole,
 } from "@/lib/supabase/database.types";
 import { AdminSection } from "@/components/admin/AdminUi";
 import { AdminNav } from "@/components/admin/AdminNav";
@@ -32,18 +31,18 @@ const TABS: Tab[] = [
   {
     key: "tables",
     label: "Tables",
-    eyebrow: "Schema · Records",
+    eyebrow: "Browse · Records",
     title: "Table Explorer",
     description:
-      "Browse and maintain plaques, events, and profiles. Paginated stacked cards with quick edit and delete, bound by Row Level Security.",
+      "Browse plaques, events, and steward profiles. Prefer the Dashboard forms for photos, dates, and payment links — Quick Edit is for short text fixes.",
   },
   {
     key: "storage",
     label: "Storage Assets",
-    eyebrow: "Storage · plaque-assets",
+    eyebrow: "Photos · Uploads",
     title: "Storage Inspector",
     description:
-      "Inspect objects in the plaque-assets bucket. Preview thumbnails, review file size, and remove orphaned assets.",
+      "Photos uploaded for plaques. Delete only if you’re sure nothing on the site still uses that photo.",
   },
   {
     key: "sql",
@@ -51,7 +50,7 @@ const TABS: Tab[] = [
     eyebrow: "Developer · Emergency",
     title: "SQL Console",
     description:
-      "Run administrative queries and schema refreshes through the developer-gated service-role executor.",
+      "Run administrative queries. Only use this if you know exactly what the command does — changes often cannot be undone.",
     developerOnly: true,
   },
 ];
@@ -60,7 +59,6 @@ export function DatabasePortalShell() {
   const router = useRouter();
   const [gate, setGate] = useState<Gate>("loading");
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [deniedRole, setDeniedRole] = useState<ProfileRole | null>(null);
   const [tab, setTab] = useState<TabKey>("tables");
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -72,7 +70,6 @@ export function DatabasePortalShell() {
         router.replace("/admin");
         return;
       }
-      setDeniedRole(session.role ?? "user");
       setGate("denied");
       return;
     }
@@ -105,7 +102,7 @@ export function DatabasePortalShell() {
         <p className="text-gold text-xs tracking-[0.28em] uppercase mb-3 font-mono">
           Session checkpoint
         </p>
-        <p className="font-body text-slate-weathered">Verifying clearance…</p>
+        <p className="font-body text-slate-weathered">Checking your sign-in…</p>
       </div>
     );
   }
@@ -115,11 +112,8 @@ export function DatabasePortalShell() {
       <div className="mx-auto max-w-md px-4 py-28 text-center admin-panel p-8">
         <p className="font-display text-2xl text-charcoal mb-3">Access denied</p>
         <p className="font-body text-sm text-slate-weathered mb-8">
-          Role{" "}
-          <code className="font-mono text-crimson">{deniedRole ?? "user"}</code>{" "}
-          cannot open the database portal. Elevate to{" "}
-          <code className="font-mono">admin</code> or{" "}
-          <code className="font-mono">developer</code>.
+          Your account doesn&apos;t have permission to open this page. Ask a
+          developer to grant Admin access.
         </p>
         <Link
           href="/admin"
@@ -193,28 +187,35 @@ export function DatabasePortalShell() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <p className="font-mono text-gold text-[10px] sm:text-xs tracking-[0.28em] uppercase mb-3">
-                Database &amp; Schema Portal · RBAC
+                Browse &amp; fix site data
               </p>
               <h1 className="font-display text-2xl sm:text-3xl md:text-4xl text-parchment font-semibold leading-tight">
-                Data Control Room
+                Data browser
               </h1>
               <p className="mt-3 font-body text-sm text-parchment/70 max-w-xl">
-                Signed in as{" "}
+                Look up plaques, events, and uploaded photos. Prefer the Dashboard
+                forms for normal edits. Signed in as{" "}
                 <span className="text-parchment">
                   {profile?.full_name?.trim() || role}
-                </span>{" "}
-                · <span className="font-mono text-gold">{role}</span>
+                </span>
+                .
               </p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-3 self-start">
-              <button
-                type="button"
-                onClick={() => void exportSnapshot()}
-                disabled={exporting}
-                className="focus-ring btn-gold bg-transparent px-5 py-2.5 text-sm disabled:opacity-60"
-              >
-                {exporting ? "Exporting…" : "Export Site Data Snapshot (JSON)"}
-              </button>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => void exportSnapshot()}
+                  disabled={exporting}
+                  className="focus-ring btn-gold bg-transparent px-5 py-2.5 text-sm disabled:opacity-60"
+                >
+                  {exporting ? "Exporting…" : "Export Site Data Snapshot (JSON)"}
+                </button>
+                <p className="mt-1.5 max-w-[16rem] text-[10px] leading-relaxed text-parchment/55">
+                  Downloads a backup file of plaques, settings, FAQs, and
+                  documents. Does not change the live site.
+                </p>
+              </div>
               <Link
                 href="/admin/dashboard"
                 className="focus-ring btn-gold bg-transparent px-5 py-2.5 text-sm"

@@ -202,7 +202,13 @@ export function ManageEventsForm({
 
   async function handleDelete(id: string) {
     if (!canSensitive) return;
-    if (!confirm("Delete this event permanently? This cannot be undone.")) {
+    const event = eventsQuery.data?.data?.find((e) => e.id === id);
+    const title = event?.title?.trim() || "this event";
+    if (
+      !confirm(
+        `Delete the event “${title}”?\n\nIt will disappear from the public Events page. This cannot be undone.`
+      )
+    ) {
       return;
     }
     setBusy(true);
@@ -222,9 +228,9 @@ export function ManageEventsForm({
 
   return (
     <AdminSection
-      eyebrow="Component A"
+      eyebrow="Public · Events"
       title="Events Manager"
-      description="Create gatherings with title, description, date/time, badge label, an optional image, and an optional payment URL. Submissions write to the live events table. Edit or delete any row from the roster below."
+      description="Create and update gatherings shown on the Events page. Optional image and payment link for registration."
     >
       {(notice || error) && (
         <AdminAlert tone={error ? "error" : "success"}>
@@ -257,6 +263,7 @@ export function ManageEventsForm({
           value={form.label}
           onChange={(v) => setForm((f) => ({ ...f, label: v }))}
           placeholder="Dinner, Dedication, Lore Night…"
+          hint="Short tag on the event card (e.g. Dinner, Dedication). Leave blank for no badge."
         />
         <LocationAutocompleteField
           label="Location (optional)"
@@ -367,7 +374,7 @@ export function ManageEventsForm({
               thumbnailUrl={event.image_url || null}
               meta={`${new Date(event.date).toLocaleString()}${
                 event.label ? ` · ${event.label}` : ""
-              }${canSensitive && event.payment_url ? " · Payment live" : ""}`}
+              }${canSensitive && event.payment_url ? " · Registration link on" : ""}`}
               onEdit={() => startEdit(event)}
               onDelete={canSensitive ? () => void handleDelete(event.id) : undefined}
               canDelete={canSensitive}

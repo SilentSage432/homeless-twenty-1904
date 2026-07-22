@@ -30,8 +30,14 @@ export function DocumentManager() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const data = await fetchDocuments();
-    setDocs(data);
+    setError(null);
+    try {
+      const data = await fetchDocuments();
+      setDocs(data);
+    } catch {
+      setError("Couldn't load documents. Refresh and try again.");
+      setDocs([]);
+    }
     setLoading(false);
   }, []);
 
@@ -45,12 +51,12 @@ export function DocumentManager() {
     const { url, error: e } = await uploadDocumentFile(file);
     setUploading(false);
     if (e || !url) {
-      setError(e ?? "Upload failed.");
+      setError(e ?? "Upload failed. Please try a different file.");
       return;
     }
     setFileUrl(url);
     if (!title.trim()) setTitle(file.name.replace(/\.[^.]+$/, ""));
-    setMessage("File uploaded — add a title and save the entry.");
+    setMessage("File uploaded — add a title and click Publish document.");
   }
 
   async function save() {
@@ -72,17 +78,25 @@ export function DocumentManager() {
     setCategory("");
     setFileUrl("");
     if (fileRef.current) fileRef.current.value = "";
-    setMessage("Document published.");
+    setMessage("Document is live — visitors can download it now.");
     await load();
   }
 
   async function remove(doc: PublicDocument) {
-    if (!confirm(`Remove “${doc.title}” from public documents?`)) return;
+    if (
+      !confirm(
+        `Remove “${doc.title}” from public documents?\n\nVisitors will no longer be able to download it. This cannot be undone.`
+      )
+    ) {
+      return;
+    }
     setBusyId(doc.id);
     setError(null);
+    setMessage(null);
     const { error: e } = await deleteDocument(doc.id);
     setBusyId(null);
     if (e) return setError(e);
+    setMessage(`“${doc.title}” removed from public documents.`);
     await load();
   }
 
@@ -90,7 +104,7 @@ export function DocumentManager() {
     <AdminSection
       eyebrow="Public · Documents"
       title="Public Documents"
-      description="Upload PDFs and files (bylaws, newsletters, forms) for public download. Files land in the lodge-documents bucket."
+      description="Upload PDFs and files (bylaws, newsletters, forms) for visitors to download on the About page."
       deck
     >
       <div className="space-y-6">
@@ -99,12 +113,19 @@ export function DocumentManager() {
 
         <div className="border border-gold/40 bg-parchment-deep/60 p-4 space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <AdminField label="Title" value={title} onChange={setTitle} required />
+            <AdminField
+              label="Title"
+              value={title}
+              onChange={setTitle}
+              required
+              hint="The name visitors see in the download list."
+            />
             <AdminField
               label="Category"
               value={category}
               onChange={setCategory}
               placeholder="Bylaws, Newsletter, Form…"
+              hint="Optional grouping label shown with the document."
             />
           </div>
 
@@ -126,7 +147,11 @@ export function DocumentManager() {
             />
             {uploading ? (
               <p className="mt-1.5 text-xs text-slate-weathered">Uploading…</p>
-            ) : null}
+            ) : (
+              <p className="mt-1.5 text-xs text-slate-weathered/90">
+                PDF, Word, text, or image files work best.
+              </p>
+            )}
           </div>
 
           <AdminField
@@ -136,14 +161,19 @@ export function DocumentManager() {
             hint="Auto-filled after upload, or paste an external link."
           />
 
-          <button
-            type="button"
-            onClick={() => void save()}
-            disabled={saving || uploading}
-            className="focus-ring btn-primary px-6 py-2.5 text-sm tracking-wide disabled:opacity-60"
-          >
-            {saving ? "Saving…" : "Publish document"}
-          </button>
+          <div>
+            <button
+              type="button"
+              onClick={() => void save()}
+              disabled={saving || uploading}
+              className="focus-ring btn-primary px-6 py-2.5 text-sm tracking-wide disabled:opacity-60"
+            >
+              {saving ? "Saving…" : "Publish document"}
+            </button>
+            <p className="mt-1.5 text-xs text-slate-weathered/90">
+              Saves the file to the public documents list so visitors can download it.
+            </p>
+          </div>
         </div>
 
         {loading ? (
@@ -173,7 +203,7 @@ export function DocumentManager() {
                     href={doc.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="focus-ring text-sm text-crimson underline underline-offset-4"
+                    className="focus-ring tap-target text-sm text-crimson underline underline-offset-4"
                   >
                     View
                   </a>
@@ -181,7 +211,7 @@ export function DocumentManager() {
                     type="button"
                     onClick={() => void remove(doc)}
                     disabled={busyId === doc.id}
-                    className="focus-ring text-sm text-slate-weathered underline underline-offset-4 hover:text-charcoal disabled:opacity-60"
+                    className="focus-ring tap-target text-sm text-slate-weathered underline underline-offset-4 hover:text-charcoal disabled:opacity-60"
                   >
                     {busyId === doc.id ? "Removing…" : "Remove"}
                   </button>

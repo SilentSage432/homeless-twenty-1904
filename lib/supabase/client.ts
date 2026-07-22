@@ -57,19 +57,3 @@ export function getSupabaseBrowserClient(): HomelessTwentySupabaseClient | null 
 export function isSupabaseConfigured(): boolean {
   return readSupabasePublicEnv() !== null;
 }
-
-/**
- * Create a disposable typed client (e.g. one-off diagnostics).
- * Prefer getSupabaseBrowserClient() for normal app use.
- */
-export function createSupabaseBrowserClient(): HomelessTwentySupabaseClient | null {
-  const env = readSupabasePublicEnv();
-  if (!env) return null;
-  return createClient<Database>(env.url, env.anonKey, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-    },
-  });
-}

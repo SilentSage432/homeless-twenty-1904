@@ -379,10 +379,6 @@ export function isDeveloperRole(role: ProfileRole | null | undefined): boolean {
   return role === "developer";
 }
 
-export function isStaffRole(role: ProfileRole | null | undefined): boolean {
-  return canManageContent(role);
-}
-
 /** Payment URL + destructive deletes are staff-only (not standard user). */
 export function canManageSensitiveContent(
   role: ProfileRole | null | undefined

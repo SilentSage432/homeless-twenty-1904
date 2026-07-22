@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AdminAlert,
   AdminField,
@@ -27,6 +27,16 @@ import type {
   HeroConfig,
   SiteContentSection,
 } from "@/lib/supabase/database.types";
+import { useModalA11y } from "@/lib/hooks/useModalA11y";
+
+const SECTION_LABELS: Record<string, string> = {
+  "about-lore": "About page · Lodge lore",
+  "president-message": "About page · President's message",
+};
+
+function sectionLabel(slug: string): string {
+  return SECTION_LABELS[slug] ?? slug;
+}
 
 export function ContentManager() {
   return (
@@ -68,7 +78,7 @@ function HeroManager() {
     setSaving(false);
     if (e) return setError(e);
     await requestRevalidate(["/"]);
-    setMessage("Hero updated and published.");
+    setMessage("Hero updated and published to the homepage.");
   }
 
   return (
@@ -89,24 +99,28 @@ function HeroManager() {
             rows={2}
             value={hero.title}
             onChange={(v) => setHero((h) => ({ ...h, title: v }))}
+            hint="Large text at the top of the homepage."
           />
           <AdminTextArea
             label="Subtitle"
             rows={2}
             value={hero.subtitle}
             onChange={(v) => setHero((h) => ({ ...h, subtitle: v }))}
+            hint="Supporting sentence under the headline."
           />
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField
               label="Button text"
               value={hero.button_text}
               onChange={(v) => setHero((h) => ({ ...h, button_text: v }))}
+              hint="Label on the homepage button."
             />
             <AdminField
               label="Button link"
               value={hero.button_link}
               onChange={(v) => setHero((h) => ({ ...h, button_link: v }))}
               placeholder="/#events"
+              hint="Where the button goes (e.g. /events)."
             />
           </div>
           <AdminField
@@ -166,10 +180,18 @@ function SectionEditor() {
     setSavingSlug(null);
     if (e) return setError(e);
     await requestRevalidate(["/", "/about"]);
-    setMessage(`Saved “${slug}” and published.`);
+    setMessage(`Saved “${sectionLabel(slug)}” and published.`);
   }
 
-  async function restore(slug: string, content: string) {
+  async function restore(slug: string, content: string, createdAt: string) {
+    const when = new Date(createdAt).toLocaleString();
+    if (
+      !confirm(
+        `Replace the current text for “${sectionLabel(slug)}” with the version from ${when}?\n\nUnsaved edits in the form will also be replaced.`
+      )
+    ) {
+      return;
+    }
     setHistorySlug(null);
     setSavingSlug(slug);
     setError(null);
@@ -182,7 +204,7 @@ function SectionEditor() {
     setDrafts((d) => ({ ...d, [slug]: { title, content } }));
     await load();
     await requestRevalidate(["/", "/about"]);
-    setMessage(`Restored a previous version of “${slug}”.`);
+    setMessage(`Restored the ${when} version of “${sectionLabel(slug)}” and published it.`);
   }
 
   return (
@@ -196,7 +218,8 @@ function SectionEditor() {
         <p className="font-body text-sm text-slate-weathered">Loading…</p>
       ) : sections.length === 0 ? (
         <p className="font-body text-sm text-slate-weathered">
-          No sections found. Apply the CMS migration to seed default sections.
+          No page sections are set up yet. Ask a developer to finish site setup,
+          then refresh.
         </p>
       ) : (
         <div className="space-y-6">
@@ -208,13 +231,13 @@ function SectionEditor() {
               className="border border-charcoal/12 bg-white/70 p-4 space-y-3"
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-gold-muted">
-                  {section.slug}
+                <p className="font-body text-sm font-medium text-charcoal">
+                  {sectionLabel(section.slug)}
                 </p>
                 <button
                   type="button"
                   onClick={() => setHistorySlug(section.slug)}
-                  className="focus-ring px-1 text-xs tracking-wide text-crimson underline underline-offset-4"
+                  className="focus-ring tap-target px-1 text-xs tracking-wide text-crimson underline underline-offset-4"
                 >
                   Revision history
                 </button>
@@ -239,6 +262,7 @@ function SectionEditor() {
                     [section.slug]: { ...d[section.slug], content: v },
                   }))
                 }
+                hint="You can use simple formatting: paragraphs, links, and lists. Avoid pasting from Word if the layout looks broken."
               />
               <button
                 type="button"
@@ -257,7 +281,9 @@ function SectionEditor() {
         <RevisionHistoryModal
           slug={historySlug}
           onClose={() => setHistorySlug(null)}
-          onRestore={(content) => void restore(historySlug, content)}
+          onRestore={(content, createdAt) =>
+            void restore(historySlug, content, createdAt)
+          }
         />
       ) : null}
     </AdminSection>
@@ -271,10 +297,13 @@ function RevisionHistoryModal({
 }: {
   slug: string;
   onClose: () => void;
-  onRestore: (content: string) => void;
+  onRestore: (content: string, createdAt: string) => void;
 }) {
   const [revisions, setRevisions] = useState<ContentRevision[]>([]);
   const [loading, setLoading] = useState(true);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useModalA11y({ open: true, onClose, initialFocusRef: closeRef });
 
   useEffect(() => {
     let cancelled = false;
@@ -288,20 +317,12 @@ function RevisionHistoryModal({
     };
   }, [slug]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
   return (
     <div
       className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
-      aria-label={`Revision history for ${slug}`}
+      aria-label={`Revision history for ${sectionLabel(slug)}`}
     >
       <div className="absolute inset-0 bg-charcoal/90" aria-hidden="true" onClick={onClose} />
       <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col border border-gold/40 bg-parchment shadow-[var(--shadow-lift)]">
@@ -310,13 +331,16 @@ function RevisionHistoryModal({
             <p className="font-mono text-gold text-[10px] tracking-[0.24em] uppercase">
               Revision history
             </p>
-            <p className="font-mono text-[11px] text-parchment/70">{slug}</p>
+            <p className="font-body text-sm text-parchment/85">
+              {sectionLabel(slug)}
+            </p>
           </div>
           <button
+            ref={closeRef}
             type="button"
             onClick={onClose}
-            aria-label="Close"
-            className="focus-ring flex h-8 w-8 items-center justify-center text-parchment/80 hover:text-gold"
+            aria-label="Close revision history"
+            className="focus-ring flex h-11 w-11 items-center justify-center text-parchment/80 hover:text-gold"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
@@ -341,8 +365,8 @@ function RevisionHistoryModal({
                     </span>
                     <button
                       type="button"
-                      onClick={() => onRestore(rev.content)}
-                      className="focus-ring px-1 text-sm text-crimson underline underline-offset-4"
+                      onClick={() => onRestore(rev.content, rev.created_at)}
+                      className="focus-ring tap-target px-1 text-sm text-crimson underline underline-offset-4"
                     >
                       Restore
                     </button>
@@ -366,6 +390,7 @@ function FaqManager() {
   const [faqs, setFaqs] = useState<FaqRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [newQ, setNewQ] = useState("");
   const [newA, setNewA] = useState("");
@@ -386,6 +411,7 @@ function FaqManager() {
     if (!newQ.trim()) return;
     setAdding(true);
     setError(null);
+    setMessage(null);
     const nextOrder =
       faqs.length > 0 ? Math.max(...faqs.map((f) => f.display_order)) + 1 : 0;
     const { error: e } = await createFaq({
@@ -398,27 +424,38 @@ function FaqManager() {
     if (e) return setError(e);
     setNewQ("");
     setNewA("");
+    setMessage("FAQ added and is live on the About page.");
     await load();
     await requestRevalidate(["/about"]);
   }
 
-  async function patch(id: string, payload: Partial<FaqRow>) {
+  async function patch(id: string, payload: Partial<FaqRow>, success?: string) {
     setBusyId(id);
     setError(null);
+    setMessage(null);
     const { error: e } = await updateFaq(id, payload);
     setBusyId(null);
     if (e) return setError(e);
+    if (success) setMessage(success);
     await load();
     await requestRevalidate(["/about"]);
   }
 
-  async function remove(id: string) {
-    if (!confirm("Delete this FAQ permanently?")) return;
-    setBusyId(id);
+  async function remove(faq: FaqRow) {
+    if (
+      !confirm(
+        `Delete this FAQ?\n\n“${faq.question}”\n\nIt will disappear from the About page. This cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    setBusyId(faq.id);
     setError(null);
-    const { error: e } = await deleteFaq(id);
+    setMessage(null);
+    const { error: e } = await deleteFaq(faq.id);
     setBusyId(null);
     if (e) return setError(e);
+    setMessage("FAQ deleted.");
     await load();
     await requestRevalidate(["/about"]);
   }
@@ -429,9 +466,15 @@ function FaqManager() {
     if (!target || !swap) return;
     setBusyId(target.id);
     setError(null);
-    await updateFaq(target.id, { display_order: swap.display_order });
-    await updateFaq(swap.id, { display_order: target.display_order });
+    setMessage(null);
+    const a = await updateFaq(target.id, { display_order: swap.display_order });
+    const b = await updateFaq(swap.id, { display_order: target.display_order });
     setBusyId(null);
+    if (a.error || b.error) {
+      setError(a.error ?? b.error ?? "Couldn't reorder FAQs.");
+      return;
+    }
+    setMessage("FAQ order updated on the About page.");
     await load();
     await requestRevalidate(["/about"]);
   }
@@ -440,18 +483,30 @@ function FaqManager() {
     <AdminSection
       eyebrow="Public · FAQ"
       title="FAQ Manager"
-      description="Add, edit, reorder, publish, and remove frequently asked questions."
+      description="Add, edit, reorder, publish, and remove frequently asked questions shown on the About page."
       deck
     >
       <div className="space-y-5">
         {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
+        {message ? <AdminAlert tone="success">{message}</AdminAlert> : null}
 
         <div className="border border-gold/40 bg-parchment-deep/60 p-4 space-y-3">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-charcoal">
             Add a FAQ
           </p>
-          <AdminField label="Question" value={newQ} onChange={setNewQ} />
-          <AdminTextArea label="Answer" rows={3} value={newA} onChange={setNewA} />
+          <AdminField
+            label="Question"
+            value={newQ}
+            onChange={setNewQ}
+            hint="The question visitors see on the About page."
+          />
+          <AdminTextArea
+            label="Answer"
+            rows={3}
+            value={newA}
+            onChange={setNewA}
+            hint="Keep answers clear and concise."
+          />
           <button
             type="button"
             onClick={() => void add()}
@@ -492,14 +547,22 @@ function FaqManager() {
                     )
                   }
                 />
+                <p className="text-xs text-slate-weathered">
+                  Save stores text changes. Publish/Unpublish controls whether
+                  visitors see this FAQ. ↑↓ changes the order on the About page.
+                </p>
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     type="button"
                     onClick={() =>
-                      void patch(faq.id, {
-                        question: faq.question,
-                        answer: faq.answer,
-                      })
+                      void patch(
+                        faq.id,
+                        {
+                          question: faq.question,
+                          answer: faq.answer,
+                        },
+                        "FAQ saved."
+                      )
                     }
                     disabled={busyId === faq.id}
                     className="focus-ring btn-primary px-4 py-2 text-sm tracking-wide disabled:opacity-60"
@@ -509,18 +572,26 @@ function FaqManager() {
                   <button
                     type="button"
                     onClick={() =>
-                      void patch(faq.id, { is_published: !faq.is_published })
+                      void patch(
+                        faq.id,
+                        { is_published: !faq.is_published },
+                        faq.is_published
+                          ? "FAQ hidden from visitors."
+                          : "FAQ published on the About page."
+                      )
                     }
                     disabled={busyId === faq.id}
-                    className="focus-ring px-1 text-sm text-charcoal underline underline-offset-4 disabled:opacity-60"
+                    className="focus-ring tap-target px-1 text-sm text-charcoal underline underline-offset-4 disabled:opacity-60"
                   >
-                    {faq.is_published ? "Unpublish" : "Publish"}
+                    {faq.is_published
+                      ? "Unpublish (hide from visitors)"
+                      : "Publish (show on About page)"}
                   </button>
                   <button
                     type="button"
                     onClick={() => void move(i, -1)}
                     disabled={busyId === faq.id || i === 0}
-                    className="focus-ring px-1 text-sm text-slate-weathered underline underline-offset-4 disabled:opacity-30"
+                    className="focus-ring tap-target px-1 text-sm text-slate-weathered underline underline-offset-4 disabled:opacity-30"
                   >
                     ↑ Up
                   </button>
@@ -528,7 +599,7 @@ function FaqManager() {
                     type="button"
                     onClick={() => void move(i, 1)}
                     disabled={busyId === faq.id || i === faqs.length - 1}
-                    className="focus-ring px-1 text-sm text-slate-weathered underline underline-offset-4 disabled:opacity-30"
+                    className="focus-ring tap-target px-1 text-sm text-slate-weathered underline underline-offset-4 disabled:opacity-30"
                   >
                     ↓ Down
                   </button>
@@ -541,9 +612,9 @@ function FaqManager() {
                   </span>
                   <button
                     type="button"
-                    onClick={() => void remove(faq.id)}
+                    onClick={() => void remove(faq)}
                     disabled={busyId === faq.id}
-                    className="focus-ring ml-auto px-1 text-sm text-crimson underline underline-offset-4 disabled:opacity-60"
+                    className="focus-ring tap-target ml-auto px-1 text-sm text-crimson underline underline-offset-4 disabled:opacity-60"
                   >
                     Delete
                   </button>

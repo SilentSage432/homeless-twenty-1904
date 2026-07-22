@@ -11,7 +11,12 @@ const LINKS = [
   { href: "/admin/inquiries", label: "Inquiries", icon: "📥" },
   { href: "/admin/content", label: "Content & FAQs", icon: "📝" },
   { href: "/admin/documents", label: "Documents", icon: "📄" },
-  { href: "/admin/database", label: "Database", icon: "🗄️" },
+  {
+    href: "/admin/database",
+    label: "Data browser",
+    icon: "🗄️",
+    title: "Browse plaques, events, and photos (advanced)",
+  },
 ] as const;
 
 type NavLink = (typeof LINKS)[number];
@@ -80,6 +85,7 @@ export function AdminNav() {
           type="button"
           aria-haspopup="menu"
           aria-expanded={open}
+          aria-controls="admin-nav-mobile-menu"
           onClick={() => setOpen((o) => !o)}
           className="focus-ring flex w-full items-center justify-between gap-3 border border-parchment/25 bg-charcoal/50 px-4 py-3 text-left text-parchment"
         >
@@ -103,6 +109,7 @@ export function AdminNav() {
 
         {open ? (
           <ul
+            id="admin-nav-mobile-menu"
             role="menu"
             className="absolute z-40 mt-2 w-full overflow-hidden border border-parchment/25 bg-charcoal shadow-[var(--shadow-lift)]"
           >
@@ -113,11 +120,12 @@ export function AdminNav() {
                   <Link
                     role="menuitem"
                     href={link.href}
+                    title={"title" in link ? link.title : undefined}
                     aria-current={isActive ? "page" : undefined}
                     className={
                       isActive
-                        ? "flex items-center gap-2 border-l-2 border-gold bg-gold/15 px-4 py-3 text-sm text-parchment"
-                        : "flex items-center gap-2 border-l-2 border-transparent px-4 py-3 text-sm text-parchment/75 museum-ease hover:bg-white/5 hover:text-parchment"
+                        ? "focus-ring flex min-h-[44px] items-center gap-2 border-l-2 border-gold bg-gold/15 px-4 py-3 text-sm text-parchment"
+                        : "focus-ring flex min-h-[44px] items-center gap-2 border-l-2 border-transparent px-4 py-3 text-sm text-parchment/75 museum-ease hover:bg-white/5 hover:text-parchment"
                     }
                   >
                     <span aria-hidden="true">{link.icon}</span>
@@ -132,28 +140,31 @@ export function AdminNav() {
       </div>
 
       {/* Desktop (>= md): horizontal tab bar */}
-      <ul className="hidden flex-wrap gap-2 md:flex">
-        {LINKS.map((link) => {
-          const isActive = link.href === pathname;
-          return (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                aria-current={isActive ? "page" : undefined}
-                className={
-                  isActive
-                    ? "focus-ring flex items-center gap-2 whitespace-nowrap border border-gold bg-gold/15 px-4 py-2.5 text-sm text-parchment"
-                    : "focus-ring flex items-center gap-2 whitespace-nowrap border border-parchment/25 bg-charcoal/40 px-4 py-2.5 text-sm text-parchment/75 museum-ease hover:border-gold/50 hover:text-parchment"
-                }
-              >
-                <span aria-hidden="true">{link.icon}</span>
-                {link.label}
-                <Badge count={badgeFor(link)} />
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="hidden max-w-full overflow-x-auto md:block">
+        <ul className="flex flex-wrap gap-2">
+          {LINKS.map((link) => {
+            const isActive = link.href === pathname;
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  title={"title" in link ? link.title : undefined}
+                  aria-current={isActive ? "page" : undefined}
+                  className={
+                    isActive
+                      ? "focus-ring flex min-h-[44px] items-center gap-2 whitespace-nowrap border border-gold bg-gold/15 px-4 py-2.5 text-sm text-parchment"
+                      : "focus-ring flex min-h-[44px] items-center gap-2 whitespace-nowrap border border-parchment/25 bg-charcoal/40 px-4 py-2.5 text-sm text-parchment/75 museum-ease hover:border-gold/50 hover:text-parchment"
+                  }
+                >
+                  <span aria-hidden="true">{link.icon}</span>
+                  {link.label}
+                  <Badge count={badgeFor(link)} />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </nav>
   );
 }

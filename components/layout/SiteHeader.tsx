@@ -56,6 +56,15 @@ export function SiteHeader() {
     setMobileOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
   // Detect staff clearance to reveal the portal shortcut (no query for anon).
   useEffect(() => {
     let cancelled = false;

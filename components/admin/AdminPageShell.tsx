@@ -7,7 +7,6 @@ import { requireStaffSession, signOutSession } from "@/lib/supabase/auth";
 import {
   isDeveloperRole,
   type Profile,
-  type ProfileRole,
 } from "@/lib/supabase/database.types";
 import { AdminNav } from "@/components/admin/AdminNav";
 
@@ -34,7 +33,6 @@ export function AdminPageShell({
   const router = useRouter();
   const [gate, setGate] = useState<Gate>("loading");
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [deniedRole, setDeniedRole] = useState<ProfileRole | null>(null);
 
   const verify = useCallback(async () => {
     const session = await requireStaffSession();
@@ -43,12 +41,10 @@ export function AdminPageShell({
         router.replace("/admin");
         return;
       }
-      setDeniedRole(session.role ?? "user");
       setGate("denied");
       return;
     }
     if (requireDeveloper && !isDeveloperRole(session.profile.role)) {
-      setDeniedRole(session.profile.role);
       setGate("denied");
       return;
     }
@@ -71,7 +67,7 @@ export function AdminPageShell({
         <p className="text-gold text-xs tracking-[0.28em] uppercase mb-3 font-mono">
           Session checkpoint
         </p>
-        <p className="font-body text-slate-weathered">Verifying clearance…</p>
+        <p className="font-body text-slate-weathered">Checking your sign-in…</p>
       </div>
     );
   }
@@ -81,10 +77,10 @@ export function AdminPageShell({
       <div className="mx-auto max-w-md px-4 py-28 text-center admin-panel p-8">
         <p className="font-display text-2xl text-charcoal mb-3">Access denied</p>
         <p className="font-body text-sm text-slate-weathered mb-8">
-          Role{" "}
-          <code className="font-mono text-crimson">{deniedRole ?? "user"}</code>{" "}
-          cannot open this workspace.
-          {requireDeveloper ? " Developer clearance required." : ""}
+          Your account doesn&apos;t have permission to open this page.
+          {requireDeveloper
+            ? " This area is only for developers."
+            : " Ask a developer to grant Admin access."}
         </p>
         <Link
           href="/admin"

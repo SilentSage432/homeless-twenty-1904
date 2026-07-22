@@ -143,7 +143,7 @@ export function ContactModal({
             type="button"
             onClick={onClose}
             aria-label="Close contact form"
-            className="focus-ring -mr-1 flex h-10 w-10 shrink-0 items-center justify-center text-parchment/80 hover:text-gold"
+            className="focus-ring -mr-1 flex h-11 w-11 shrink-0 items-center justify-center text-parchment/80 hover:text-gold"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />

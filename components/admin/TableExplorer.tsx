@@ -1,14 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { AdminAlert } from "@/components/admin/AdminUi";
+import { useModalA11y } from "@/lib/hooks/useModalA11y";
 
 type Row = Record<string, unknown>;
 type TableKey = "plaques" | "events" | "profiles";
 
-type EditField = { key: string; label: string; type: "text" | "textarea" };
+type EditField = {
+  key: string;
+  label: string;
+  type: "text" | "textarea";
+  hint?: string;
+};
 
 type TableConfig = {
   key: TableKey;
@@ -19,18 +24,28 @@ type TableConfig = {
   timestampKey: string | null;
   titleKey: string;
   metaKeys: string[];
-  editFields: EditField[]; // empty → read-only
+  editFields: EditField[];
   deletable: boolean;
   note?: string;
 };
 
 const PAGE_SIZE = 10;
 
+const META_LABELS: Record<string, string> = {
+  location: "Location",
+  latitude: "Latitude",
+  longitude: "Longitude",
+  date: "Date",
+  label: "Badge",
+  role: "Access level",
+};
+
 const TABLES: TableConfig[] = [
   {
     key: "plaques",
     label: "Plaques",
-    select: "id, title, location, description, image_url, latitude, longitude, date_placed",
+    select:
+      "id, title, location, description, image_url, latitude, longitude, date_placed",
     orderBy: "date_placed",
     ascending: false,
     timestampKey: "date_placed",
@@ -40,14 +55,20 @@ const TABLES: TableConfig[] = [
       { key: "title", label: "Title", type: "text" },
       { key: "location", label: "Location", type: "text" },
       { key: "description", label: "Description", type: "textarea" },
-      { key: "image_url", label: "Image URL", type: "text" },
+      {
+        key: "image_url",
+        label: "Image URL",
+        type: "text",
+        hint: "Link to the photo. Prefer changing photos from Plaque Uploader on the Dashboard.",
+      },
     ],
     deletable: true,
   },
   {
     key: "events",
     label: "Events",
-    select: "id, title, description, date, label, location, payment_url, image_url, created_at",
+    select:
+      "id, title, description, date, label, location, payment_url, image_url, created_at",
     orderBy: "date",
     ascending: false,
     timestampKey: "created_at",
@@ -58,7 +79,12 @@ const TABLES: TableConfig[] = [
       { key: "description", label: "Description", type: "textarea" },
       { key: "label", label: "Badge Label", type: "text" },
       { key: "location", label: "Location", type: "text" },
-      { key: "payment_url", label: "Payment URL", type: "text" },
+      {
+        key: "payment_url",
+        label: "Payment URL",
+        type: "text",
+        hint: "Stripe or payment link shown on the event.",
+      },
     ],
     deletable: true,
   },
@@ -73,7 +99,7 @@ const TABLES: TableConfig[] = [
     metaKeys: ["role"],
     editFields: [],
     deletable: false,
-    note: "Profiles are read-only here — invite or revoke stewards from the Personnel & Access Control panel (uses the Auth Admin API).",
+    note: "Profiles are read-only here. To add or remove stewards, use Personnel & Access Control on the Dashboard.",
   },
 ];
 
@@ -101,13 +127,14 @@ export function TableExplorer() {
     setError(null);
     const supabase = getSupabaseBrowserClient();
     if (!supabase) {
-      setError("Supabase client unavailable.");
+      setError(
+        "Can't reach the database right now. Refresh the page or try again later."
+      );
       setLoading(false);
       return;
     }
-    const db = supabase as unknown as SupabaseClient;
     const from = page * PAGE_SIZE;
-    const { data, error: queryError } = await db
+    const { data, error: queryError } = await supabase
       .from(config.key)
       .select(config.select)
       .order(config.orderBy, { ascending: config.ascending, nullsFirst: false })
@@ -129,7 +156,6 @@ export function TableExplorer() {
     void load();
   }, [load]);
 
-  // Reset to first page when switching tables.
   useEffect(() => {
     setPage(0);
     setNotice(null);
@@ -139,25 +165,44 @@ export function TableExplorer() {
   async function handleDelete(row: Row) {
     if (!config.deletable) return;
     const id = String(row.id);
-    if (!confirm(`Delete this ${config.label.slice(0, -1).toLowerCase()} permanently?`)) {
+    const title = display(row[config.titleKey]);
+    const entity = config.label.slice(0, -1).toLowerCase();
+    if (
+      !confirm(
+        `Delete ${entity} “${title === "—" ? "untitled" : title}” permanently?\n\nThis cannot be undone.`
+      )
+    ) {
       return;
     }
     setBusyId(id);
     setError(null);
     const supabase = getSupabaseBrowserClient();
-    const db = supabase as unknown as SupabaseClient;
-    const { error: delError } = await db.from(config.key).delete().eq("id", id);
+    if (!supabase) {
+      setError(
+        "Can't reach the database right now. Refresh the page or try again later."
+      );
+      setBusyId(null);
+      return;
+    }
+    const { error: delError } = await supabase
+      .from(config.key)
+      .delete()
+      .eq("id", id);
     setBusyId(null);
     if (delError) {
       setError(delError.message);
       return;
     }
-    setNotice("Record deleted.");
+    setNotice(`${config.label.slice(0, -1)} deleted.`);
     await load();
   }
 
   return (
     <div className="space-y-5">
+      <p className="font-body text-xs leading-relaxed text-slate-weathered">
+        Use this for quick text fixes only. To add photos, set dates, or payment
+        links, use Events Manager / Plaque Uploader on the Dashboard.
+      </p>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2">
           {TABLES.map((t) => (
@@ -212,13 +257,12 @@ export function TableExplorer() {
                       ? "(untitled)"
                       : display(row[config.titleKey])}
                   </p>
-                  <p className="font-mono text-[11px] text-slate-weathered truncate">
-                    {id}
-                  </p>
                 </div>
                 {config.timestampKey && row[config.timestampKey] ? (
                   <span className="shrink-0 font-mono text-[10px] text-slate-weathered">
-                    {new Date(String(row[config.timestampKey])).toLocaleDateString()}
+                    {new Date(
+                      String(row[config.timestampKey])
+                    ).toLocaleDateString()}
                   </span>
                 ) : null}
               </div>
@@ -227,7 +271,7 @@ export function TableExplorer() {
                 {config.metaKeys.map((k) => (
                   <div key={k} className="min-w-0">
                     <dt className="font-mono text-[9px] uppercase tracking-[0.14em] text-slate-weathered">
-                      {k}
+                      {META_LABELS[k] ?? k}
                     </dt>
                     <dd className="text-sm text-charcoal truncate">
                       {display(row[k])}
@@ -291,7 +335,7 @@ export function TableExplorer() {
           onClose={() => setEditing(null)}
           onSaved={async () => {
             setEditing(null);
-            setNotice("Record updated.");
+            setNotice(`${config.label.slice(0, -1)} updated.`);
             await load();
           }}
           onError={setError}
@@ -323,19 +367,40 @@ function QuickEditModal({
     return initial;
   });
   const [saving, setSaving] = useState(false);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const savingRef = useRef(false);
+  savingRef.current = saving;
+
+  const handleClose = useCallback(() => {
+    if (!savingRef.current) onClose();
+  }, [onClose]);
+
+  useModalA11y({
+    open: true,
+    onClose: handleClose,
+    initialFocusRef: cancelRef,
+  });
 
   async function handleSave() {
     setSaving(true);
     const supabase = getSupabaseBrowserClient();
-    const db = supabase as unknown as SupabaseClient;
+    if (!supabase) {
+      onError(
+        "Can't reach the database right now. Refresh the page or try again later."
+      );
+      setSaving(false);
+      onClose();
+      return;
+    }
     const patch: Record<string, string | null> = {};
     for (const field of config.editFields) {
       const trimmed = form[field.key]?.trim() ?? "";
       patch[field.key] = trimmed === "" ? null : trimmed;
     }
-    const { error } = await db
+    const { error } = await supabase
       .from(config.key)
-      .update(patch)
+      // Dynamic table key + field map; validated by editFields config above.
+      .update(patch as never)
       .eq("id", String(row.id));
     setSaving(false);
     if (error) {
@@ -363,8 +428,8 @@ function QuickEditModal({
           <p className="font-mono text-gold text-[10px] tracking-[0.24em] uppercase mb-1">
             {config.label} · Quick edit
           </p>
-          <p className="font-mono text-[11px] text-parchment/70 truncate">
-            {String(row.id)}
+          <p className="font-body text-sm text-parchment/85">
+            Limited fields — open Dashboard for the full editor.
           </p>
         </div>
         <div className="space-y-4 px-5 py-5">
@@ -396,10 +461,16 @@ function QuickEditModal({
                   disabled={saving}
                 />
               )}
+              {field.hint ? (
+                <p className="mt-1.5 text-xs text-slate-weathered/90">
+                  {field.hint}
+                </p>
+              ) : null}
             </div>
           ))}
           <div className="flex flex-wrap justify-end gap-3 pt-1">
             <button
+              ref={cancelRef}
               type="button"
               onClick={onClose}
               disabled={saving}

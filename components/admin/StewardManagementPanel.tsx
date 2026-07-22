@@ -135,7 +135,7 @@ export function StewardManagementPanel({
     const label = target.full_name?.trim() || target.role;
     if (
       !confirm(
-        `Revoke ${label}? This permanently deletes their Auth account and profile.`
+        `Remove ${label}’s access?\n\nThey will no longer be able to sign in to the steward portal. This cannot be undone.`
       )
     ) {
       return;
@@ -179,12 +179,12 @@ export function StewardManagementPanel({
 
   return (
     <AdminSection
-      eyebrow="Component D · Personnel"
+      eyebrow="Personnel · Access"
       title="Personnel & Access Control"
       description={
         actorRole === "developer"
-          ? "Invite stewards by email, assign any role clearance, and revoke accounts from the roster. Invites and deletions use the Auth Admin API on a staff-gated server route — the service role never ships to the browser."
-          : "Invite stewards by email and assign admin or user clearance. You may revoke admin/user accounts; developers retain exclusive ability to grant or remove developer clearance."
+          ? "Add someone who can manage the lodge site. They’ll use this email to sign in. Choose Admin for day-to-day content, or Developer for system tools."
+          : "Add someone who can manage the lodge site. They’ll use this email to sign in. Choose Admin for day-to-day content, or User only if they should not manage the site."
       }
       deck
     >
@@ -196,6 +196,7 @@ export function StewardManagementPanel({
           value={email}
           onChange={setEmail}
           placeholder="steward@lodge.example"
+          hint="They will sign in at /admin with this email."
         />
         <AdminField
           label="Full Name"
@@ -205,11 +206,12 @@ export function StewardManagementPanel({
           placeholder="Lodge Steward"
         />
         <AdminSelect
-          label="Role clearance"
+          label="Access level"
           required
           value={role}
           onChange={(v) => setRole(v as ProfileRole)}
           options={roleOptions}
+          hint="Admin: edit events, plaques, settings, and inquiries. Developer: also system tools."
         />
         <div className="flex items-end">
           <button
@@ -217,7 +219,7 @@ export function StewardManagementPanel({
             disabled={busy || roleOptions.length === 0}
             className="focus-ring btn-primary w-full px-5 py-3 text-sm tracking-wide disabled:opacity-60"
           >
-            {busy ? "Registering…" : "Invite steward"}
+            {busy ? "Adding…" : "Add steward"}
           </button>
         </div>
       </form>
@@ -228,7 +230,7 @@ export function StewardManagementPanel({
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="font-mono text-[11px] tracking-[0.18em] uppercase text-charcoal">
-            Active clearance roster
+            Active stewards
           </h3>
           <button
             type="button"
@@ -244,7 +246,7 @@ export function StewardManagementPanel({
 
         {!listError && !listLoading && profiles.length === 0 ? (
           <p className="font-mono text-xs text-slate-weathered">
-            No profiles visible under current RLS.
+            No stewards found, or you don’t have permission to view the list.
           </p>
         ) : null}
 

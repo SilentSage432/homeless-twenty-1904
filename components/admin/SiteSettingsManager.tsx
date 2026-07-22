@@ -25,9 +25,9 @@ import type {
 } from "@/lib/supabase/database.types";
 
 const BANNER_TYPES: { value: AnnouncementType; label: string }[] = [
-  { value: "info", label: "Info — brass notice" },
-  { value: "alert", label: "Alert — crimson" },
-  { value: "event", label: "Event — gold" },
+  { value: "info", label: "Info (calm notice)" },
+  { value: "alert", label: "Alert (urgent / closure)" },
+  { value: "event", label: "Event (upcoming gathering)" },
 ];
 
 export function SiteSettingsManager() {
@@ -97,12 +97,15 @@ export function SiteSettingsManager() {
             label="Show announcement banner on the public site"
             checked={banner.enabled}
             onChange={(v) => setBanner((b) => ({ ...b, enabled: v }))}
+            showStatus
+            hint="On: visitors see this message at the top of every public page. Off: the banner is hidden. Remember to Save all settings."
           />
           <AdminTextArea
             label="Message"
             rows={2}
             value={banner.message}
             onChange={(v) => setBanner((b) => ({ ...b, message: v }))}
+            hint="Short is best (1–2 sentences). This is the text visitors see in the top bar."
           />
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField
@@ -110,6 +113,7 @@ export function SiteSettingsManager() {
               value={banner.link_url}
               onChange={(v) => setBanner((b) => ({ ...b, link_url: v }))}
               placeholder="/events or https://…"
+              hint="Optional. Example: /events or a full https:// link. Visitors tap the banner to open it."
             />
             <AdminSelect
               label="Style"
@@ -118,6 +122,7 @@ export function SiteSettingsManager() {
                 setBanner((b) => ({ ...b, type: v as AnnouncementType }))
               }
               options={BANNER_TYPES}
+              hint="Color only — does not change who sees the banner."
             />
           </div>
 
@@ -134,11 +139,13 @@ export function SiteSettingsManager() {
                 preview
               />
             </div>
-            {!banner.enabled ? (
-              <p className="mt-1.5 text-xs text-slate-weathered">
-                Banner is currently hidden from the public site.
-              </p>
-            ) : null}
+            <p className="mt-1.5 text-xs text-slate-weathered">
+              Preview only — click Save all settings to show this on the real
+              site.
+              {!banner.enabled
+                ? " The banner switch is currently off."
+                : null}
+            </p>
           </div>
         </div>
       </AdminSection>
@@ -155,40 +162,46 @@ export function SiteSettingsManager() {
             type="tel"
             value={lodge.phone}
             onChange={(v) => setLodge((l) => ({ ...l, phone: v }))}
+            hint="Shown in the site footer and contact areas."
           />
           <AdminField
             label="Address"
             value={lodge.address}
             onChange={(v) => setLodge((l) => ({ ...l, address: v }))}
+            hint="Shown in the site footer and contact areas."
           />
           <AdminField
             label="Hours"
             value={lodge.hours}
             onChange={(v) => setLodge((l) => ({ ...l, hours: v }))}
             placeholder="Mon–Fri, 9–5"
+            hint="Shown where lodge hours are listed."
           />
           <AdminField
             label="Meeting schedule"
             value={lodge.meeting_schedule}
             onChange={(v) => setLodge((l) => ({ ...l, meeting_schedule: v }))}
             placeholder="Second Tuesday, 7pm"
+            hint="Shown where meeting times are listed."
           />
           <AdminField
             label="Facebook URL"
             value={lodge.social_facebook}
             onChange={(v) => setLodge((l) => ({ ...l, social_facebook: v }))}
+            hint="Used for footer social links. Leave blank to hide."
           />
           <AdminField
             label="Instagram URL"
             value={lodge.social_instagram}
             onChange={(v) => setLodge((l) => ({ ...l, social_instagram: v }))}
+            hint="Used for footer social links. Leave blank to hide."
           />
         </div>
       </AdminSection>
 
       <AdminSection
-        eyebrow="Operations · Feature Flags"
-        title="Feature Flags"
+        eyebrow="Public site · Switches"
+        title="Public site switches"
         description="Simple on/off switches for public-site features. Save settings, then use Preview page to confirm what visitors see."
         deck
       >

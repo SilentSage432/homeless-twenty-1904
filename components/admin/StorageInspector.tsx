@@ -72,7 +72,11 @@ export function StorageInspector() {
   }
 
   async function handleDelete(name: string) {
-    if (!confirm(`Delete "${name}" from ${PLAQUE_ASSETS_BUCKET}? This cannot be undone.`)) {
+    if (
+      !confirm(
+        `Delete this photo (“${name}”)?\n\nPlaques that still use it may show a broken image. This cannot be undone.`
+      )
+    ) {
       return;
     }
     setBusyName(name);
@@ -87,15 +91,15 @@ export function StorageInspector() {
       setError(removeError.message);
       return;
     }
-    setNotice("Asset deleted.");
+    setNotice("Photo deleted from storage.");
     await load();
   }
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-charcoal">
-          Bucket · {PLAQUE_ASSETS_BUCKET}
+        <p className="font-body text-sm text-charcoal">
+          Plaque photos
         </p>
         <button
           type="button"

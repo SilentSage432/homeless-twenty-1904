@@ -1,5 +1,14 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-21 — Full repo audit: steward UX, a11y, hygiene
+
+- **Steward UX:** plain-English helpers and friendlier success/confirm copy across Site Settings, Content/FAQs, Inquiries, Documents, Data browser, Events/Plaques managers, and Personnel. Renamed Feature Flags → “Public site switches”; softened Database → “Data browser”; removed jargon from empty/denied states.
+- **Accessibility:** shared `useModalA11y` (Escape, scroll lock, initial focus, restore focus) applied to PlaqueLightbox, ImageCropEditor, Revision history, Quick Edit. Contact close + AdminToggle hit areas ≥44px; AdminNav `aria-controls` + focus rings; SiteHeader Escape closes mobile menu.
+- **Hygiene:** removed unused `isStaffRole`, `isCurrentUserAdmin`, `createSupabaseBrowserClient`; internalized unused CMS defaults; TableExplorer null-client guards + typed client (no untyped cast); FAQ reorder errors surfaced; AdminTextArea/AdminSelect gained `hint`.
+- Typecheck + lint + production build green.
+
+---
+
 ## 2026-07-21 — Feature Flags steward UX (hints, status, preview links)
 
 - Extended canonical `AdminToggle` with optional `showStatus` (“Live on site” green / “Disabled” gray) and `previewHref` / `previewLabel` (opens the relevant public route in a new tab). Restructured the control so the preview link sits outside a wrapping `<label>` and won’t accidentally flip the switch.

@@ -23,6 +23,7 @@
 - [x] CMS & Operational Control Suite: Site Settings/banner, Inquiry Inbox, Content & FAQ editor, Public Documents; public announcement banner + FAQ/documents; feature flags
 - [x] Resilience & performance: on-demand revalidation on CMS saves, content revision history + one-click undo, client-side WebP image compression, JSON data-snapshot export, contact email alert + ack payload
 - [x] Canonical `AdminToggle` primitive (vertically-centered switch, `role="switch"`, single owner) — replaces the ad-hoc settings toggle
+- [x] Full repo audit polish: steward-facing helper/confirm copy, modal a11y baseline (`useModalA11y`), tap targets, dead-export cleanup
 - [x] Typecheck + production build green
 
 ## Near-term

@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Cropper, { type Area, type Point } from "react-easy-crop";
 import { generateCroppedImage } from "@/lib/utils/crop-image";
+import { useModalA11y } from "@/lib/hooks/useModalA11y";
 
 const DEFAULT_ASPECT = 4 / 3;
 
@@ -29,6 +30,17 @@ export function ImageCropEditor({
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const processingRef = useRef(false);
+  processingRef.current = processing;
+
+  const handleClose = useCallback(() => {
+    if (!processingRef.current) onCancel();
+  }, [onCancel]);
+
+  useModalA11y({
+    open: true,
+    onClose: handleClose,
+  });
 
   const onCropComplete = useCallback((_area: Area, areaPixels: Area) => {
     setCroppedAreaPixels(areaPixels);

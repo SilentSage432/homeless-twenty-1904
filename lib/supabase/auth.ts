@@ -145,8 +145,3 @@ export async function canCurrentUserManageContent(): Promise<boolean> {
   const role = await getCurrentUserRole();
   return canManageContent(role);
 }
-
-/** @deprecated Prefer requireStaffSession / canCurrentUserManageContent */
-export async function isCurrentUserAdmin(): Promise<boolean> {
-  return canCurrentUserManageContent();
-}

@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
 import type { PlaqueRow } from "@/lib/supabase/database.types";
 import { buildMapUrl } from "@/lib/utils";
+import { useModalA11y } from "@/lib/hooks/useModalA11y";
 
 /**
  * Full plaque detail modal. Shared by the grid gallery and the discovery map
@@ -15,6 +17,13 @@ export function PlaqueLightbox({
   plaque: PlaqueRow | null;
   onClose: () => void;
 }) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useModalA11y({
+    open: !!plaque,
+    onClose,
+    initialFocusRef: closeRef,
+  });
+
   if (!plaque) return null;
   const mapUrl = buildMapUrl(plaque);
 
@@ -25,9 +34,6 @@ export function PlaqueLightbox({
       aria-modal="true"
       aria-label={`Plaque detail: ${plaque.title}`}
       onClick={onClose}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") onClose();
-      }}
     >
       <div className="absolute inset-0 bg-charcoal/90" aria-hidden="true" />
       <div
@@ -35,6 +41,7 @@ export function PlaqueLightbox({
         onClick={(e) => e.stopPropagation()}
       >
         <button
+          ref={closeRef}
           type="button"
           className="focus-ring absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center bg-charcoal text-parchment hover:text-gold"
           onClick={onClose}
@@ -80,7 +87,7 @@ export function PlaqueLightbox({
               href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="focus-ring btn-primary mt-6 inline-flex items-center gap-2 px-5 py-3 text-base tracking-wide"
+              className="focus-ring btn-primary mt-6 inline-flex min-h-[44px] items-center gap-2 px-5 py-3 text-base tracking-wide"
               aria-label={`Navigate to ${plaque.title} on Google Maps`}
             >
               <svg

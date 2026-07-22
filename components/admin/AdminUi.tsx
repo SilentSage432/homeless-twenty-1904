@@ -143,15 +143,22 @@ export function AdminToggle({
         aria-checked={checked}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`focus-ring relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
-          checked ? "bg-crimson" : "bg-charcoal/25"
-        } ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+        className={`focus-ring relative inline-flex h-11 w-14 shrink-0 items-center justify-center rounded-sm transition-colors duration-200 ease-in-out ${
+          disabled ? "cursor-not-allowed" : "cursor-pointer"
+        }`}
       >
         <span
-          className={`absolute left-0.5 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-parchment shadow-sm transition-transform duration-200 ease-in-out ${
-            checked ? "translate-x-5" : "translate-x-0"
+          aria-hidden="true"
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out ${
+            checked ? "bg-crimson" : "bg-charcoal/25"
           }`}
-        />
+        >
+          <span
+            className={`absolute left-0.5 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-parchment shadow-sm transition-transform duration-200 ease-in-out ${
+              checked ? "translate-x-5" : "translate-x-0"
+            }`}
+          />
+        </span>
       </button>
     </div>
   );
@@ -203,12 +210,14 @@ export function AdminSelect({
   onChange,
   options,
   required,
+  hint,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   required?: boolean;
+  hint?: string;
 }) {
   const id = useId();
   return (
@@ -230,6 +239,9 @@ export function AdminSelect({
           </option>
         ))}
       </select>
+      {hint ? (
+        <p className="mt-1.5 text-xs text-slate-weathered/90">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -240,12 +252,14 @@ export function AdminTextArea({
   onChange,
   required,
   rows = 4,
+  hint,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   required?: boolean;
   rows?: number;
+  hint?: string;
 }) {
   const id = useId();
   return (
@@ -262,6 +276,9 @@ export function AdminTextArea({
         onChange={(e) => onChange(e.target.value)}
         className="admin-input focus-ring resize-y min-h-[100px]"
       />
+      {hint ? (
+        <p className="mt-1.5 text-xs text-slate-weathered/90">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -492,7 +509,7 @@ export function ImageDropZone({
               ? "Current image kept · drop a new file to replace"
               : onPick
                 ? "JPEG, PNG, or WebP · you'll crop & rotate before saving"
-                : "JPEG, PNG, or WebP · up to 8MB · uploads to plaque-assets"}
+                : "JPEG, PNG, or WebP · up to 8MB"}
         </p>
       </div>
     </div>

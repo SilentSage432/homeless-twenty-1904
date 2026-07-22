@@ -11,9 +11,9 @@ export default function AdminSettingsPage() {
   return (
     <div className="min-h-[80vh] bg-parchment-warm">
       <AdminPageShell
-        eyebrow="CMS · Global Configuration"
+        eyebrow="Public site · Settings"
         title="Site Settings & Banner"
-        description="Announcement banner, lodge metadata, and feature flags for the public site."
+        description="Announcement banner, lodge contact details, and public-site switches."
       >
         <SiteSettingsManager />
       </AdminPageShell>

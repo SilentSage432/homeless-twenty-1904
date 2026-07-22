@@ -18,22 +18,31 @@ const STATUS_STYLE: Record<InquiryStatus, string> = {
   archived: "border-charcoal/25 text-slate-weathered bg-charcoal/[0.04]",
 };
 
+const FRIENDLY_ERROR =
+  "Couldn't save — please try again. If it keeps failing, ask a developer for help.";
+
 export function InquiryInbox() {
   const [rows, setRows] = useState<InquiryRow[]>([]);
   const [filter, setFilter] = useState<InquiryStatus | "all">("new");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [draftNotes, setDraftNotes] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const data = await fetchInquiries();
-    setRows(data);
-    setDraftNotes(
-      Object.fromEntries(data.map((r) => [r.id, r.notes ?? ""]))
-    );
+    try {
+      const data = await fetchInquiries();
+      setRows(data);
+      setDraftNotes(
+        Object.fromEntries(data.map((r) => [r.id, r.notes ?? ""]))
+      );
+    } catch {
+      setError("Couldn't load inquiries. Refresh the page or try again shortly.");
+      setRows([]);
+    }
     setLoading(false);
   }, []);
 
@@ -44,26 +53,32 @@ export function InquiryInbox() {
   async function setStatus(row: InquiryRow, status: InquiryStatus) {
     setBusyId(row.id);
     setError(null);
+    setMessage(null);
     const { error: e } = await updateInquiry(row.id, { status });
     setBusyId(null);
     if (e) {
-      setError(e);
+      setError(FRIENDLY_ERROR);
       return;
     }
     setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, status } : r)));
+    if (status === "replied") setMessage("Marked as replied.");
+    else if (status === "archived") setMessage("Moved to Archived.");
+    else setMessage("Restored to New.");
   }
 
   async function saveNotes(row: InquiryRow) {
     setBusyId(row.id);
     setError(null);
+    setMessage(null);
     const notes = draftNotes[row.id] ?? "";
     const { error: e } = await updateInquiry(row.id, { notes });
     setBusyId(null);
     if (e) {
-      setError(e);
+      setError(FRIENDLY_ERROR);
       return;
     }
     setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, notes } : r)));
+    setMessage("Notes saved.");
   }
 
   const visible =
@@ -76,17 +91,25 @@ export function InquiryInbox() {
 
   return (
     <div className="space-y-5">
+      <p className="font-body text-sm leading-relaxed text-slate-weathered">
+        Open the sender&apos;s email to reply outside this portal, then mark the
+        message as Replied. Archive hides it from New without deleting. Steward
+        notes are private — visitors never see them.
+      </p>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label="Inquiry filters">
           {FILTERS.map((f) => (
             <button
               key={f.value}
               type="button"
+              role="tab"
+              aria-selected={f.value === filter}
               onClick={() => setFilter(f.value)}
               className={
                 f.value === filter
-                  ? "focus-ring border border-charcoal bg-charcoal px-3.5 py-2 text-sm text-parchment"
-                  : "focus-ring border border-parchment/40 bg-parchment/70 px-3.5 py-2 text-sm text-charcoal museum-ease hover:border-charcoal/40"
+                  ? "focus-ring min-h-[44px] border border-charcoal bg-charcoal px-3.5 py-2 text-sm text-parchment"
+                  : "focus-ring min-h-[44px] border border-parchment/40 bg-parchment/70 px-3.5 py-2 text-sm text-charcoal museum-ease hover:border-charcoal/40"
               }
             >
               {f.label}
@@ -109,6 +132,7 @@ export function InquiryInbox() {
       </div>
 
       {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert tone="success">{message}</AdminAlert> : null}
 
       {!loading && visible.length === 0 ? (
         <p className="font-body text-sm text-slate-weathered py-6 text-center">
@@ -170,6 +194,9 @@ export function InquiryInbox() {
                 className="admin-input focus-ring resize-y"
                 placeholder="Add a private note…"
               />
+              <p className="mt-1.5 text-xs text-slate-weathered/90">
+                Only stewards can see these notes.
+              </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -177,7 +204,7 @@ export function InquiryInbox() {
                 type="button"
                 onClick={() => void saveNotes(row)}
                 disabled={busyId === row.id}
-                className="focus-ring border border-charcoal/20 px-4 py-2 text-sm museum-ease hover:border-charcoal/40 disabled:opacity-60"
+                className="focus-ring min-h-[44px] border border-charcoal/20 px-4 py-2 text-sm museum-ease hover:border-charcoal/40 disabled:opacity-60"
               >
                 Save notes
               </button>
@@ -186,7 +213,7 @@ export function InquiryInbox() {
                   type="button"
                   onClick={() => void setStatus(row, "replied")}
                   disabled={busyId === row.id}
-                  className="focus-ring px-1 text-sm text-emerald-700 underline underline-offset-4 disabled:opacity-60"
+                  className="focus-ring tap-target px-1 text-sm text-emerald-700 underline underline-offset-4 disabled:opacity-60"
                 >
                   Mark as Replied
                 </button>
@@ -196,7 +223,7 @@ export function InquiryInbox() {
                   type="button"
                   onClick={() => void setStatus(row, "archived")}
                   disabled={busyId === row.id}
-                  className="focus-ring px-1 text-sm text-slate-weathered underline underline-offset-4 hover:text-charcoal disabled:opacity-60"
+                  className="focus-ring tap-target px-1 text-sm text-slate-weathered underline underline-offset-4 hover:text-charcoal disabled:opacity-60"
                 >
                   Archive
                 </button>
@@ -205,7 +232,7 @@ export function InquiryInbox() {
                   type="button"
                   onClick={() => void setStatus(row, "new")}
                   disabled={busyId === row.id}
-                  className="focus-ring px-1 text-sm text-slate-weathered underline underline-offset-4 hover:text-charcoal disabled:opacity-60"
+                  className="focus-ring tap-target px-1 text-sm text-slate-weathered underline underline-offset-4 hover:text-charcoal disabled:opacity-60"
                 >
                   Restore to New
                 </button>
