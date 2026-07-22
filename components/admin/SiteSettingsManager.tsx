@@ -231,8 +231,8 @@ export function SiteSettingsManager() {
               setFlags((f) => ({ ...f, show_interactive_map: v }))
             }
             showStatus
-            previewHref="/plaques"
-            previewLabel="Preview plaques page ↗"
+            previewHref="/plaques?view=map"
+            previewLabel="Preview plaque map ↗"
             hint="On: the Plaque Gallery (/plaques) includes a map with location pins alongside the photo grid. Off: only the photo grid is shown — the map toggle is hidden."
           />
         </div>

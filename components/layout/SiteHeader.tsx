@@ -29,12 +29,16 @@ function ShieldKeyIcon({ className }: { className?: string }) {
   );
 }
 
-const NAV = [
+type NavItem =
+  | { href: string; label: string; hash: string }
+  | { href: string; label: string; hash: null };
+
+const NAV: NavItem[] = [
   { href: "/#top", label: "Home", hash: "top" },
   { href: "/#about", label: "About Us", hash: "about" },
-  { href: "/#plaques", label: "Historical Plaques", hash: "plaques" },
+  { href: "/plaques", label: "Plaque Gallery", hash: null },
   { href: "/#events", label: "Events", hash: "events" },
-] as const;
+];
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -144,7 +148,10 @@ export function SiteHeader() {
 
           <nav className="hidden lg:flex items-center gap-7" aria-label="Primary">
             {NAV.map((item) => {
-              const active = pathname === "/" && activeHash === item.hash;
+              const active =
+                item.hash === null
+                  ? pathname === "/plaques" || pathname.startsWith("/plaques/")
+                  : pathname === "/" && activeHash === item.hash;
               return (
                 <Link
                   key={item.href}

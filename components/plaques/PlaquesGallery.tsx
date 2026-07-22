@@ -124,7 +124,7 @@ export function PlaquesGallery({
               id="plaques-heading"
               className="font-display text-charcoal text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight mb-5"
             >
-              Historical Plaque Gallery
+              Plaque Gallery
             </h2>
             <div className="ornament-rule max-w-xs mx-auto mb-5" aria-hidden="true">
               <span className="ornament-diamond" />

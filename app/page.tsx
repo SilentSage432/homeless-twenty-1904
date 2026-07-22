@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { HeroSection } from "@/components/hero/HeroSection";
 import { AboutSection } from "@/components/about/AboutSection";
 import { PlaquesGallery } from "@/components/plaques/PlaquesGallery";
@@ -28,6 +29,20 @@ export default function HomePage() {
         </div>
       </aside>
       <PlaquesGallery />
+      <div className="bg-parchment-warm/50 pb-16 sm:pb-20 -mt-6 sm:-mt-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+          <p className="font-body text-base sm:text-lg text-slate-weathered mb-6 max-w-xl mx-auto">
+            See where each marker stands across the Magic Valley — open the
+            interactive map with location pins.
+          </p>
+          <Link
+            href="/plaques?view=map"
+            className="focus-ring btn-primary inline-flex min-h-[44px] items-center gap-2 px-7 py-3.5 text-base tracking-wide"
+          >
+            Explore Interactive Plaque Map ↗
+          </Link>
+        </div>
+      </div>
       <EventsBoard />
     </>
   );

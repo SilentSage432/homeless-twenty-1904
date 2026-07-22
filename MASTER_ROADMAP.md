@@ -24,6 +24,7 @@
 - [x] Resilience & performance: on-demand revalidation on CMS saves, content revision history + one-click undo, client-side WebP image compression, JSON data-snapshot export, contact email alert + ack payload
 - [x] Canonical `AdminToggle` primitive (vertically-centered switch, `role="switch"`, single owner) — replaces the ad-hoc settings toggle
 - [x] Full repo audit polish: steward-facing helper/confirm copy, modal a11y baseline (`useModalA11y`), tap targets, dead-export cleanup
+- [x] Plaque Gallery nav label + homepage map CTA + `/plaques?view=map` deep link
 - [x] Typecheck + production build green
 
 ## Near-term

@@ -1,5 +1,14 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-21 — Plaque Gallery nav + map deep-link discovery
+
+- Navbar (`SiteHeader`) label **Historical Plaques → Plaque Gallery**, linking to `/plaques` (active when on that route). Footer Explore link now also points to `/plaques` for parity.
+- Homepage CTA under the plaque grid: **Explore Interactive Plaque Map ↗** → `/plaques?view=map`.
+- `/plaques` reads `?view=map` (server `searchParams` + client sync); tab switches update the query string. Heading copy standardized to “Plaque Gallery”.
+- Typecheck green.
+
+---
+
 ## 2026-07-21 — Full repo audit: steward UX, a11y, hygiene
 
 - **Steward UX:** plain-English helpers and friendlier success/confirm copy across Site Settings, Content/FAQs, Inquiries, Documents, Data browser, Events/Plaques managers, and Personnel. Renamed Feature Flags → “Public site switches”; softened Database → “Data browser”; removed jargon from empty/denied states.

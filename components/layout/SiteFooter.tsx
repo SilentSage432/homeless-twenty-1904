@@ -35,7 +35,7 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/#plaques" className="focus-ring text-parchment/80 hover:text-gold">
+                <Link href="/plaques" className="focus-ring text-parchment/80 hover:text-gold">
                   Plaque Gallery
                 </Link>
               </li>
