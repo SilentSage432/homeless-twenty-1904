@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { fetchSection } from "@/lib/supabase/cms";
+import { CmsText } from "@/components/CmsText";
+import { getContentSection } from "@/lib/supabase/cms";
 
 const PILLARS = [
   {
@@ -16,10 +17,16 @@ const PILLARS = [
   },
 ] as const;
 
-export async function AboutSection() {
-  const lore = await fetchSection("about-lore").catch(() => null);
-  const heading = lore?.title?.trim() || "Guardians of Magic Valley Lore";
-  const loreHtml = lore?.content?.trim() || null;
+export async function AboutSection({
+  showHistory = false,
+}: {
+  /** When true (About page), also render the History block. */
+  showHistory?: boolean;
+}) {
+  const mission = await getContentSection("about_mission");
+  const history = showHistory
+    ? await getContentSection("about_history")
+    : null;
 
   return (
     <section
@@ -41,7 +48,7 @@ export async function AboutSection() {
               id="about-heading"
               className="font-display text-charcoal text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight mb-6"
             >
-              {heading}
+              {mission.title || "Guardians of Magic Valley Lore"}
             </h2>
             <div className="h-px w-16 bg-gold mb-8" aria-hidden="true" />
             <figure className="relative">
@@ -62,29 +69,10 @@ export async function AboutSection() {
           </div>
 
           <div className="lg:col-span-7">
-            {loreHtml ? (
-              <div
-                className="cms-prose font-body text-lg leading-[1.85] text-parchment-ink/90 mb-10 space-y-6"
-                dangerouslySetInnerHTML={{ __html: loreHtml }}
-              />
-            ) : (
-              <>
-                <p className="drop-cap font-body text-lg sm:text-[1.125rem] leading-[1.85] text-parchment-ink/90 mb-6">
-                  Homeless Twenty 1904 is a historical society interested in
-                  raising awareness of western heritage in Southern and Eastern
-                  Idaho. We focus heavily on preserving Eastern Idaho and Magic
-                  Valley history through community engagement, events, and the
-                  physical placement of historical markers and plaques that honor
-                  our region&apos;s rich past.
-                </p>
-                <p className="font-body text-lg leading-[1.85] text-parchment-ink/85 mb-10">
-                  We gather as neighbors and keepers of memory — educators,
-                  outdoor wanderers, long-time locals, and anyone who believes a
-                  plaque on a quiet roadside can outlast a generation of
-                  forgetting.
-                </p>
-              </>
-            )}
+            <CmsText
+              content={mission.content}
+              className="cms-prose font-body text-lg leading-[1.85] text-parchment-ink/90 mb-10 space-y-6"
+            />
 
             <ul className="space-y-6 border-l-2 border-crimson/30 pl-6" role="list">
               {PILLARS.map((pillar) => (
@@ -98,6 +86,18 @@ export async function AboutSection() {
                 </li>
               ))}
             </ul>
+
+            {history && history.content.trim() ? (
+              <div className="mt-12 border-t border-charcoal/10 pt-10">
+                <h3 className="font-display text-2xl text-charcoal font-semibold mb-4">
+                  {history.title || "Our History"}
+                </h3>
+                <CmsText
+                  content={history.content}
+                  className="cms-prose font-body text-lg leading-[1.85] text-parchment-ink/85 space-y-4"
+                />
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

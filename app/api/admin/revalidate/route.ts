@@ -5,7 +5,7 @@ import { requireStaffRequest } from "@/lib/supabase/admin";
 export const runtime = "nodejs";
 
 // Only public, CMS-driven routes may be revalidated on demand.
-const ALLOWED_PATHS = new Set(["/", "/about", "/plaques", "/events"]);
+const ALLOWED_PATHS = new Set(["/", "/about", "/plaques", "/events", "/contact"]);
 const DEFAULT_PATHS = ["/", "/about", "/plaques"];
 
 /**

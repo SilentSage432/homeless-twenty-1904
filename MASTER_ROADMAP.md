@@ -25,6 +25,7 @@
 - [x] Canonical `AdminToggle` primitive (vertically-centered switch, `role="switch"`, single owner) — replaces the ad-hoc settings toggle
 - [x] Full repo audit polish: steward-facing helper/confirm copy, modal a11y baseline (`useModalA11y`), tap targets, dead-export cleanup
 - [x] Plaque Gallery nav label + homepage map CTA + `/plaques?view=map` deep link
+- [x] Expanded CMS page-copy engine (`getContentSection`, tabbed Content Manager, `/contact` page)
 - [x] Typecheck + production build green
 
 ## Near-term
@@ -33,6 +34,7 @@
 - [ ] Apply `supabase/migrations/20260720_admin_exec_sql.sql` (developer SQL console) to the live DB
 - [ ] Apply `supabase/migrations/20260721_site_settings_and_cms.sql` (CMS suite + lodge-documents bucket) to the live DB
 - [ ] Apply `supabase/migrations/20260721_content_revisions.sql` (content revision history) to the live DB
+- [ ] Apply `supabase/migrations/20260721_expand_content_sections.sql` (About/Home/Events/Contact copy seeds) to the live DB
 - [ ] Final hero-oval historic photograph drop-in
 - [ ] Authentic plaque photography via dashboard uploads
 - [ ] Stripe Payment Links on events

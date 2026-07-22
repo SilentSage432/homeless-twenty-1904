@@ -120,6 +120,176 @@ export async function updateSiteSettings(
 
 // --- Content sections --------------------------------------------------------
 
+export type ContentSectionSlug =
+  | "about_hero"
+  | "about_mission"
+  | "about_history"
+  | "home_intro"
+  | "home_heritage_callout"
+  | "events_intro"
+  | "contact_intro"
+  | "about-lore"
+  | "president-message";
+
+export type ContentPageGroup =
+  | "about"
+  | "homepage"
+  | "events_contact"
+  | "legacy";
+
+export type ContentSectionDefault = {
+  slug: ContentSectionSlug;
+  title: string;
+  content: string;
+  label: string;
+  group: ContentPageGroup;
+  /** Public paths to revalidate when this section is saved. */
+  revalidatePaths: string[];
+};
+
+/**
+ * Canonical catalog of editable page blocks. Ownership lives here — public
+ * pages and the Content Manager both compose from these defaults.
+ */
+export const CONTENT_SECTION_DEFAULTS: ContentSectionDefault[] = [
+  {
+    slug: "about_hero",
+    label: "About · Hero",
+    group: "about",
+    title: "About Homeless Twenty 1904",
+    content:
+      "Guardians of Magic Valley lore and western heritage across Southern and Eastern Idaho.",
+    revalidatePaths: ["/about"],
+  },
+  {
+    slug: "about_mission",
+    label: "About · Mission",
+    group: "about",
+    title: "Guardians of Magic Valley Lore",
+    content:
+      "Homeless Twenty 1904 is a historical society interested in raising awareness of western heritage in Southern and Eastern Idaho. We focus heavily on preserving Eastern Idaho and Magic Valley history through community engagement, events, and the physical placement of historical markers and plaques that honor our region's rich past.\n\nWe gather as neighbors and keepers of memory — educators, outdoor wanderers, long-time locals, and anyone who believes a plaque on a quiet roadside can outlast a generation of forgetting.",
+    revalidatePaths: ["/", "/about"],
+  },
+  {
+    slug: "about_history",
+    label: "About · History",
+    group: "about",
+    title: "Our History",
+    content:
+      "From early trail markers to present-day commemorations, the lodge preserves stories that shaped the Magic Valley — and invites every generation to keep the record alive.",
+    revalidatePaths: ["/about"],
+  },
+  {
+    slug: "home_intro",
+    label: "Homepage · Intro",
+    group: "homepage",
+    title: "Welcome",
+    content:
+      "Homeless Twenty 1904 preserves western heritage across Southern and Eastern Idaho — through plaques, gatherings, and the stories we refuse to forget.",
+    revalidatePaths: ["/"],
+  },
+  {
+    slug: "home_heritage_callout",
+    label: "Homepage · Heritage callout",
+    group: "homepage",
+    title: "Homeless Twenty 1904",
+    content: "A region that remembers its trails will never lose its way.",
+    revalidatePaths: ["/"],
+  },
+  {
+    slug: "events_intro",
+    label: "Events · Intro",
+    group: "events_contact",
+    title: "Upcoming Events",
+    content:
+      "Join us for dinners, trail markers, and fellowship across the Magic Valley. Pre-pay when ready — secure payment links appear when each event opens.",
+    revalidatePaths: ["/", "/events"],
+  },
+  {
+    slug: "contact_intro",
+    label: "Contact · Intro",
+    group: "events_contact",
+    title: "Contact the Lodge",
+    content:
+      "Questions about plaques, events, membership, or local history? Send a message to lodge leadership — we read every note.",
+    revalidatePaths: ["/contact"],
+  },
+  {
+    slug: "president-message",
+    label: "About · President's message",
+    group: "about",
+    title: "A Word from the President",
+    content: "",
+    revalidatePaths: ["/about"],
+  },
+  {
+    slug: "about-lore",
+    label: "About · Lodge lore (legacy)",
+    group: "legacy",
+    title: "Guardians of Magic Valley Lore",
+    content:
+      "Homeless Twenty 1904 is a historical society interested in raising awareness of western heritage in Southern and Eastern Idaho. We focus heavily on preserving Eastern Idaho and Magic Valley history through community engagement, events, and the physical placement of historical markers and plaques that honor our region's rich past.\n\nWe gather as neighbors and keepers of memory — educators, outdoor wanderers, long-time locals, and anyone who believes a plaque on a quiet roadside can outlast a generation of forgetting.",
+    revalidatePaths: ["/", "/about"],
+  },
+];
+
+export function getContentSectionDefault(
+  slug: string
+): ContentSectionDefault | undefined {
+  return CONTENT_SECTION_DEFAULTS.find((d) => d.slug === slug);
+}
+
+export type ResolvedContentSection = {
+  slug: string;
+  title: string;
+  content: string;
+  /** True when non-empty content came from the database. */
+  fromDb: boolean;
+};
+
+/**
+ * Public helper: return database text when present, otherwise catalog/passed
+ * fallback. Never throws — pages always receive renderable copy.
+ */
+export async function getContentSection(
+  slug: string,
+  fallback?: { title?: string; content?: string }
+): Promise<ResolvedContentSection> {
+  const catalog = getContentSectionDefault(slug);
+  const fbTitle = fallback?.title?.trim() || catalog?.title || "";
+  const fbContent = fallback?.content ?? catalog?.content ?? "";
+
+  try {
+    const row = await fetchSection(slug);
+    const dbContent = row?.content?.trim() ?? "";
+    if (dbContent) {
+      return {
+        slug,
+        title: row?.title?.trim() || fbTitle,
+        content: dbContent,
+        fromDb: true,
+      };
+    }
+    // Prefer legacy about-lore when about_mission has not been seeded yet.
+    if (slug === "about_mission") {
+      const legacy = await fetchSection("about-lore");
+      const legacyContent = legacy?.content?.trim() ?? "";
+      if (legacyContent) {
+        return {
+          slug,
+          title: legacy?.title?.trim() || fbTitle,
+          content: legacyContent,
+          fromDb: true,
+        };
+      }
+    }
+  } catch {
+    // Fall through to defaults.
+  }
+
+  return { slug, title: fbTitle, content: fbContent, fromDb: false };
+}
+
 export async function fetchSections(): Promise<SiteContentSection[]> {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return [];
@@ -129,6 +299,46 @@ export async function fetchSections(): Promise<SiteContentSection[]> {
     .order("slug", { ascending: true });
   if (error || !data) return [];
   return data;
+}
+
+/**
+ * Merge DB rows with the catalog so the editor always shows every editable
+ * block — even before a steward has saved it for the first time.
+ */
+export async function fetchSectionsForEditor(): Promise<
+  Array<SiteContentSection & { label: string; group: ContentPageGroup }>
+> {
+  const rows = await fetchSections();
+  const bySlug = new Map(rows.map((r) => [r.slug, r]));
+
+  const catalogued = CONTENT_SECTION_DEFAULTS.filter(
+    (d) => d.group !== "legacy"
+  ).map((d) => {
+    const row = bySlug.get(d.slug);
+    bySlug.delete(d.slug);
+    return {
+      id: row?.id ?? `draft-${d.slug}`,
+      slug: d.slug,
+      title: row?.title ?? d.title,
+      content: row?.content ?? d.content,
+      updated_at: row?.updated_at ?? new Date(0).toISOString(),
+      updated_by: row?.updated_by ?? null,
+      label: d.label,
+      group: d.group,
+    };
+  });
+
+  // Surface any unexpected DB-only rows (e.g. legacy about-lore) at the end.
+  const extras = Array.from(bySlug.values()).map((row) => {
+    const d = getContentSectionDefault(row.slug);
+    return {
+      ...row,
+      label: d?.label ?? row.slug,
+      group: d?.group ?? ("legacy" as ContentPageGroup),
+    };
+  });
+
+  return [...catalogued, ...extras];
 }
 
 export async function fetchSection(

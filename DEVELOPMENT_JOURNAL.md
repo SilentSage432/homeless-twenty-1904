@@ -1,5 +1,14 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-21 — Expanded CMS page-copy engine
+
+- **Catalog ownership in `cms.ts`:** registered defaults for `about_hero` / `about_mission` / `about_history`, `home_intro` / `home_heritage_callout`, `events_intro`, `contact_intro` (+ legacy `president-message` / `about-lore`). New `getContentSection(slug, fallback)` and `fetchSectionsForEditor()` merge DB rows with catalog fallbacks. Migration `20260721_expand_content_sections.sql` seeds the new slugs (`ON CONFLICT DO NOTHING`).
+- **Content Manager tabs:** About Us · Homepage (hero + copy) · Events & Contact · FAQs. Section cards show plaintext editing, live character counts, instant preview, revision history, and path-aware `requestRevalidate` (allowlist now includes `/contact`).
+- **Public wiring:** About page hero/mission/history; homepage intro + heritage callout; Events intro via props; new `/contact` page with `contact_intro` + Send a message CTA. Shared `CmsText` renders plaintext paragraphs or legacy HTML.
+- Typecheck + lint + build green.
+
+---
+
 ## 2026-07-21 — Plaque Gallery nav + map deep-link discovery
 
 - Navbar (`SiteHeader`) label **Historical Plaques → Plaque Gallery**, linking to `/plaques` (active when on that route). Footer Explore link now also points to `/plaques` for parity.

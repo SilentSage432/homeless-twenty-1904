@@ -5,7 +5,17 @@ import { fetchEvents } from "@/lib/supabase/content";
 import { buildMapUrl, formatEventDate } from "@/lib/utils";
 import { useContactModal } from "@/components/contact/ContactModalContext";
 
-export function EventsBoard({ heading = true }: { heading?: boolean }) {
+export function EventsBoard({
+  heading = true,
+  introTitle,
+  introBody,
+}: {
+  heading?: boolean;
+  /** CMS-managed heading; falls back to “Upcoming Events”. */
+  introTitle?: string;
+  /** CMS-managed intro paragraph. */
+  introBody?: string;
+}) {
   const { open: openContact } = useContactModal();
   const { data, isLoading } = useQuery({
     queryKey: ["events"],
@@ -14,6 +24,10 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
 
   const events = data?.data ?? [];
   const upcoming = events.filter((e) => new Date(e.date).getTime() >= Date.now() - 86_400_000);
+  const title = introTitle?.trim() || "Upcoming Events";
+  const body =
+    introBody?.trim() ||
+    "Join us for dinners, trail markers, and fellowship across the Magic Valley. Pre-pay when ready — secure payment links appear when each event opens.";
 
   return (
     <section
@@ -31,13 +45,11 @@ export function EventsBoard({ heading = true }: { heading?: boolean }) {
               id="events-heading"
               className="font-display text-charcoal text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight mb-5"
             >
-              Upcoming Events
+              {title}
             </h2>
             <div className="h-px w-16 bg-gold mb-5" aria-hidden="true" />
-            <p className="font-body text-lg leading-relaxed text-slate-weathered">
-              Join us for dinners, trail markers, and fellowship across the Magic
-              Valley. Pre-pay when ready — secure payment links appear when each
-              event opens.
+            <p className="font-body text-lg leading-relaxed text-slate-weathered whitespace-pre-wrap">
+              {body}
             </p>
           </div>
         )}

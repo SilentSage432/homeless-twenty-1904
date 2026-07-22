@@ -11,9 +11,9 @@ export default function AdminContentPage() {
   return (
     <div className="min-h-[80vh] bg-parchment-warm">
       <AdminPageShell
-        eyebrow="Public site · Homepage & FAQs"
+        eyebrow="Public site · Page copy & FAQs"
         title="Content & FAQs"
-        description="Homepage hero, editable page sections, and the public FAQ list."
+        description="Edit the words on About, Homepage, Events, and Contact — plus the public FAQ list."
       >
         <ContentManager />
       </AdminPageShell>

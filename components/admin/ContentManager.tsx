@@ -15,35 +15,84 @@ import {
   deleteFaq,
   fetchFaqs,
   fetchRevisions,
-  fetchSections,
+  fetchSectionsForEditor,
   fetchSiteSettings,
+  getContentSectionDefault,
   updateFaq,
   updateSiteSettings,
   upsertSection,
+  type ContentPageGroup,
 } from "@/lib/supabase/cms";
 import type {
   ContentRevision,
   FaqRow,
   HeroConfig,
-  SiteContentSection,
 } from "@/lib/supabase/database.types";
 import { useModalA11y } from "@/lib/hooks/useModalA11y";
 
-const SECTION_LABELS: Record<string, string> = {
-  "about-lore": "About page · Lodge lore",
-  "president-message": "About page · President's message",
-};
+type EditorSection = Awaited<ReturnType<typeof fetchSectionsForEditor>>[number];
+
+type ContentTab = "about" | "homepage" | "events_contact" | "faqs";
+
+const CONTENT_TABS: { id: ContentTab; label: string }[] = [
+  { id: "about", label: "About Us" },
+  { id: "homepage", label: "Homepage" },
+  { id: "events_contact", label: "Events & Contact" },
+  { id: "faqs", label: "FAQs" },
+];
 
 function sectionLabel(slug: string): string {
-  return SECTION_LABELS[slug] ?? slug;
+  return getContentSectionDefault(slug)?.label ?? slug;
+}
+
+function pathsForSlug(slug: string): string[] {
+  return (
+    getContentSectionDefault(slug)?.revalidatePaths ?? ["/", "/about", "/events", "/contact"]
+  );
 }
 
 export function ContentManager() {
+  const [tab, setTab] = useState<ContentTab>("about");
+
   return (
     <div className="space-y-8">
-      <HeroManager />
-      <SectionEditor />
-      <FaqManager />
+      <div
+        className="flex flex-wrap gap-2"
+        role="tablist"
+        aria-label="Content pages"
+      >
+        {CONTENT_TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={
+              tab === t.id
+                ? "focus-ring min-h-[44px] border border-charcoal bg-charcoal px-4 py-2 text-sm text-parchment"
+                : "focus-ring min-h-[44px] border border-charcoal/20 bg-white/70 px-4 py-2 text-sm text-charcoal museum-ease hover:border-charcoal/40"
+            }
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "homepage" ? <HeroManager /> : null}
+      {tab === "faqs" ? (
+        <FaqManager />
+      ) : (
+        <SectionEditor
+          group={
+            tab === "about"
+              ? "about"
+              : tab === "homepage"
+                ? "homepage"
+                : "events_contact"
+          }
+        />
+      )}
     </div>
   );
 }
@@ -145,9 +194,11 @@ function HeroManager() {
 
 // --- Sections -----------------------------------------------------------------
 
-function SectionEditor() {
-  const [sections, setSections] = useState<SiteContentSection[]>([]);
-  const [drafts, setDrafts] = useState<Record<string, { title: string; content: string }>>({});
+function SectionEditor({ group }: { group: ContentPageGroup }) {
+  const [sections, setSections] = useState<EditorSection[]>([]);
+  const [drafts, setDrafts] = useState<
+    Record<string, { title: string; content: string }>
+  >({});
   const [loading, setLoading] = useState(true);
   const [savingSlug, setSavingSlug] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -156,7 +207,7 @@ function SectionEditor() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const data = await fetchSections();
+    const data = await fetchSectionsForEditor();
     setSections(data);
     setDrafts(
       Object.fromEntries(
@@ -170,6 +221,8 @@ function SectionEditor() {
     void load();
   }, [load]);
 
+  const visible = sections.filter((s) => s.group === group);
+
   async function save(slug: string) {
     setSavingSlug(slug);
     setError(null);
@@ -179,8 +232,9 @@ function SectionEditor() {
     const { error: e } = await upsertSection(slug, draft, userId);
     setSavingSlug(null);
     if (e) return setError(e);
-    await requestRevalidate(["/", "/about"]);
+    await requestRevalidate(pathsForSlug(slug));
     setMessage(`Saved “${sectionLabel(slug)}” and published.`);
+    await load();
   }
 
   async function restore(slug: string, content: string, createdAt: string) {
@@ -203,77 +257,121 @@ function SectionEditor() {
     if (e) return setError(e);
     setDrafts((d) => ({ ...d, [slug]: { title, content } }));
     await load();
-    await requestRevalidate(["/", "/about"]);
-    setMessage(`Restored the ${when} version of “${sectionLabel(slug)}” and published it.`);
+    await requestRevalidate(pathsForSlug(slug));
+    setMessage(
+      `Restored the ${when} version of “${sectionLabel(slug)}” and published it.`
+    );
   }
+
+  const groupTitle =
+    group === "about"
+      ? "About Us page copy"
+      : group === "homepage"
+        ? "Homepage copy"
+        : "Events & Contact copy";
 
   return (
     <AdminSection
-      eyebrow="Pages · Static Content"
-      title="Section Editor"
-      description="Edit reusable page blocks. Content accepts basic HTML (paragraphs, links, lists). Every save is snapshotted to revision history."
+      eyebrow="Pages · Editable text"
+      title={groupTitle}
+      description="Edit the words visitors see on this page. Use plain paragraphs (blank line between paragraphs). Every save is snapshotted to revision history and published immediately."
       deck
     >
       {loading ? (
         <p className="font-body text-sm text-slate-weathered">Loading…</p>
-      ) : sections.length === 0 ? (
+      ) : visible.length === 0 ? (
         <p className="font-body text-sm text-slate-weathered">
-          No page sections are set up yet. Ask a developer to finish site setup,
-          then refresh.
+          No sections in this group yet.
         </p>
       ) : (
         <div className="space-y-6">
           {error ? <AdminAlert tone="error">{error}</AdminAlert> : null}
           {message ? <AdminAlert tone="success">{message}</AdminAlert> : null}
-          {sections.map((section) => (
-            <div
-              key={section.slug}
-              className="border border-charcoal/12 bg-white/70 p-4 space-y-3"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-body text-sm font-medium text-charcoal">
-                  {sectionLabel(section.slug)}
+          {visible.map((section) => {
+            const draft = drafts[section.slug] ?? {
+              title: section.title,
+              content: section.content,
+            };
+            const charCount = draft.content.length;
+            return (
+              <div
+                key={section.slug}
+                className="border border-charcoal/12 bg-white/70 p-4 space-y-3"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="font-body text-sm font-medium text-charcoal">
+                      {section.label}
+                    </p>
+                    <p className="font-mono text-[10px] text-slate-weathered">
+                      {section.slug}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setHistorySlug(section.slug)}
+                    className="focus-ring tap-target px-1 text-xs tracking-wide text-crimson underline underline-offset-4"
+                  >
+                    Revision history
+                  </button>
+                </div>
+                <AdminField
+                  label="Title"
+                  value={draft.title}
+                  onChange={(v) =>
+                    setDrafts((d) => ({
+                      ...d,
+                      [section.slug]: { ...draft, title: v },
+                    }))
+                  }
+                  hint="Shown as the section heading on the public page (when used)."
+                />
+                <AdminTextArea
+                  label="Body text"
+                  rows={6}
+                  value={draft.content}
+                  onChange={(v) =>
+                    setDrafts((d) => ({
+                      ...d,
+                      [section.slug]: { ...draft, content: v },
+                    }))
+                  }
+                  hint="Plain text preferred. Separate paragraphs with a blank line."
+                />
+                <p className="text-xs text-slate-weathered" aria-live="polite">
+                  {charCount.toLocaleString()} character
+                  {charCount === 1 ? "" : "s"}
                 </p>
+
+                <div className="border border-charcoal/10 bg-parchment/80 p-4">
+                  <p className="admin-label mb-2">Live preview</p>
+                  {draft.title.trim() ? (
+                    <p className="font-display text-xl text-charcoal mb-2">
+                      {draft.title}
+                    </p>
+                  ) : null}
+                  {draft.content.trim() ? (
+                    <div className="font-body text-sm leading-relaxed text-slate-weathered whitespace-pre-wrap">
+                      {draft.content}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-slate-weathered italic">
+                      (empty — visitors will see the default fallback copy)
+                    </p>
+                  )}
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => setHistorySlug(section.slug)}
-                  className="focus-ring tap-target px-1 text-xs tracking-wide text-crimson underline underline-offset-4"
+                  onClick={() => void save(section.slug)}
+                  disabled={savingSlug === section.slug}
+                  className="focus-ring btn-primary px-5 py-2 text-sm tracking-wide disabled:opacity-60"
                 >
-                  Revision history
+                  {savingSlug === section.slug ? "Saving…" : "Save section"}
                 </button>
               </div>
-              <AdminField
-                label="Title"
-                value={drafts[section.slug]?.title ?? ""}
-                onChange={(v) =>
-                  setDrafts((d) => ({
-                    ...d,
-                    [section.slug]: { ...d[section.slug], title: v },
-                  }))
-                }
-              />
-              <AdminTextArea
-                label="Content (HTML)"
-                rows={6}
-                value={drafts[section.slug]?.content ?? ""}
-                onChange={(v) =>
-                  setDrafts((d) => ({
-                    ...d,
-                    [section.slug]: { ...d[section.slug], content: v },
-                  }))
-                }
-                hint="You can use simple formatting: paragraphs, links, and lists. Avoid pasting from Word if the layout looks broken."
-              />
-              <button
-                type="button"
-                onClick={() => void save(section.slug)}
-                disabled={savingSlug === section.slug}
-                className="focus-ring btn-primary px-5 py-2 text-sm tracking-wide disabled:opacity-60"
-              >
-                {savingSlug === section.slug ? "Saving…" : "Save section"}
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -324,7 +422,11 @@ function RevisionHistoryModal({
       aria-modal="true"
       aria-label={`Revision history for ${sectionLabel(slug)}`}
     >
-      <div className="absolute inset-0 bg-charcoal/90" aria-hidden="true" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-charcoal/90"
+        aria-hidden="true"
+        onClick={onClose}
+      />
       <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col border border-gold/40 bg-parchment shadow-[var(--shadow-lift)]">
         <div className="flex items-center justify-between gap-3 border-b border-charcoal/10 bg-charcoal px-5 py-4">
           <div>
@@ -342,8 +444,19 @@ function RevisionHistoryModal({
             aria-label="Close revision history"
             className="focus-ring flex h-11 w-11 items-center justify-center text-parchment/80 hover:text-gold"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -358,7 +471,10 @@ function RevisionHistoryModal({
           ) : (
             <ul className="space-y-3">
               {revisions.map((rev) => (
-                <li key={rev.id} className="border border-charcoal/12 bg-white/70 p-3">
+                <li
+                  key={rev.id}
+                  className="border border-charcoal/12 bg-white/70 p-3"
+                >
                   <div className="flex items-center justify-between gap-3">
                     <span className="font-mono text-[11px] text-slate-weathered">
                       {new Date(rev.created_at).toLocaleString()}
@@ -372,7 +488,8 @@ function RevisionHistoryModal({
                     </button>
                   </div>
                   <p className="mt-2 line-clamp-3 font-mono text-xs text-charcoal/80">
-                    {rev.content.replace(/<[^>]+>/g, " ").slice(0, 240) || "(empty)"}
+                    {rev.content.replace(/<[^>]+>/g, " ").slice(0, 240) ||
+                      "(empty)"}
                   </p>
                 </li>
               ))}

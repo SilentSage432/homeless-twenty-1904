@@ -25,14 +25,14 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 - `/admin/settings` (`SiteSettingsManager`): announcement banner (with live preview), lodge info, public-site switches. All switches use the canonical `AdminToggle` — hints, Live/Disabled badges, preview links. Lodge fields + banner fields carry plain-English helpers. **Use `AdminToggle` for any new on/off control.**
 - Modal a11y baseline: `lib/hooks/useModalA11y.ts` (Escape, body scroll lock, initial focus, restore focus) used by PlaqueLightbox, ImageCropEditor, Revision history, Quick Edit.
 - `/admin/inquiries` (`InquiryInbox`): triage new/replied/archived, edit internal notes.
-- `/admin/content` (`ContentManager`): Hero Manager, Section Editor (HTML), FAQ Manager (add/edit/publish/reorder/delete).
+- `/admin/content` (`ContentManager`): tabbed **About Us · Homepage · Events & Contact · FAQs**. Catalog-driven sections (`CONTENT_SECTION_DEFAULTS` + `getContentSection` / `fetchSectionsForEditor` in `cms.ts`); plaintext editors with character counts + live preview; revision history retained.
 - `/admin/documents` (`DocumentManager`): upload to `lodge-documents`, list/remove.
-- Public: `AnnouncementBanner` (top of layout, dismissible per session, `--ann-height` offsets header/main; hidden on `/admin`); `FaqAccordion` + `DocumentDownloadList` + optional `president-message` on `/about`. `HeroSection`/`AboutSection` read `hero_config`/`about-lore` (async, `revalidate=30` on `/` + `/about`).
+- Public: `AnnouncementBanner`; About uses `about_hero`/`about_mission`/`about_history`/`president-message`; Home uses `home_intro`/`home_heritage_callout`; Events uses `events_intro`; new `/contact` page uses `contact_intro` (`CmsText` renderer). Seed: `20260721_expand_content_sections.sql`.
 - Nav UX: `AdminNav` = mobile dropdown (active section + new-inquiry badge) / desktop tabs. `SiteHeader` shows an "Admin Cockpit" pill for staff on desktop and a "Steward Portal" link in the mobile drawer (staff detected via `getCurrentUserRole`).
 - Feature flags: `allow_inquiries` gates `/api/contact` (persists to `inquiries` via service role; friendly 403 when off); `show_interactive_map` hides the `/plaques` map toggle; `allow_rsvps` stored.
 
 **Resilience & performance**
-- Instant publish: every CMS save calls `requestRevalidate()` (staff-api) → `POST /api/admin/revalidate` (`requireStaffRequest`, path allowlist) → `revalidatePath`, so `/ · /about · /plaques` update immediately (ISR `revalidate=30` remains as a safety net).
+- Instant publish: every CMS save calls `requestRevalidate()` → `POST /api/admin/revalidate` (path allowlist `/ · /about · /plaques · /events · /contact`) → `revalidatePath`.
 - Revision history: `content_revisions` (migration `20260721_content_revisions.sql`, staff-only RLS). `upsertSection` snapshots prior content before overwriting; `ContentManager` has a per-section **Revision history** modal with one-click Restore.
 - Image compression: `lib/utils/imageCompressor.ts` (canvas → ≤1920px WebP @0.82, GIF/SVG passthrough) runs inside `uploadImageAsset`, so all plaque/event uploads are compressed before Storage.
 - Backup export: Database portal **Export Site Data Snapshot (JSON)** downloads `plaques/site_settings/site_content_sections/faqs/public_documents`.
@@ -56,6 +56,7 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 8. Apply `supabase/migrations/20260720_admin_exec_sql.sql` to enable the developer SQL Console (`/admin/database`).
 9. Apply `supabase/migrations/20260721_site_settings_and_cms.sql` to enable the CMS suite (site_settings/sections/faqs/inquiries/documents + `lodge-documents` bucket).
 10. Apply `supabase/migrations/20260721_content_revisions.sql` to enable content revision history / one-click undo.
+11. Apply `supabase/migrations/20260721_expand_content_sections.sql` to seed About/Home/Events/Contact page-copy slugs.
 
 ## Do not
 - Do not put the service role key in `NEXT_PUBLIC_*`.
