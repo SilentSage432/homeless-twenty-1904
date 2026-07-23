@@ -6,6 +6,7 @@ Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `event
 **SEO / Search Console**
 - Root `app/layout.tsx` metadata includes `verification.google` (`OEJCptJR1xWyWGNTFqTtBjXJmZFifizemgJjxfv-Dg8`) so Next.js emits the Google site-verification meta tag site-wide.
 - File method: `public/google30302848f8b35cc7.html` served at `/google30302848f8b35cc7.html`.
+- Static `public/sitemap.xml` (Home, About, Plaques, Events, Contact) + `public/robots.txt` Sitemap → `https://thehomelesstwenty1904.org/sitemap.xml`.
 
 **Dashboard**
 - `developer`: telemetry control deck + events/plaques CRUD + personnel (any role)

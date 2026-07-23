@@ -1,5 +1,12 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-22 — Static sitemap for Search Console
+
+- Replaced `public/sitemap.xml` with a static urlset covering `/`, `/about`, `/plaques`, `/events`, `/contact` under `https://thehomelesstwenty1904.org` (no lastmod / no dynamic App Router sitemap).
+- Pointed `public/robots.txt` Sitemap directive at `https://thehomelesstwenty1904.org/sitemap.xml`.
+
+---
+
 ## 2026-07-22 — Google Search Console HTML verification file
 
 - Placed `public/google30302848f8b35cc7.html` (from Downloads) so Search Console can verify via file upload method. Content: `google-site-verification: google30302848f8b35cc7.html`. Complements existing `verification.google` meta in root layout.

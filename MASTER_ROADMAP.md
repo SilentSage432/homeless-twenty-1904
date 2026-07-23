@@ -28,6 +28,7 @@
 - [x] Expanded CMS page-copy engine (`getContentSection`, tabbed Content Manager, `/contact` page)
 - [x] Google Search Console site verification metadata (`verification.google` in root layout)
 - [x] Google Search Console HTML verification file (`public/google30302848f8b35cc7.html`)
+- [x] Static `public/sitemap.xml` + robots Sitemap URL for Search Console
 - [x] Typecheck + production build green
 
 ## Near-term
