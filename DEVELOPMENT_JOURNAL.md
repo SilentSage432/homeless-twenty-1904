@@ -1,5 +1,12 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-22 — Google Search Console HTML verification file
+
+- Placed `public/google30302848f8b35cc7.html` (from Downloads) so Search Console can verify via file upload method. Content: `google-site-verification: google30302848f8b35cc7.html`. Complements existing `verification.google` meta in root layout.
+- Typecheck + lint + production build green.
+
+---
+
 ## 2026-07-22 — Google Search Console site verification
 
 - Added `verification.google` to root `app/layout.tsx` metadata so Next.js emits `<meta name="google-site-verification" content="OEJCptJR1xWyWGNTFqTtBjXJmZFifizemgJjxfv-Dg8" />` on every page. No manual `<head>` tag in the layout.
