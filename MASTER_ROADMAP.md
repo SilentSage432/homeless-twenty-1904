@@ -26,6 +26,7 @@
 - [x] Full repo audit polish: steward-facing helper/confirm copy, modal a11y baseline (`useModalA11y`), tap targets, dead-export cleanup
 - [x] Plaque Gallery nav label + homepage map CTA + `/plaques?view=map` deep link
 - [x] Expanded CMS page-copy engine (`getContentSection`, tabbed Content Manager, `/contact` page)
+- [x] Google Search Console site verification metadata (`verification.google` in root layout)
 - [x] Typecheck + production build green
 
 ## Near-term

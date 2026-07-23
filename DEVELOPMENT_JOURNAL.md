@@ -1,5 +1,12 @@
 # Development Journal — Homeless Twenty 1904
 
+## 2026-07-22 — Google Search Console site verification
+
+- Added `verification.google` to root `app/layout.tsx` metadata so Next.js emits `<meta name="google-site-verification" content="OEJCptJR1xWyWGNTFqTtBjXJmZFifizemgJjxfv-Dg8" />` on every page. No manual `<head>` tag in the layout.
+- Typecheck + production build green.
+
+---
+
 ## 2026-07-21 — Expanded CMS page-copy engine
 
 - **Catalog ownership in `cms.ts`:** registered defaults for `about_hero` / `about_mission` / `about_history`, `home_intro` / `home_heritage_callout`, `events_intro`, `contact_intro` (+ legacy `president-message` / `about-lore`). New `getContentSection(slug, fallback)` and `fetchSectionsForEditor()` merge DB rows with catalog fallbacks. Migration `20260721_expand_content_sections.sql` seeds the new slugs (`ON CONFLICT DO NOTHING`).

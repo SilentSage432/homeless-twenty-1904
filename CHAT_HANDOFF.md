@@ -3,6 +3,9 @@
 ## Current state
 Supabase RBAC live: `profiles` (`id`, `updated_at`, `full_name`, `role`), `events`, `plaques`.
 
+**SEO / Search Console**
+- Root `app/layout.tsx` metadata includes `verification.google` (`OEJCptJR1xWyWGNTFqTtBjXJmZFifizemgJjxfv-Dg8`) so Next.js emits the Google site-verification meta tag site-wide.
+
 **Dashboard**
 - `developer`: telemetry control deck + events/plaques CRUD + personnel (any role)
 - `admin`: events/plaques CRUD + personnel (admin/user only)

@@ -63,6 +63,9 @@ export const metadata: Metadata = {
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
+  verification: {
+    google: "OEJCptJR1xWyWGNTFqTtBjXJmZFifizemgJjxfv-Dg8",
+  },
 };
 
 export const viewport: Viewport = {
